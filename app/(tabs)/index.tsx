@@ -5,7 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,16 +13,13 @@ import { Colors } from "../../src/constants/colors";
 import { useMatches, useLiveMatches } from "../../src/hooks/useMatches";
 import { useFeaturedLeagues } from "../../src/hooks/useLeagues";
 import MatchCard from "../../src/components/match/MatchCard";
-import LeagueChip from "../../src/components/match/LeagueChip";
 import LiveMatchCard from "../../src/components/match/LiveMatchCard";
-
-const DATES = [
-  { label: "어제", value: getDateString(-1) },
-  { label: "오늘", value: getDateString(0) },
-  { label: "내일", value: getDateString(1) },
-  { label: "2일 후", value: getDateString(2) },
-  { label: "3일 후", value: getDateString(3) },
-];
+import { Image } from "expo-image";
+import WorldCupBanner from "../../src/components/home/WorldCupBanner";
+import UzbekPlayers from "../../src/components/home/UzbekPlayers";
+import NewsSection from "../../src/components/home/NewsSection";
+import PredictionSection from "../../src/components/home/PredictionSection";
+import HeroBanner from "../../src/components/home/HeroBanner";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -31,34 +27,109 @@ function getDateString(offset: number): string {
   return date.toISOString().split("T")[0];
 }
 
+// 오늘/내일/모레 3일치
+const DATES = [
+  { label: "오늘", value: getDateString(0) },
+  { label: "내일", value: getDateString(1) },
+  { label: "모레", value: getDateString(2) },
+];
+
 export default function HomeScreen() {
-  const [selectedDate, setSelectedDate] = useState(getDateString(0));
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
   const [showLeagueModal, setShowLeagueModal] = useState(false);
 
-  const {
-    data: matches,
-    isLoading,
-    refetch,
-  } = useMatches(selectedDate, selectedLeague);
-  const { data: liveMatches } = useLiveMatches();
   const { data: leagues } = useFeaturedLeagues();
+  const { data: liveMatches } = useLiveMatches();
 
-  // 리그별 그룹핑
-  const groupedMatches = matches?.reduce((acc: any, match) => {
-    const leagueId = match.league.id;
-    if (!acc[leagueId]) {
-      acc[leagueId] = {
-        league: match.league,
-        matches: [],
-      };
-    }
-    acc[leagueId].matches.push(match);
-    return acc;
-  }, {});
+  // 오늘/내일/모레 경기 모두 가져오기
+  const {
+    data: todayMatches,
+    isLoading: l1,
+    refetch: r1,
+  } = useMatches(getDateString(0), selectedLeague);
+  const {
+    data: tomorrowMatches,
+    isLoading: l2,
+    refetch: r2,
+  } = useMatches(getDateString(1), selectedLeague);
+  const {
+    data: dayAfterMatches,
+    isLoading: l3,
+    refetch: r3,
+  } = useMatches(getDateString(2), selectedLeague);
+
+  const isLoading = l1 || l2 || l3;
+
+  const refetch = () => {
+    r1();
+    r2();
+    r3();
+  };
+
+  const groupByLeague = (matches: any[]) => {
+    if (!matches) return {};
+    return matches.reduce((acc: any, match) => {
+      const leagueId = match.league.id;
+      if (!acc[leagueId]) {
+        acc[leagueId] = { league: match.league, matches: [] };
+      }
+      acc[leagueId].matches.push(match);
+
+      // if (acc[leagueId].matches.length < 4) {
+      //   acc[leagueId].matches.push(match);
+      // }
+      return acc;
+    }, {});
+  };
+
+  const renderDateSection = (label: string, matches: any[]) => {
+    if (!matches || matches.length === 0) return null;
+    const grouped = groupByLeague(matches);
+    const groupList = Object.values(grouped);
+
+    return (
+      <View key={label}>
+        <View style={styles.dateHeader}>
+          <Text style={styles.dateHeaderText}>{label}</Text>
+        </View>
+
+        {groupList.map((group: any, index: number) => (
+          <View key={group.league.id}>
+            {/* 리그 그룹 */}
+            <View style={styles.leagueGroup}>
+              <TouchableOpacity style={styles.leagueHeader}>
+                <Image
+                  source={group.league.logo}
+                  style={styles.leagueLogo}
+                  contentFit="contain"
+                />
+                <Text style={styles.leagueName}>{group.league.name}</Text>
+                <Text style={styles.leagueCountry}>{group.league.country}</Text>
+                <Ionicons
+                  name="chevron-forward"
+                  size={14}
+                  color={Colors.textSecondary}
+                />
+              </TouchableOpacity>
+              {group.matches.map((match: any) => (
+                <MatchCard key={match._id} match={match} />
+              ))}
+            </View>
+
+            {/* 2개마다 광고 배너 */}
+            {(index + 1) % 2 === 0 && (
+              <View style={styles.adBanner}>
+                <Text style={styles.adText}>Advertisement</Text>
+              </View>
+            )}
+          </View>
+        ))}
+      </View>
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={[]}>
       {/* 헤더 */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>⚽ FootballUZ</Text>
@@ -71,21 +142,85 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* 리그 칩 (상단) */}
+      <View style={styles.leagueChipContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.leagueChipContent}
+        >
+          <TouchableOpacity
+            style={[styles.chip, !selectedLeague && styles.chipActive]}
+            onPress={() => setSelectedLeague(undefined)}
+          >
+            <Text
+              style={[
+                styles.chipText,
+                !selectedLeague && styles.chipTextActive,
+              ]}
+            >
+              All
+            </Text>
+          </TouchableOpacity>
+
+          {leagues?.map((league) => (
+            <TouchableOpacity
+              key={league._id}
+              style={[
+                styles.chip,
+                selectedLeague === league.apiFootballId && styles.chipActive,
+              ]}
+              onPress={() =>
+                setSelectedLeague(
+                  selectedLeague === league.apiFootballId
+                    ? undefined
+                    : league.apiFootballId,
+                )
+              }
+            >
+              <Image
+                source={{ uri: league.logo }}
+                style={styles.chipLogo}
+                resizeMode="contain"
+              />
+              <Text
+                style={[
+                  styles.chipText,
+                  selectedLeague === league.apiFootballId &&
+                    styles.chipTextActive,
+                ]}
+              >
+                {league.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+          <TouchableOpacity
+            style={styles.allLeaguesBtn}
+            onPress={() => setShowLeagueModal(true)}
+          >
+            <Text style={styles.allLeaguesBtnText}>All Leagues</Text>
+            <Ionicons name="chevron-forward" size={12} color={Colors.primary} />
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
       >
-        {/* 라이브 경기 섹션 */}
+        <HeroBanner />
+
+        {/* 라이브 경기 */}
         {liveMatches && liveMatches.length > 0 && (
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.liveIndicator}>
+            <View style={styles.liveHeader}>
+              <View style={styles.liveBadge}>
                 <View style={styles.liveDot} />
                 <Text style={styles.liveText}>LIVE</Text>
               </View>
-              <Text style={styles.sectionTitle}>라이브 경기</Text>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {liveMatches.map((match) => (
@@ -95,112 +230,41 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* 날짜 탭 */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.dateTabContainer}
-          contentContainerStyle={styles.dateTabContent}
-        >
-          {DATES.map((date) => (
-            <TouchableOpacity
-              key={date.value}
-              style={[
-                styles.dateTab,
-                selectedDate === date.value && styles.dateTabActive,
-              ]}
-              onPress={() => setSelectedDate(date.value)}
-            >
-              <Text
-                style={[
-                  styles.dateTabText,
-                  selectedDate === date.value && styles.dateTabTextActive,
-                ]}
-              >
-                {date.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        {/* 오늘/내일/모레 경기 */}
+        {renderDateSection("오늘", todayMatches || [])}
 
-        {/* 경기 목록 */}
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>불러오는 중...</Text>
-          </View>
-        ) : groupedMatches && Object.keys(groupedMatches).length > 0 ? (
-          Object.values(groupedMatches).map((group: any) => (
-            <View key={group.league.id} style={styles.leagueGroup}>
-              {/* 리그 헤더 */}
-              <View style={styles.leagueHeader}>
-                <Text style={styles.leagueName}>{group.league.name}</Text>
-                <Text style={styles.leagueCountry}>{group.league.country}</Text>
-              </View>
-              {/* 경기 목록 */}
-              {group.matches.map((match: any) => (
-                <MatchCard key={match._id} match={match} />
-              ))}
+        {/* 월드컵 배너 */}
+        <WorldCupBanner />
+        {renderDateSection("내일", tomorrowMatches || [])}
+
+        {/* 우즈벡 선수 */}
+        <UzbekPlayers />
+
+        {renderDateSection("모레", dayAfterMatches || [])}
+
+        {/* 최신 뉴스 */}
+        <NewsSection />
+
+        {/* AI 예측 */}
+        <PredictionSection />
+
+        {/* 전부 없을 때 */}
+        {!isLoading &&
+          !todayMatches?.length &&
+          !tomorrowMatches?.length &&
+          !dayAfterMatches?.length && (
+            <View style={styles.emptyContainer}>
+              <Ionicons
+                name="football-outline"
+                size={48}
+                color={Colors.border}
+              />
+              <Text style={styles.emptyText}>경기가 없습니다</Text>
             </View>
-          ))
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="football-outline" size={48} color={Colors.border} />
-            <Text style={styles.emptyText}>이 날 경기가 없습니다</Text>
-          </View>
-        )}
+          )}
 
-        {/* 하단 여백 */}
         <View style={{ height: 20 }} />
       </ScrollView>
-
-      {/* 하단 리그 칩 */}
-      <View style={styles.leagueChipContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.leagueChipContent}
-        >
-          <TouchableOpacity
-            style={[
-              styles.leagueChip,
-              !selectedLeague && styles.leagueChipActive,
-            ]}
-            onPress={() => setSelectedLeague(undefined)}
-          >
-            <Text
-              style={[
-                styles.leagueChipText,
-                !selectedLeague && styles.leagueChipTextActive,
-              ]}
-            >
-              전체
-            </Text>
-          </TouchableOpacity>
-
-          {leagues?.map((league) => (
-            <LeagueChip
-              key={league._id}
-              league={league}
-              isSelected={selectedLeague === league.apiFootballId}
-              onPress={() =>
-                setSelectedLeague(
-                  selectedLeague === league.apiFootballId
-                    ? undefined
-                    : league.apiFootballId,
-                )
-              }
-            />
-          ))}
-
-          <TouchableOpacity
-            style={styles.allLeaguesBtn}
-            onPress={() => setShowLeagueModal(true)}
-          >
-            <Text style={styles.allLeaguesBtnText}>전체 리그 보기</Text>
-            <Ionicons name="chevron-forward" size={14} color={Colors.primary} />
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
     </SafeAreaView>
   );
 }
@@ -209,6 +273,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+    paddingTop: 40,
   },
   header: {
     flexDirection: "row",
@@ -225,29 +290,75 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.text,
   },
+  leagueChipContainer: {
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    paddingVertical: 10,
+  },
+  leagueChipContent: {
+    paddingHorizontal: 16,
+    alignItems: "center",
+    gap: 8,
+  },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: Colors.background,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 5,
+  },
+  chipActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  chipLogo: {
+    width: 16,
+    height: 16,
+  },
+  chipText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: "500",
+  },
+  chipTextActive: {
+    color: "#fff",
+  },
+  allLeaguesBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    gap: 4,
+  },
+  allLeaguesBtnText: {
+    fontSize: 12,
+    color: Colors.primary,
+    fontWeight: "500",
+  },
   section: {
     marginTop: 12,
   },
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+  liveHeader: {
     paddingHorizontal: 16,
     marginBottom: 8,
-    gap: 8,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  liveIndicator: {
+  liveBadge: {
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "flex-start",
     backgroundColor: "#fff0f0",
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    gap: 4,
+    gap: 5,
   },
   liveDot: {
     width: 6,
@@ -256,41 +367,25 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.live,
   },
   liveText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "700",
     color: Colors.live,
   },
-  dateTabContainer: {
-    marginTop: 12,
-    backgroundColor: Colors.surface,
-  },
-  dateTabContent: {
+  dateHeader: {
     paddingHorizontal: 16,
-    gap: 8,
+    paddingVertical: 10,
+    marginTop: 8,
   },
-  dateTab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-  },
-  dateTabActive: {
-    backgroundColor: Colors.primary,
-  },
-  dateTabText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    fontWeight: "500",
-  },
-  dateTabTextActive: {
-    color: "#ffffff",
+  dateHeaderText: {
+    fontSize: 16,
     fontWeight: "700",
+    color: Colors.text,
   },
   leagueGroup: {
-    marginTop: 12,
     backgroundColor: Colors.surface,
-    borderRadius: 12,
     marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 12,
     overflow: "hidden",
   },
   leagueHeader: {
@@ -298,83 +393,49 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f8f9fa",
     gap: 8,
   },
+  leagueLogo: {
+    width: 20,
+    height: 20,
+  },
   leagueName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "700",
     color: Colors.text,
+    flex: 1,
   },
   leagueCountry: {
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.textSecondary,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 40,
-  },
-  loadingText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
   },
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
+    paddingVertical: 80,
     gap: 12,
   },
   emptyText: {
     color: Colors.textSecondary,
     fontSize: 15,
   },
-  leagueChipContainer: {
-    backgroundColor: Colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingVertical: 10,
-  },
-  leagueChipContent: {
-    paddingHorizontal: 16,
-    gap: 8,
+
+  adBanner: {
+    marginHorizontal: 16,
+    marginVertical: 8,
+    height: 60,
+    backgroundColor: "#e8f0fe",
+    borderRadius: 12,
     alignItems: "center",
-  },
-  leagueChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: Colors.background,
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: Colors.border,
-    marginRight: 8,
+    borderStyle: "dashed",
   },
-  leagueChipActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  leagueChipText: {
-    fontSize: 13,
+  adText: {
+    fontSize: 12,
     color: Colors.textSecondary,
-    fontWeight: "500",
-  },
-  leagueChipTextActive: {
-    color: "#ffffff",
-  },
-  allLeaguesBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    gap: 4,
-  },
-  allLeaguesBtnText: {
-    fontSize: 13,
-    color: Colors.primary,
     fontWeight: "500",
   },
 });

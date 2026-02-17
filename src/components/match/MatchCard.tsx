@@ -1,4 +1,5 @@
-import { TouchableOpacity, View, Text, StyleSheet, Image } from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Colors } from "../../constants/colors";
 import { Match } from "../../types";
@@ -33,7 +34,7 @@ export default function MatchCard({ match }: Props) {
       {/* 홈팀 */}
       <View style={styles.teamContainer}>
         <Image
-          source={{ uri: match.homeTeam.logo }}
+          source={match.homeTeam.logo}
           style={styles.teamLogo}
           resizeMode="contain"
         />
@@ -67,7 +68,7 @@ export default function MatchCard({ match }: Props) {
       {/* 원정팀 */}
       <View style={[styles.teamContainer, styles.awayTeam]}>
         <Image
-          source={{ uri: match.awayTeam.logo }}
+          source={match.homeTeam.logo}
           style={styles.teamLogo}
           resizeMode="contain"
         />
