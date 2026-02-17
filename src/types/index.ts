@@ -89,11 +89,13 @@ export interface PlayerInfo {
   playerName: string;
   number: number;
   pos: string;
+  photo: string;
 }
 
 export interface MatchStatistic {
   side: "home" | "away";
   possession?: string;
+  [key: string]: any;
   shots?: number;
   shotsOnTarget?: number;
   corners?: number;

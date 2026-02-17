@@ -9,7 +9,7 @@ export const useMatches = (date?: string, leagueId?: number) => {
     queryKey: ["matches", date, leagueId],
     queryFn: async () => {
       const params: any = {};
-      if (date) params.date = "2024-11-10"; // 테스트용 날짜
+      if (date) params.date = "2024-08-17"; // 테스트용 날짜
       if (leagueId) params.leagueId = leagueId;
       return api.get(ENDPOINTS.matches, { params });
     },

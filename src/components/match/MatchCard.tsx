@@ -68,7 +68,7 @@ export default function MatchCard({ match }: Props) {
       {/* 원정팀 */}
       <View style={[styles.teamContainer, styles.awayTeam]}>
         <Image
-          source={match.homeTeam.logo}
+          source={match.awayTeam.logo}
           style={styles.teamLogo}
           resizeMode="contain"
         />
