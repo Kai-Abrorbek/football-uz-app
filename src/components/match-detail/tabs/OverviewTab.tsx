@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,8 +14,20 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+
+interface Tab {
+  key: string;
+  label: string;
+}
+
 interface Props {
   match: Match;
+  onTabChange: (key: string) => void;
 }
 
 function CollapsibleSection({
@@ -54,7 +67,7 @@ function CollapsibleSection({
   );
 }
 
-export default function OverviewTab({ match }: Props) {
+export default function OverviewTab({ match, onTabChange }: Props) {
   const { data: standing } = useQuery({
     queryKey: ["standings", match.league.id],
     queryFn: () => api.get(ENDPOINTS.leagueStandings(match.league.id)),
@@ -119,6 +132,7 @@ export default function OverviewTab({ match }: Props) {
           title="승리 확률"
           subtitle="팀별 우승 확률"
           defaultOpen={true}
+          key="prob"
         >
           <View style={styles.probContainer}>
             <View style={styles.probRow}>
@@ -157,6 +171,7 @@ export default function OverviewTab({ match }: Props) {
         <CollapsibleSection
           title="순위"
           subtitle={`${match.homeTeam.name} 대 ${match.awayTeam.name}`}
+          key="standings"
         >
           <View style={miniStyles.container}>
             <View style={miniStyles.header}>
@@ -166,25 +181,32 @@ export default function OverviewTab({ match }: Props) {
               <Text style={miniStyles.headerStat}>득실</Text>
               <Text style={miniStyles.headerStat}>승점</Text>
             </View>
-            {[homeStanding, awayStanding].filter(Boolean).map((entry: any) => (
-              <View key={entry.rank} style={miniStyles.row}>
-                <Text style={miniStyles.rank}>{entry.rank}</Text>
-                <Image
-                  source={entry.team.logo}
-                  style={miniStyles.logo}
-                  contentFit="contain"
-                />
-                <Text style={miniStyles.teamName} numberOfLines={1}>
-                  {entry.team.name}
-                </Text>
-                <Text style={miniStyles.stat}>{entry.played}</Text>
-                <Text style={miniStyles.stat}>{entry.goalsDiff}</Text>
-                <Text style={[miniStyles.stat, miniStyles.points]}>
-                  {entry.points}
-                </Text>
-              </View>
-            ))}
-            <TouchableOpacity style={miniStyles.allBtn}>
+            {[homeStanding, awayStanding]
+              .filter(Boolean)
+              .map((entry: any, index: number) => (
+                <Pressable onPress={() => onTabChange("standings")} key={index}>
+                  <View key={`${entry.rank}-${index}`} style={miniStyles.row}>
+                    <Text style={miniStyles.rank}>{entry.rank}</Text>
+                    <Image
+                      source={entry.team.logo}
+                      style={miniStyles.logo}
+                      contentFit="contain"
+                    />
+                    <Text style={miniStyles.teamName} numberOfLines={1}>
+                      {entry.team.name}
+                    </Text>
+                    <Text style={miniStyles.stat}>{entry.played}</Text>
+                    <Text style={miniStyles.stat}>{entry.goalsDiff}</Text>
+                    <Text style={[miniStyles.stat, miniStyles.points]}>
+                      {entry.points}
+                    </Text>
+                  </View>
+                </Pressable>
+              ))}
+            <TouchableOpacity
+              style={miniStyles.allBtn}
+              onPress={() => onTabChange("standings")}
+            >
               <Text style={miniStyles.allBtnText}>전체 순위 →</Text>
             </TouchableOpacity>
           </View>
@@ -194,55 +216,66 @@ export default function OverviewTab({ match }: Props) {
         <CollapsibleSection
           title="부상 및 출장 정지"
           subtitle="플레이어별 상황 소식"
+          key="injuries"
         >
           {/* 팀 탭 */}
           <InjurySection match={match} injuries={dummyInjuries} />
         </CollapsibleSection>
 
         {/* 최근 성적 */}
-        <CollapsibleSection title="최근 성적" subtitle="팀별 최근 경기 결과">
+        <CollapsibleSection
+          title="최근 성적"
+          subtitle="팀별 최근 경기 결과"
+          key="form"
+        >
           <Text style={styles.formSubtitle}>최근 5경기</Text>
           {teams.map(({ team, standing }) => {
             const form = standing?.form?.split("").slice(-5) || [];
             return (
-              <View key={team.id} style={formStyles.teamRow}>
-                {standing && (
-                  <Text style={formStyles.rank}>{standing.rank}</Text>
-                )}
-                <Image
-                  source={team.logo}
-                  style={formStyles.teamLogo}
-                  contentFit="contain"
-                />
-                <Text style={formStyles.teamName} numberOfLines={1}>
-                  {team.name}
-                </Text>
-                <View style={formStyles.formIcons}>
-                  {form.length > 0 ? (
-                    form.map((f: string, i: number) => (
-                      <View
-                        key={i}
-                        style={[
-                          formStyles.formIcon,
-                          f === "W" && formStyles.formW,
-                          f === "L" && formStyles.formL,
-                          f === "D" && formStyles.formD,
-                        ]}
-                      >
-                        <Text style={formStyles.formText}>{f}</Text>
-                      </View>
-                    ))
-                  ) : (
-                    <Text style={styles.emptyText}>데이터 없음</Text>
+              <Pressable onPress={() => onTabChange("standings")} key={team.id}>
+                <View key={team.id} style={formStyles.teamRow}>
+                  {standing && (
+                    <Text style={formStyles.rank}>{standing.rank}</Text>
                   )}
+                  <Image
+                    source={team.logo}
+                    style={formStyles.teamLogo}
+                    contentFit="contain"
+                  />
+                  <Text style={formStyles.teamName} numberOfLines={1}>
+                    {team.name}
+                  </Text>
+                  <View style={formStyles.formIcons}>
+                    {form.length > 0 ? (
+                      form.map((f: string, i: number) => (
+                        <View
+                          key={i}
+                          style={[
+                            formStyles.formIcon,
+                            f === "W" && formStyles.formW,
+                            f === "L" && formStyles.formL,
+                            f === "D" && formStyles.formD,
+                          ]}
+                        >
+                          <Text style={formStyles.formText}>{f}</Text>
+                        </View>
+                      ))
+                    ) : (
+                      <Text style={styles.emptyText}>데이터 없음</Text>
+                    )}
+                  </View>
                 </View>
-              </View>
+              </Pressable>
             );
           })}
         </CollapsibleSection>
 
         {/* 상대 전적 */}
-        <CollapsibleSection title="상대 전적" subtitle="이전 경기 결과">
+        <CollapsibleSection
+          title="상대 전적"
+          subtitle="이전 경기 결과"
+          key="h2h"
+        >
           {!h2hMatches || h2hMatches.length === 0 ? (
             <Text style={styles.emptyText}>상대 전적이 없습니다</Text>
           ) : (

@@ -42,105 +42,85 @@ export default function H2HTab({ match }: Props) {
 
   const draws = h2hMatches.length - homeWins - awayWins;
 
-  const total = h2hMatches.length;
-  const homeWidth = total > 0 ? (homeWins / total) * 100 : 33;
-  const drawWidth = total > 0 ? (draws / total) * 100 : 34;
-  const awayWidth = total > 0 ? (awayWins / total) * 100 : 33;
-
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* 통계 요약 */}
-      <View style={styles.summaryContainer}>
-        <Text style={styles.summaryTitle}>최근 {h2hMatches.length}경기</Text>
-
-        <View style={styles.summaryRow}>
-          <View style={styles.summaryTeam}>
-            <Text style={styles.summaryWins}>{homeWins}승</Text>
-            <Text style={styles.summaryTeamName}>{match.homeTeam.name}</Text>
-          </View>
-          <View style={styles.summaryDraw}>
-            <Text style={styles.summaryDrawCount}>{draws}</Text>
-            <Text style={styles.summaryDrawLabel}>무승부</Text>
-          </View>
-          <View style={[styles.summaryTeam, { alignItems: "flex-end" }]}>
-            <Text style={styles.summaryWins}>{awayWins}승</Text>
-            <Text style={styles.summaryTeamName}>{match.awayTeam.name}</Text>
-          </View>
-        </View>
-
-        {/* 바 */}
-        <View style={styles.summaryBar}>
-          <View style={[styles.barHome, { flex: homeWidth || 1 }]} />
-          <View style={[styles.barDraw, { flex: drawWidth || 1 }]} />
-          <View style={[styles.barAway, { flex: awayWidth || 1 }]} />
-        </View>
-      </View>
-
       {/* 경기 목록 */}
       {h2hMatches.map((m, index) => {
-        const isHomeTeamHome = m.homeTeam.id === match.homeTeam.id;
         const homeGoals = m.goals.home ?? 0;
         const awayGoals = m.goals.away ?? 0;
         const homeWon = homeGoals > awayGoals;
         const awayWon = awayGoals > homeGoals;
+        const isDraw = homeGoals === awayGoals;
+
+        // 레드카드 체크
+        const homeRedCards =
+          m.statistics?.find((s) => s.side === "home")?.redCards || 0;
+        const awayRedCards =
+          m.statistics?.find((s) => s.side === "away")?.redCards || 0;
 
         return (
           <View key={m._id} style={styles.matchCard}>
-            {/* 날짜 + 리그 */}
-            <Text style={styles.matchDate}>
-              {new Date(m.date).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}{" "}
-              · {m.league.name}
-            </Text>
-
-            {/* 경기 결과 */}
+            {/* 팀 + 스코어 */}
             <View style={styles.matchRow}>
               {/* 홈팀 */}
-              <View style={styles.matchTeam}>
+              <View style={styles.teamSide}>
                 <Image
                   source={m.homeTeam.logo}
-                  style={styles.matchLogo}
+                  style={styles.teamLogo}
                   contentFit="contain"
                 />
-                <Text
-                  style={[
-                    styles.matchTeamName,
-                    homeWon && styles.matchTeamNameWinner,
-                  ]}
-                >
+                <Text style={styles.teamName} numberOfLines={1}>
                   {m.homeTeam.name}
                 </Text>
+                {homeRedCards > 0 && <Text style={styles.redCard}>🟥</Text>}
               </View>
 
               {/* 스코어 */}
-              <View style={styles.matchScore}>
-                <Text style={styles.matchScoreText}>
-                  {homeGoals} - {awayGoals}
-                </Text>
-                <Text style={styles.matchStatus}>
-                  {m.status.short === "FT" ? "종료" : m.status.short}
-                </Text>
+              <View style={styles.scoreContainer}>
+                <View style={styles.scoreRow}>
+                  <Text style={[styles.score, homeWon && styles.scoreWinner]}>
+                    {homeGoals}
+                  </Text>
+                  {homeWon && <Text style={styles.winnerArrow}>◀</Text>}
+                  {isDraw && <Text style={styles.drawDash}>-</Text>}
+                  {awayWon && <Text style={styles.winnerArrow}>▶</Text>}
+                  <Text style={[styles.score, awayWon && styles.scoreWinner]}>
+                    {awayGoals}
+                  </Text>
+                </View>
               </View>
 
               {/* 원정팀 */}
-              <View style={[styles.matchTeam, { alignItems: "flex-end" }]}>
-                <Image
-                  source={m.awayTeam.logo}
-                  style={styles.matchLogo}
-                  contentFit="contain"
-                />
+              <View style={[styles.teamSide, styles.teamSideRight]}>
+                {awayRedCards > 0 && <Text style={styles.redCard}>🟥</Text>}
                 <Text
-                  style={[
-                    styles.matchTeamName,
-                    awayWon && styles.matchTeamNameWinner,
-                  ]}
+                  style={[styles.teamName, styles.teamNameRight]}
+                  numberOfLines={1}
                 >
                   {m.awayTeam.name}
                 </Text>
+                <Image
+                  source={m.awayTeam.logo}
+                  style={styles.teamLogo}
+                  contentFit="contain"
+                />
               </View>
+            </View>
+
+            {/* 날짜 + 대회 */}
+            <View style={styles.matchInfo}>
+              <Text style={styles.matchStatus}>
+                {m.status.short === "FT" ? "풀타임" : m.status.short}
+              </Text>
+              <Text style={styles.matchDate}>
+                {new Date(m.date)
+                  .toLocaleDateString("ko-KR", {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                  })
+                  .replace(/\. /g, ". ")}
+              </Text>
             </View>
           </View>
         );
@@ -166,111 +146,87 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.textSecondary,
   },
-  summaryContainer: {
-    backgroundColor: Colors.surface,
-    padding: 16,
-    marginBottom: 8,
-    gap: 12,
-  },
-  summaryTitle: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    textAlign: "center",
-  },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  summaryTeam: {
-    flex: 1,
-    alignItems: "flex-start",
-    gap: 2,
-  },
-  summaryWins: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  summaryTeamName: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  summaryDraw: {
-    alignItems: "center",
-    gap: 2,
-  },
-  summaryDrawCount: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  summaryDrawLabel: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  summaryBar: {
-    flexDirection: "row",
-    height: 8,
-    borderRadius: 4,
-    overflow: "hidden",
-  },
-  barHome: {
-    backgroundColor: "#4285f4",
-  },
-  barDraw: {
-    backgroundColor: "#9e9e9e",
-  },
-  barAway: {
-    backgroundColor: "#ea4335",
-  },
   matchCard: {
     backgroundColor: Colors.surface,
     marginHorizontal: 12,
-    marginBottom: 8,
+    marginTop: 12,
     borderRadius: 12,
-    padding: 14,
-    gap: 8,
-  },
-  matchDate: {
-    fontSize: 12,
-    color: Colors.textSecondary,
+    padding: 16,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   matchRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 12,
   },
-  matchTeam: {
+  teamSide: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  matchLogo: {
-    width: 28,
-    height: 28,
+  teamSideRight: {
+    flexDirection: "row-reverse",
   },
-  matchTeamName: {
+  teamLogo: {
+    width: 32,
+    height: 32,
+  },
+  teamName: {
+    flex: 1,
     fontSize: 14,
     fontWeight: "500",
     color: Colors.text,
-    flex: 1,
   },
-  matchTeamNameWinner: {
-    fontWeight: "700",
+  teamNameRight: {
+    textAlign: "right",
   },
-  matchScore: {
+  redCard: {
+    fontSize: 14,
+  },
+  scoreContainer: {
     alignItems: "center",
-    gap: 2,
   },
-  matchScoreText: {
-    fontSize: 18,
+  scoreRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  score: {
+    fontSize: 24,
     fontWeight: "700",
+    color: Colors.textSecondary,
+    minWidth: 30,
+    textAlign: "center",
+  },
+  scoreWinner: {
     color: Colors.text,
   },
+  winnerArrow: {
+    fontSize: 12,
+    color: Colors.text,
+  },
+  drawDash: {
+    fontSize: 20,
+    color: Colors.textSecondary,
+  },
+  matchInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    gap: 8,
+  },
   matchStatus: {
-    fontSize: 11,
+    fontSize: 12,
+    color: Colors.textSecondary,
+  },
+  matchDate: {
+    fontSize: 12,
     color: Colors.textSecondary,
   },
 });

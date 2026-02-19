@@ -12,19 +12,22 @@ import MatchTabs from "../../src/components/match-detail/MatchTabs";
 import OverviewTab from "../../src/components/match-detail/tabs/OverviewTab";
 import LineupTab from "../../src/components/match-detail/tabs/LineupTab";
 import StatsTab from "../../src/components/match-detail/tabs/StatsTab";
-import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
 import H2HTab from "../../src/components/match-detail/tabs/H2HTab";
-import LiveTab from "../../src/components/match-detail/tabs/LiveTab";
+import LiveTab from "../../src/components/match-detail/tabs/HighlightsTab";
+import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
 
+// 탭 설정 변경
 const UPCOMING_TABS = [
   { key: "overview", label: "개요" },
   { key: "lineup", label: "라인업" },
-  { key: "h2h", label: "경기 더보기" },
+  { key: "stats", label: "기록" },
   { key: "standings", label: "순위" },
+  { key: "h2h", label: "경기 더보기" },
 ];
 
 const LIVE_TABS = [
-  { key: "live", label: "실시간" },
+  { key: "overview", label: "개요" },
+  { key: "highlights", label: "경기 하이라이트" },
   { key: "lineup", label: "라인업" },
   { key: "stats", label: "기록" },
   { key: "standings", label: "순위" },
@@ -33,9 +36,11 @@ const LIVE_TABS = [
 
 const FINISHED_TABS = [
   { key: "overview", label: "개요" },
+  { key: "highlights", label: "경기 하이라이트" },
   { key: "lineup", label: "라인업" },
   { key: "stats", label: "기록" },
   { key: "standings", label: "순위" },
+  // { key: "rating", label: "선수 평가" },
   { key: "h2h", label: "경기 더보기" },
 ];
 
@@ -77,7 +82,7 @@ export default function MatchDetailScreen() {
   const renderTab = () => {
     switch (activeTab) {
       case "overview":
-        return <OverviewTab match={match} />;
+        return <OverviewTab match={match} onTabChange={setActiveTab} />;
       case "lineup":
         return <LineupTab match={match} />;
       case "stats":
@@ -86,10 +91,12 @@ export default function MatchDetailScreen() {
         return <StandingsTab match={match} />;
       case "h2h":
         return <H2HTab match={match} />;
-      case "live":
+      case "highlights":
         return <LiveTab match={match} />;
+      // case "rating": // 추가
+      //   return <PlayerRatingTab match={match} />;
       default:
-        return <OverviewTab match={match} />;
+        return <OverviewTab match={match} onTabChange={setActiveTab} />;
     }
   };
 

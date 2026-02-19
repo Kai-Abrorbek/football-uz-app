@@ -82,20 +82,37 @@ export default function HomeScreen() {
     }, {});
   };
 
-  const renderDateSection = (label: string, matches: any[]) => {
+  // renderDateSection 함수 수정
+  const renderDateSection = (
+    label: string,
+    matches: any[],
+    isToday: boolean = false,
+  ) => {
     if (!matches || matches.length === 0) return null;
-    const grouped = groupByLeague(matches);
+
+    // 오늘이면 라이브 경기도 포함
+    let allMatches = matches;
+    if (isToday && liveMatches && liveMatches.length > 0) {
+      allMatches = [...liveMatches, ...matches];
+    }
+
+    const grouped = groupByLeague(allMatches);
     const groupList = Object.values(grouped);
 
     return (
       <View key={label}>
         <View style={styles.dateHeader}>
           <Text style={styles.dateHeaderText}>{label}</Text>
+          {/* {isToday && liveMatches && liveMatches.length > 0 && (
+            <View style={styles.liveIndicator}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>LIVE {liveMatches.length}</Text>
+            </View>
+          )} */}
         </View>
 
         {groupList.map((group: any, index: number) => (
           <View key={group.league.id}>
-            {/* 리그 그룹 */}
             <View style={styles.leagueGroup}>
               <TouchableOpacity style={styles.leagueHeader}>
                 <Image
@@ -116,7 +133,6 @@ export default function HomeScreen() {
               ))}
             </View>
 
-            {/* 2개마다 광고 배너 */}
             {(index + 1) % 2 === 0 && (
               <View style={styles.adBanner}>
                 <Text style={styles.adText}>Advertisement</Text>
@@ -214,7 +230,7 @@ export default function HomeScreen() {
         <HeroBanner />
 
         {/* 라이브 경기 */}
-        {liveMatches && liveMatches.length > 0 && (
+        {/* {liveMatches && liveMatches.length > 0 && (
           <View style={styles.section}>
             <View style={styles.liveHeader}>
               <View style={styles.liveBadge}>
@@ -228,10 +244,10 @@ export default function HomeScreen() {
               ))}
             </ScrollView>
           </View>
-        )}
+        )} */}
 
-        {/* 오늘/내일/모레 경기 */}
-        {renderDateSection("오늘", todayMatches || [])}
+        {/* 오늘 경기 (라이브 포함) */}
+        {renderDateSection("오늘", todayMatches || [], true)}
 
         {/* 월드컵 배너 */}
         <WorldCupBanner />
@@ -380,6 +396,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: Colors.text,
+  },
+  liveIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff0f0",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 5,
   },
   leagueGroup: {
     backgroundColor: Colors.surface,

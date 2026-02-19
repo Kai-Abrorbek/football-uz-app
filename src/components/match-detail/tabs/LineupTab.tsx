@@ -1,21 +1,15 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Image } from "expo-image";
-import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../../constants/colors";
 import { Match } from "../../../types";
-import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   match: Match;
 }
 
-const POSITION_MAP: any = {
+const POSITION_MAP: Record<string, string> = {
   G: "GK",
   D: "DF",
   M: "MF",
@@ -23,8 +17,6 @@ const POSITION_MAP: any = {
 };
 
 export default function LineupTab({ match }: Props) {
-  const [selectedTeam, setSelectedTeam] = useState<"home" | "away">("home");
-
   const lineup = match.lineups;
 
   if (!lineup || (!lineup.home && !lineup.away)) {
@@ -40,261 +32,274 @@ export default function LineupTab({ match }: Props) {
   const homeLineup = lineup.home;
   const awayLineup = lineup.away;
 
-  const getFormationRows = (formation: string) => {
-    return formation.split("-").map(Number);
-  };
-
-  const renderPitch = (teamLineup: any, isHome: boolean) => {
-    if (!teamLineup) return null;
-
-    const rows = getFormationRows(teamLineup.formation || "4-3-3");
-    const players = teamLineup.startXI || [];
-
-    // 포메이션대로 선수 배치
-    let playerIndex = 1; // 0은 골키퍼
-    const formationRows = rows.map((count) => {
-      const rowPlayers = players.slice(playerIndex, playerIndex + count);
-      playerIndex += count;
-      return rowPlayers;
-    });
-
-    const gk = players[0];
-
-    return (
-      <View
-        style={[styles.pitch, isHome ? styles.pitchHome : styles.pitchAway]}
-      >
-        {/* 팀 이름 + 포메이션 */}
-        <View style={styles.pitchHeader}>
-          <Image
-            source={isHome ? match.homeTeam.logo : match.awayTeam.logo}
-            style={styles.pitchTeamLogo}
-            contentFit="contain"
-          />
-          <Text style={styles.pitchTeamName}>
-            {isHome ? match.homeTeam.name : match.awayTeam.name}
-          </Text>
-          <Text style={styles.formation}>{teamLineup.formation}</Text>
-        </View>
-
-        {/* 필드 */}
-        <View style={styles.field}>
-          {/* 공격진 → 수비진 순서 (홈팀) / 수비진 → 공격진 순서 (원정팀) */}
-          {(isHome ? [...formationRows].reverse() : formationRows).map(
-            (row: any[], rowIndex: number) => (
-              <View key={rowIndex} style={styles.fieldRow}>
-                {row.map((player: any, i: number) => (
-                  <View key={i} style={styles.playerSpot}>
-                    <View style={styles.playerCircle}>
-                      {player?.photo ? (
-                        <Image
-                          source={player?.photo}
-                          style={styles.subPhotoImg}
-                          contentFit="contain"
-                        />
-                      ) : (
-                        <Text style={styles.playerNumber}>
-                          {player?.number}
-                        </Text>
-                      )}
-                    </View>
-                    <Text style={styles.playerName} numberOfLines={1}>
-                      {player?.playerName?.split(" ").pop()} #{player?.number}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            ),
-          )}
-
-          {/* 골키퍼 */}
-          <View style={styles.fieldRow}>
-            <View style={styles.playerSpot}>
-              <View style={[styles.playerCircle, styles.gkCircle]}>
-                <Text style={styles.playerNumber}>{gk?.number}</Text>
-              </View>
-              <Text style={styles.playerName} numberOfLines={1}>
-                {gk?.playerName?.split(" ").pop()}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  };
-
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* 팀 선택 탭 */}
-      <View style={styles.teamTabs}>
-        <TouchableOpacity
-          style={[
-            styles.teamTab,
-            selectedTeam === "home" && styles.teamTabActive,
-          ]}
-          onPress={() => setSelectedTeam("home")}
-        >
+      {/* 포메이션 헤더 */}
+      <View style={styles.formationHeader}>
+        <View style={styles.teamHeader}>
           <Image
             source={match.homeTeam.logo}
-            style={styles.teamTabLogo}
+            style={styles.headerLogo}
             contentFit="contain"
           />
-          <Text
-            style={[
-              styles.teamTabText,
-              selectedTeam === "home" && styles.teamTabTextActive,
-            ]}
-          >
+          <Text style={styles.headerTeamName} numberOfLines={1}>
             {match.homeTeam.name}
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.teamTab,
-            selectedTeam === "away" && styles.teamTabActive,
-          ]}
-          onPress={() => setSelectedTeam("away")}
-        >
-          <Image
-            source={match.awayTeam.logo}
-            style={styles.teamTabLogo}
-            contentFit="contain"
-          />
+          <Text style={styles.headerFormation}>
+            {homeLineup?.formation || "4-3-3"}
+          </Text>
+        </View>
+
+        <View style={[styles.teamHeader, { justifyContent: "flex-end" }]}>
+          <Text style={styles.headerFormation}>
+            {awayLineup?.formation || "4-3-3"}
+          </Text>
           <Text
-            style={[
-              styles.teamTabText,
-              selectedTeam === "away" && styles.teamTabTextActive,
-            ]}
+            style={[styles.headerTeamName, { textAlign: "right" }]}
+            numberOfLines={1}
           >
             {match.awayTeam.name}
           </Text>
-        </TouchableOpacity>
+          <Image
+            source={match.awayTeam.logo}
+            style={styles.headerLogo}
+            contentFit="contain"
+          />
+        </View>
       </View>
 
       {/* 피치 */}
-      {selectedTeam === "home"
-        ? renderPitch(homeLineup, true)
-        : renderPitch(awayLineup, false)}
+      <View style={styles.pitch}>
+        {/* 원정팀 (위) */}
+        {awayLineup ? (
+          <FieldHalf teamLineup={awayLineup} isHome={false} />
+        ) : (
+          <HalfPlaceholder label="원정 라인업 없음" />
+        )}
+
+        {/* 중앙선 */}
+        <View style={styles.centerLine} />
+
+        {/* 홈팀 (아래) */}
+        {homeLineup ? (
+          <FieldHalf teamLineup={homeLineup} isHome={true} />
+        ) : (
+          <HalfPlaceholder label="홈 라인업 없음" />
+        )}
+      </View>
 
       {/* 후보 선수 */}
-      <View style={styles.subsContainer}>
-        <View style={styles.subsHeader}>
-          <Image
-            source={
-              selectedTeam === "home"
-                ? match.homeTeam.logo
-                : match.awayTeam.logo
-            }
-            style={styles.subsHeaderLogo}
-            contentFit="contain"
-          />
-          <Text style={styles.subsTitle}>후보 선수</Text>
-          <Image
-            source={
-              selectedTeam === "home"
-                ? match.awayTeam.logo
-                : match.homeTeam.logo
-            }
-            style={styles.subsHeaderLogo}
-            contentFit="contain"
-          />
-        </View>
-        {/* 양 팀 후보 2열 */}
-        {(() => {
-          const homeSubs = homeLineup?.substitutes || [];
-          const awaySubs = awayLineup?.substitutes || [];
-          const maxLen = Math.max(homeSubs.length, awaySubs.length);
-
-          return Array.from({ length: maxLen }).map((_, i) => {
-            const homePlayer = homeSubs[i];
-            const awayPlayer = awaySubs[i];
-            console.log(homePlayer);
-            return (
-              <View key={i} style={styles.subRow}>
-                {/* 홈 선수 */}
-                {homePlayer ? (
-                  <View style={styles.subPlayerCard}>
-                    <View style={styles.subPhotoContainer}>
-                      <View style={styles.subPhoto}>
-                        {homePlayer?.photo ? (
-                          <Image
-                            source={homePlayer?.photo}
-                            style={styles.subPhotoImg}
-                            contentFit="contain"
-                          />
-                        ) : (
-                          <Text style={styles.subPhotoText}>
-                            {homePlayer.playerName?.charAt(0)}
-                          </Text>
-                        )}
-                      </View>
-                      <View style={styles.subArrow}>
-                        <Ionicons name="arrow-up" size={8} color="#fff" />
-                      </View>
-                    </View>
-                    <View style={styles.subInfo}>
-                      <Text style={styles.subName} numberOfLines={1}>
-                        {homePlayer.playerName}
-                      </Text>
-                      <Text style={styles.subDetail}>#{homePlayer.number}</Text>
-                    </View>
-                  </View>
-                ) : (
-                  <View style={styles.subPlayerCard} />
-                )}
-
-                {/* 원정 선수 */}
-                {awayPlayer ? (
-                  <View
-                    style={[styles.subPlayerCard, styles.subPlayerCardRight]}
-                  >
-                    <View style={[styles.subInfo, { alignItems: "flex-end" }]}>
-                      <Text style={styles.subName} numberOfLines={1}>
-                        {awayPlayer.playerName}
-                      </Text>
-                      <Text style={styles.subDetail}>#{awayPlayer.number}</Text>
-                    </View>
-                    <View style={styles.subPhotoContainer}>
-                      <View style={styles.subPhoto}>
-                        {awayPlayer?.photo ? (
-                          <Image
-                            source={awayPlayer?.photo}
-                            style={styles.subPhotoImg}
-                            contentFit="contain"
-                          />
-                        ) : (
-                          <Text style={styles.subPhotoText}>
-                            {awayPlayer.playerName?.charAt(0)}
-                          </Text>
-                        )}
-                      </View>
-                      <View style={styles.subArrow}>
-                        <Ionicons name="arrow-up" size={8} color="#fff" />
-                      </View>
-                    </View>
-                  </View>
-                ) : (
-                  <View style={styles.subPlayerCard} />
-                )}
-              </View>
-            );
-          });
-        })()}
-
-        {/* 감독 */}
-        <View style={styles.coachContainer}>
-          <Text style={styles.coachTitle}>감독</Text>
-          <View style={styles.coachRow}>
-            <View style={styles.coachRow}>
-              <Text style={styles.coachName}>{match.homeTeam.name} 감독</Text>
-              <Text style={styles.coachName}>{match.awayTeam.name} 감독</Text>
-            </View>
-          </View>
-        </View>
-      </View>
+      <SubstitutesSection
+        match={match}
+        homeLineup={homeLineup}
+        awayLineup={awayLineup}
+      />
 
       <View style={{ height: 20 }} />
     </ScrollView>
+  );
+}
+
+/**
+ * 사진처럼 "서로 마주보는" 배치 핵심:
+ * - 위(원정): GK(맨위) -> DF -> MF -> FW(센터라인 쪽)
+ * - 아래(홈): FW(센터라인 쪽) -> MF -> DF -> GK(맨아래)
+ */
+function FieldHalf({
+  teamLineup,
+  isHome,
+}: {
+  teamLineup: any;
+  isHome: boolean;
+}) {
+  const formation = (teamLineup.formation || "4-3-3").trim();
+  const rows = formation.split("-").map((n: string) => Number(n));
+  const players = teamLineup.startXI || [];
+
+  const gk = players[0];
+  let playerIndex = 1;
+
+  // formationRows는 항상 [DF], [MF], [FW] 순서로 만든다
+  const formationRows = rows.map((count: number) => {
+    const rowPlayers = players.slice(playerIndex, playerIndex + count);
+    playerIndex += count;
+    return rowPlayers;
+  });
+
+  // ✅ 홈(아래)은 센터라인 쪽이 "윗부분"이라 공격부터 보여야 함
+  const orderedRows = isHome ? [...formationRows].reverse() : formationRows;
+
+  return (
+    <View style={styles.fieldHalf}>
+      {/* 원정(위): GK 먼저 */}
+      {!isHome && (
+        <View style={styles.fieldRow}>
+          <PlayerCircle player={gk} isGK />
+        </View>
+      )}
+
+      {/* 라인들 */}
+      {orderedRows.map((row: any[], i: number) => (
+        <View key={i} style={styles.fieldRow}>
+          {row.map((player: any, j: number) => (
+            <PlayerCircle key={`${i}-${j}`} player={player} />
+          ))}
+        </View>
+      ))}
+
+      {/* 홈(아래): GK 마지막 */}
+      {isHome && (
+        <View style={styles.fieldRow}>
+          <PlayerCircle player={gk} isGK />
+        </View>
+      )}
+    </View>
+  );
+}
+
+function PlayerCircle({
+  player,
+  isGK = false,
+}: {
+  player: any;
+  isGK?: boolean;
+}) {
+  const lastName = player?.playerName?.split(" ").slice(-1)[0] || "Unknown";
+  const initial = player?.playerName?.charAt(0) || "?";
+
+  return (
+    <View style={styles.playerSpot}>
+      {player?.photo ? (
+        <Image
+          source={player.photo}
+          style={[styles.playerPhoto, isGK && styles.gkPhoto]}
+          contentFit="cover"
+        />
+      ) : (
+        <View
+          style={[
+            styles.playerPhotoPlaceholder,
+            isGK && styles.gkPhotoPlaceholder,
+          ]}
+        >
+          <Text style={styles.playerPhotoText}>{initial}</Text>
+        </View>
+      )}
+      <Text style={styles.playerName} numberOfLines={1}>
+        {lastName}
+      </Text>
+    </View>
+  );
+}
+
+function SubstitutesSection({
+  match,
+  homeLineup,
+  awayLineup,
+}: {
+  match: Match;
+  homeLineup: any;
+  awayLineup: any;
+}) {
+  const homeSubs = homeLineup?.substitutes || [];
+  const awaySubs = awayLineup?.substitutes || [];
+  const maxLen = Math.max(homeSubs.length, awaySubs.length);
+
+  return (
+    <View style={styles.subsContainer}>
+      <View style={styles.subsHeader}>
+        <Image
+          source={match.homeTeam.logo}
+          style={styles.subsHeaderLogo}
+          contentFit="contain"
+        />
+        <Text style={styles.subsTitle}>후보 선수</Text>
+        <Image
+          source={match.awayTeam.logo}
+          style={styles.subsHeaderLogo}
+          contentFit="contain"
+        />
+      </View>
+
+      {Array.from({ length: maxLen }).map((_, i) => {
+        const homePlayer = homeSubs[i];
+        const awayPlayer = awaySubs[i];
+
+        return (
+          <View key={i} style={styles.subRow}>
+            {homePlayer ? (
+              <SubPlayerCard player={homePlayer} />
+            ) : (
+              <View style={styles.subPlayerCard} />
+            )}
+            {awayPlayer ? (
+              <SubPlayerCard player={awayPlayer} isRight />
+            ) : (
+              <View style={styles.subPlayerCard} />
+            )}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+function SubPlayerCard({
+  player,
+  isRight = false,
+}: {
+  player: any;
+  isRight?: boolean;
+}) {
+  const lastName = player?.playerName?.split(" ").slice(-1)[0] || "Unknown";
+
+  return (
+    <View style={[styles.subPlayerCard, isRight && styles.subPlayerCardRight]}>
+      <View style={styles.subPhotoContainer}>
+        {player?.photo ? (
+          <Image
+            source={player.photo}
+            style={styles.subPhoto}
+            contentFit="cover"
+          />
+        ) : (
+          <View style={styles.subPhotoPlaceholder}>
+            <Text style={styles.subPhotoPlaceholderText}>
+              {player?.playerName?.charAt(0) || "?"}
+            </Text>
+          </View>
+        )}
+
+        <View style={styles.subArrow}>
+          <Ionicons name="arrow-up" size={8} color="#fff" />
+        </View>
+      </View>
+
+      <View style={[styles.subInfo, isRight && { alignItems: "flex-end" }]}>
+        <Text style={styles.subName} numberOfLines={1}>
+          {lastName}
+        </Text>
+        <Text style={styles.subDetail}>
+          {POSITION_MAP[player?.pos] || player?.pos || "-"} #
+          {player?.number ?? "-"}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function HalfPlaceholder({ label }: { label: string }) {
+  return (
+    <View
+      style={[
+        styles.fieldHalf,
+        { justifyContent: "center", alignItems: "center" },
+      ]}
+    >
+      <Text style={{ color: "rgba(255,255,255,0.8)", fontWeight: "700" }}>
+        {label}
+      </Text>
+    </View>
   );
 }
 
@@ -315,165 +320,112 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-  teamTabs: {
+
+  formationHeader: {
     flexDirection: "row",
     backgroundColor: Colors.surface,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    gap: 10,
   },
-  teamTab: {
+  teamHeader: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
     gap: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
   },
-  teamTabActive: {
-    borderBottomColor: Colors.primary,
+  headerLogo: {
+    width: 24,
+    height: 24,
   },
-  teamTabLogo: {
-    width: 20,
-    height: 20,
-  },
-  teamTabText: {
+  headerTeamName: {
     fontSize: 13,
-    fontWeight: "500",
-    color: Colors.textSecondary,
+    fontWeight: "600",
+    color: Colors.text,
+    flex: 1,
   },
-  teamTabTextActive: {
-    color: Colors.primary,
+  headerFormation: {
+    fontSize: 14,
     fontWeight: "700",
+    color: Colors.primary,
   },
+
   pitch: {
     margin: 12,
     borderRadius: 12,
     overflow: "hidden",
-  },
-  pitchHome: {
     backgroundColor: "#2d8a4e",
   },
-  pitchAway: {
-    backgroundColor: "#2d6b8a",
+  centerLine: {
+    height: 2,
+    backgroundColor: "rgba(255,255,255,0.5)",
   },
-  pitchHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "rgba(0,0,0,0.2)",
-    gap: 8,
-  },
-  pitchTeamLogo: {
-    width: 24,
-    height: 24,
-  },
-  pitchTeamName: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  formation: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  field: {
-    padding: 16,
-    gap: 20,
+
+  fieldHalf: {
+    paddingHorizontal: 14,
+    paddingVertical: 16,
+    gap: 18,
   },
   fieldRow: {
     flexDirection: "row",
     justifyContent: "space-around",
+    alignItems: "center",
   },
+
   playerSpot: {
     alignItems: "center",
-    gap: 4,
-    width: 56,
+    gap: 6,
+    flex: 1,
+    maxWidth: 80,
   },
-  playerCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.9)",
+  playerPhoto: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 3,
+    borderColor: "#ffffff",
+    backgroundColor: Colors.border,
+  },
+  gkPhoto: {
+    borderColor: "#ffd700",
+  },
+  playerPhotoPlaceholder: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 3,
+    borderColor: "#ffffff",
+    backgroundColor: "rgba(255,255,255,0.3)",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#ffffff",
   },
-  gkCircle: {
-    backgroundColor: "#ffd700",
+  gkPhotoPlaceholder: {
+    borderColor: "#ffd700",
+    backgroundColor: "rgba(255,215,0,0.3)",
   },
-  playerNumber: {
-    fontSize: 13,
+  playerPhotoText: {
+    fontSize: 18,
     fontWeight: "700",
-    color: "#1a1a1a",
+    color: "#ffffff",
   },
   playerName: {
-    fontSize: 10,
+    fontSize: 11,
     color: "#ffffff",
     textAlign: "center",
-    fontWeight: "600",
-    textShadowColor: "rgba(0,0,0,0.5)",
+    fontWeight: "700",
+    textShadowColor: "rgba(0,0,0,0.75)",
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadowRadius: 3,
   },
+
   subsContainer: {
     backgroundColor: Colors.surface,
     margin: 12,
     borderRadius: 12,
-    padding: 16,
+    overflow: "hidden",
   },
-  subsTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: Colors.text,
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  subPlayer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    gap: 12,
-  },
-  subNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.background,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  subNumberText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  subInfo: {
-    flex: 1,
-  },
-  subName: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-  },
-  subPos: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  // subsContainer: {
-  //   backgroundColor: Colors.surface,
-  //   margin: 12,
-  //   borderRadius: 12,
-  //   overflow: "hidden",
-  // },
   subsHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -487,11 +439,12 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
   },
-  // subsTitle: {
-  //   fontSize: 15,
-  //   fontWeight: "700",
-  //   color: Colors.text,
-  // },
+  subsTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: Colors.text,
+  },
+
   subRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
@@ -503,6 +456,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     gap: 8,
+    minHeight: 64,
   },
   subPlayerCardRight: {
     flexDirection: "row-reverse",
@@ -516,19 +470,21 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  subPhotoPlaceholder: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: Colors.border,
     alignItems: "center",
     justifyContent: "center",
   },
-  subPhotoText: {
+  subPhotoPlaceholderText: {
     fontSize: 16,
     fontWeight: "700",
     color: Colors.textSecondary,
-  },
-  subPhotoImg: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
   },
   subArrow: {
     position: "absolute",
@@ -541,37 +497,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // subInfo: {
-  //   flex: 1,
-  //   gap: 2,
-  // },
-  // subName: {
-  //   fontSize: 13,
-  //   fontWeight: "600",
-  //   color: Colors.text,
-  // },
+  subInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  subName: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colors.text,
+  },
   subDetail: {
     fontSize: 11,
     color: Colors.textSecondary,
-  },
-  coachContainer: {
-    padding: 16,
-    alignItems: "center",
-    gap: 12,
-  },
-  coachTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  coachRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  coachName: {
-    fontSize: 14,
-    color: Colors.text,
-    fontWeight: "500",
   },
 });

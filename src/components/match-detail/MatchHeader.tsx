@@ -4,12 +4,15 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../constants/colors";
 import { Match } from "../../types";
+import { useState } from "react";
 
 interface Props {
   match: Match;
 }
 
 export default function MatchHeader({ match }: Props) {
+  const [isFollowing, setIsFollowing] = useState(false);
+
   const isLive = ["1H", "HT", "2H", "ET", "BT", "P"].includes(
     match.status.short,
   );
@@ -44,8 +47,24 @@ export default function MatchHeader({ match }: Props) {
       {/* 리그 + 팔로우 */}
       <View style={styles.topRow}>
         <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/");
+          }}
+        >
+          <Ionicons name="arrow-back" size={24} color={Colors.text} />
+        </TouchableOpacity>
+        <TouchableOpacity
           style={styles.leagueBtn}
-          onPress={() => router.push(`/league/${match.league.id}` as any)}
+          onPress={() =>
+            router.push({
+              pathname: `/league/${match.league.id}`,
+              params: {
+                matchData: JSON.stringify(match),
+              },
+            })
+          }
         >
           <Image
             source={match.league.logo}
@@ -60,8 +79,21 @@ export default function MatchHeader({ match }: Props) {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.followBtn}>
-          <Text style={styles.followText}>팔로우</Text>
+        <TouchableOpacity
+          style={[
+            styles.followButton,
+            isFollowing && styles.followButtonActive,
+          ]}
+          onPress={() => setIsFollowing(!isFollowing)}
+        >
+          <Text
+            style={[
+              styles.followButtonText,
+              isFollowing && styles.followButtonTextActive,
+            ]}
+          >
+            {isFollowing ? "팔로잉" : "팔로우"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -122,22 +154,59 @@ export default function MatchHeader({ match }: Props) {
       </View>
 
       {/* 이벤트 (골, 카드) */}
+      {/* 이벤트 (골, 레드카드만) */}
       {match.events && match.events.length > 0 && (
         <View style={styles.eventsContainer}>
           {match.events
-            .filter((e) => e.type === "Goal" || e.type === "Card")
-            .map((event, index) => (
-              <View key={index} style={styles.eventRow}>
-                <Text style={styles.eventText}>
-                  {event.type === "Goal"
-                    ? "⚽"
-                    : event.detail === "Yellow Card"
-                      ? "🟨"
-                      : "🟥"}{" "}
-                  {event.player?.name} {event.time.elapsed}'
-                </Text>
-              </View>
-            ))}
+            .filter(
+              (e) =>
+                e.type === "Goal" ||
+                (e.type === "Card" && e.detail === "Red Card"),
+            )
+            .map((event, index) => {
+              const isHomeTeam = event.team?.id === match.homeTeam.id;
+
+              return (
+                <View key={index} style={styles.eventRow}>
+                  {/* 홈팀 이벤트 (왼쪽) */}
+                  {isHomeTeam ? (
+                    <>
+                      <View style={styles.eventLeft}>
+                        <Text style={styles.eventPlayerName}>
+                          {event.player?.name?.split(" ").slice(-1)[0]}
+                        </Text>
+                        <Text style={styles.eventTime}>
+                          {event.time.elapsed}'
+                        </Text>
+                      </View>
+                      <View style={styles.eventIcon}>
+                        <Text style={styles.eventIconText}>
+                          {event.type === "Goal" ? "⚽" : "🟥"}
+                        </Text>
+                      </View>
+                      <View style={styles.eventRight} />
+                    </>
+                  ) : (
+                    <>
+                      <View style={styles.eventLeft} />
+                      <View style={styles.eventIcon}>
+                        <Text style={styles.eventIconText}>
+                          {event.type === "Goal" ? "⚽" : "🟥"}
+                        </Text>
+                      </View>
+                      <View style={styles.eventRight}>
+                        <Text style={styles.eventTime}>
+                          {event.time.elapsed}'
+                        </Text>
+                        <Text style={styles.eventPlayerName}>
+                          {event.player?.name?.split(" ").slice(-1)[0]}
+                        </Text>
+                      </View>
+                    </>
+                  )}
+                </View>
+              );
+            })}
         </View>
       )}
     </View>
@@ -155,6 +224,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   leagueBtn: {
     flexDirection: "row",
@@ -253,18 +328,72 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     marginTop: 2,
   },
-  eventsContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    gap: 4,
-  },
-  eventRow: {
-    alignItems: "center",
-  },
   eventText: {
     fontSize: 13,
     color: Colors.text,
+  },
+
+  eventsContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    gap: 8,
+  },
+  eventRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  eventLeft: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
+  eventRight: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
+  eventIcon: {
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  eventIconText: {
+    fontSize: 16,
+  },
+  eventPlayerName: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: Colors.text,
+  },
+  eventTime: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.primary,
+  },
+  followButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.surface,
+  },
+  followButtonActive: {
+    backgroundColor: Colors.primary,
+  },
+  followButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colors.primary,
+  },
+  followButtonTextActive: {
+    color: "#ffffff",
   },
 });
