@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,11 +24,17 @@ export default function MatchHeader({ match }: Props) {
   );
   const isFinished = match.status.short === "FT";
   const isUpcoming = match.status.short === "NS";
+  const isHalfTime = match.status.short === "HT";
 
   const getStatusText = () => {
-    if (isLive) return `${match.status.elapsed}'`;
-    if (match.status.short === "HT") return "HT";
+    if (isHalfTime) return "하프타임";
+    if (isLive) {
+      const elapsed = match.status.elapsed || 0;
+      return `${elapsed}'`;
+    }
     if (isFinished) return "종료";
+
+    // 예정 경기 - 날짜 표시
     const date = new Date(match.date);
     const today = new Date();
     const tomorrow = new Date();
@@ -44,6 +56,12 @@ export default function MatchHeader({ match }: Props) {
 
   return (
     <View style={styles.container}>
+      {/* LIVE 표시 (왼쪽 상단) */}
+      {isLive && !isHalfTime && (
+        <View style={styles.liveIndicator}>
+          <Text style={styles.liveIndicatorText}>LIVE</Text>
+        </View>
+      )}
       {/* 리그 + 팔로우 */}
       <View style={styles.topRow}>
         <TouchableOpacity
@@ -100,14 +118,26 @@ export default function MatchHeader({ match }: Props) {
       {/* 스코어 영역 */}
       <View style={styles.scoreArea}>
         {/* 홈팀 */}
-        <View style={styles.teamContainer}>
-          <Image
-            source={match.homeTeam.logo}
-            style={styles.teamLogo}
-            contentFit="contain"
-          />
-          <Text style={styles.teamName}>{match.homeTeam.name}</Text>
-        </View>
+        <Pressable
+          onPress={() => {
+            router.push({
+              pathname: `/team/${match.homeTeam.id}`,
+              params: {
+                team: JSON.stringify(match.homeTeam),
+                leagueId: JSON.stringify(match.league.id),
+              },
+            });
+          }}
+        >
+          <View style={styles.teamContainer}>
+            <Image
+              source={match.homeTeam.logo}
+              style={styles.teamLogo}
+              contentFit="contain"
+            />
+            <Text style={styles.teamName}>{match.homeTeam.name}</Text>
+          </View>
+        </Pressable>
 
         {/* 스코어/시간 */}
         <View style={styles.centerContainer}>
@@ -143,14 +173,26 @@ export default function MatchHeader({ match }: Props) {
         </View>
 
         {/* 원정팀 */}
-        <View style={styles.teamContainer}>
-          <Image
-            source={match.awayTeam.logo}
-            style={styles.teamLogo}
-            contentFit="contain"
-          />
-          <Text style={styles.teamName}>{match.awayTeam.name}</Text>
-        </View>
+        <Pressable
+          onPress={() => {
+            router.push({
+              pathname: `/team/${match.awayTeam.id}`,
+              params: {
+                team: JSON.stringify(match.awayTeam),
+                leagueId: JSON.stringify(match.league.id),
+              },
+            });
+          }}
+        >
+          <View style={styles.teamContainer}>
+            <Image
+              source={match.awayTeam.logo}
+              style={styles.teamLogo}
+              contentFit="contain"
+            />
+            <Text style={styles.teamName}>{match.awayTeam.name}</Text>
+          </View>
+        </Pressable>
       </View>
 
       {/* 이벤트 (골, 카드) */}
@@ -217,6 +259,21 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.surface,
     paddingBottom: 12,
+  },
+  liveIndicator: {
+    position: "absolute",
+    top: 55,
+    left: 180,
+    backgroundColor: Colors.live,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    zIndex: 10,
+  },
+  liveIndicatorText: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#ffffff",
   },
   topRow: {
     flexDirection: "row",

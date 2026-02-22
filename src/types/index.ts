@@ -178,30 +178,6 @@ export interface Player {
   };
 }
 
-export interface News {
-  _id: string;
-  title: {
-    uz: string;
-    ru: string;
-    en: string;
-  };
-  content: {
-    uz: string;
-    ru: string;
-    en: string;
-  };
-  summary: {
-    uz: string;
-    ru: string;
-    en: string;
-  };
-  imageUrl?: string;
-  category: string;
-  tags: string[];
-  publishedAt: string;
-  viewCount: number;
-}
-
 export interface Prediction {
   _id: string;
   apiFootballId: number;
@@ -247,4 +223,33 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   timestamp: string;
+}
+
+export interface News {
+  _id: string;
+  title: { en: string; uz: string; ru: string };
+  content: { en: string; uz: string; ru: string };
+  summary?: { en: string; uz: string; ru: string };
+  imageUrl: string;
+  source: string;
+  sourceUrl: string;
+  publishedAt: string;
+  category: string;
+}
+
+export interface AuthResponseDto {
+  accessToken: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    language: string;
+    avatar?: string;
+  };
+}
+
+export interface SocialLoginDto {
+  provider: "google" | "telegram";
+  token: string;
+  data?: any;
 }

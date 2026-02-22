@@ -146,40 +146,11 @@ export default function HighlightsTab({ match }: Props) {
             <Text style={styles.substTime}>{event.time.elapsed}'</Text>
           </View>
 
-          {/* 교체 투입 */}
-          <View style={styles.substPlayer}>
-            <Text style={styles.substLabel}>교체 투입</Text>
-            <View style={styles.substPlayerInfo}>
-              <Text style={styles.substPlayerName}>{event.player?.name}</Text>
-              <View style={styles.substPlayerTeam}>
-                <Image
-                  source={
-                    isHomeTeam
-                      ? currentMatch.homeTeam.logo
-                      : currentMatch.awayTeam.logo
-                  }
-                  style={styles.substPlayerLogo}
-                  contentFit="contain"
-                />
-                <Text style={styles.substPlayerTeamName}>
-                  {isHomeTeam
-                    ? currentMatch.homeTeam.name
-                    : currentMatch.awayTeam.name}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.substPlayerPhoto}>
-              <Text style={styles.substPlayerPhotoText}>
-                {event.player?.name?.charAt(0)}
-              </Text>
-            </View>
-          </View>
-
           {/* 교체됨 */}
           {event.assist && (
             <View style={[styles.substPlayer, { marginTop: 12 }]}>
               <Text style={[styles.substLabel, styles.substLabelOut]}>
-                교체됨
+                교체 투입
               </Text>
               <View style={styles.substPlayerInfo}>
                 <Text style={styles.substPlayerName}>{event.assist.name}</Text>
@@ -207,6 +178,34 @@ export default function HighlightsTab({ match }: Props) {
               </View>
             </View>
           )}
+          {/* 교체 투입 */}
+          <View style={styles.substPlayer}>
+            <Text style={styles.substLabel}>교체됨</Text>
+            <View style={styles.substPlayerInfo}>
+              <Text style={styles.substPlayerName}>{event.player?.name}</Text>
+              <View style={styles.substPlayerTeam}>
+                <Image
+                  source={
+                    isHomeTeam
+                      ? currentMatch.homeTeam.logo
+                      : currentMatch.awayTeam.logo
+                  }
+                  style={styles.substPlayerLogo}
+                  contentFit="contain"
+                />
+                <Text style={styles.substPlayerTeamName}>
+                  {isHomeTeam
+                    ? currentMatch.homeTeam.name
+                    : currentMatch.awayTeam.name}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.substPlayerPhoto}>
+              <Text style={styles.substPlayerPhotoText}>
+                {event.player?.name?.charAt(0)}
+              </Text>
+            </View>
+          </View>
         </View>
       );
     }
@@ -442,11 +441,11 @@ const styles = StyleSheet.create({
   substLabel: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#34a853",
+    color: "#ea4335",
     width: 60,
   },
   substLabelOut: {
-    color: "#ea4335",
+    color: "#34a853",
   },
   substPlayerInfo: {
     flex: 1,

@@ -7,119 +7,22 @@ import {
   Modal,
 } from "react-native";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import api from "../../../services/api";
-import { ENDPOINTS } from "../../../constants/api";
 import { Colors } from "../../../constants/colors";
 import { Match } from "../../../types";
 
 interface Props {
-  leagueId: string;
-  highlightMatch?: Match | null;
+  teamId: number;
+  teamMatches: Match[] | [];
 }
 
-export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
+export default function TeamOverviewTab({ teamId, teamMatches }: Props) {
   const [showAllMatches, setShowAllMatches] = useState(false);
 
-  // 팀 경기 조회 (테스트용으로 과거 경기 포함)
-  const { data: matches } = useQuery<Match[]>({
-    queryKey: ["league-matches", leagueId],
-    queryFn: () =>
-      api.get(`${ENDPOINTS.matches}?leagueId=${leagueId}&limit=20`),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // 하이라이트 경기 (없으면 하이라이트 안 보여주기)
-  const featuredMatch = highlightMatch;
-
   // 다음 경기 4개 (하이라이트 제외)
-  const upcomingMatches =
-    matches?.filter((m) => m._id !== featuredMatch?._id).slice(0, 4) || [];
-
-  const renderFeaturedMatch = () => {
-    if (!featuredMatch) return null;
-
-    const isLive = ["1H", "HT", "2H", "ET"].includes(
-      featuredMatch.status.short,
-    );
-    const isFinished = featuredMatch.status.short === "FT";
-    const homeGoals = featuredMatch.goals.home ?? 0;
-    const awayGoals = featuredMatch.goals.away ?? 0;
-
-    return (
-      <TouchableOpacity
-        style={styles.featuredCard}
-        onPress={() => router.push(`/match/${featuredMatch._id}`)}
-        activeOpacity={0.7}
-      >
-        {/* 헤더 */}
-        <Text style={styles.featuredHeader}>
-          {featuredMatch.league.name} ·{" "}
-          {isFinished
-            ? "풀타임"
-            : isLive
-              ? `라이브 ${featuredMatch.status.elapsed}'`
-              : new Date(featuredMatch.date).toLocaleDateString("ko-KR", {
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-        </Text>
-
-        {/* 팀들 */}
-        <View style={styles.featuredTeams}>
-          {/* 홈팀 */}
-          <View style={styles.featuredTeam}>
-            <Image
-              source={featuredMatch.homeTeam.logo}
-              style={styles.featuredLogo}
-              contentFit="contain"
-            />
-            <Text style={styles.featuredTeamName}>
-              {featuredMatch.homeTeam.name}
-            </Text>
-          </View>
-
-          {/* 스코어 or 대 */}
-          <View style={styles.featuredCenter}>
-            {isFinished || isLive ? (
-              <>
-                <Text style={styles.featuredScore}>{homeGoals}</Text>
-                <Text style={styles.featuredScore}>:</Text>
-                <Text style={styles.featuredScore}>{awayGoals}</Text>
-              </>
-            ) : (
-              <Text style={styles.featuredVs}>대</Text>
-            )}
-          </View>
-
-          {/* 원정팀 */}
-          <View style={styles.featuredTeam}>
-            <Image
-              source={featuredMatch.awayTeam.logo}
-              style={styles.featuredLogo}
-              contentFit="contain"
-            />
-            <Text style={styles.featuredTeamName}>
-              {featuredMatch.awayTeam.name}
-            </Text>
-          </View>
-        </View>
-
-        {/* 티켓 구매 (예정 경기만) */}
-        {!isFinished && !isLive && (
-          <TouchableOpacity style={styles.ticketButton}>
-            <Ionicons name="ticket-outline" size={16} color={Colors.primary} />
-            <Text style={styles.ticketText}>티켓 구매</Text>
-          </TouchableOpacity>
-        )}
-      </TouchableOpacity>
-    );
-  };
+  const upcomingMatches = teamMatches.slice(0, 4) || [];
 
   const renderSmallMatchCard = (match: Match) => {
     const isFinished = match.status.short === "FT";
@@ -192,9 +95,6 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
         {/* 경기 섹션 타이틀 */}
         <Text style={styles.sectionTitle}>경기</Text>
 
-        {/* 하이라이트 경기 */}
-        {renderFeaturedMatch()}
-
         {/* 다음 경기들 */}
         {upcomingMatches.map(renderSmallMatchCard)}
 
@@ -240,7 +140,7 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
 
             {/* 리스트 */}
             <ScrollView showsVerticalScrollIndicator={false}>
-              {matches?.map((match) => {
+              {teamMatches?.map((match) => {
                 const isFinished = match.status.short === "FT";
                 const homeGoals = match.goals.home ?? "-";
                 const awayGoals = match.goals.away ?? "-";

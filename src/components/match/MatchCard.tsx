@@ -12,11 +12,17 @@ export default function MatchCard({ match }: Props) {
   const isLive = ["1H", "HT", "2H", "ET", "BT", "P"].includes(
     match.status.short,
   );
+  const isHalfTime = match.status.short === "HT";
   const isFinished = match.status.short === "FT";
   const isUpcoming = match.status.short === "NS";
 
   const getTimeDisplay = () => {
-    if (isLive) return `${match.status.elapsed}'`;
+    if (isHalfTime) return "하프타임";
+    if (isLive) {
+      const elapsed = match.status.elapsed || 0;
+      const extra = (match.status as any).extra || 0; // 추가 시간
+      return extra > 0 ? `${elapsed}+${extra}'` : `${elapsed}'`;
+    }
     if (isFinished) return "종료";
     const date = new Date(match.date);
     return date.toLocaleTimeString("ko-KR", {
@@ -31,12 +37,19 @@ export default function MatchCard({ match }: Props) {
       onPress={() => router.push(`/match/${match._id}`)}
       activeOpacity={0.7}
     >
+      {/* LIVE 뱃지 (왼쪽 상단) */}
+      {isLive && !isHalfTime && (
+        <View style={styles.liveIndicator}>
+          <Text style={styles.liveIndicatorText}>LIVE</Text>
+        </View>
+      )}
+
       {/* 홈팀 */}
       <View style={styles.teamContainer}>
         <Image
           source={match.homeTeam.logo}
           style={styles.teamLogo}
-          resizeMode="contain"
+          contentFit="contain"
         />
         <Text style={styles.teamName} numberOfLines={1}>
           {match.homeTeam.name}
@@ -46,22 +59,21 @@ export default function MatchCard({ match }: Props) {
       {/* 스코어/시간 */}
       <View style={styles.scoreContainer}>
         {isUpcoming ? (
-          <Text style={styles.time}>{getTimeDisplay()}</Text>
-        ) : (
-          <View style={styles.scoreBox}>
-            <Text style={styles.score}>{match.goals.home ?? 0}</Text>
-            <Text style={styles.scoreDivider}> - </Text>
-            <Text style={styles.score}>{match.goals.away ?? 0}</Text>
-          </View>
-        )}
-        {isLive && (
-          <View style={styles.livebage}>
-            <Text style={styles.liveBadgeText}>{getTimeDisplay()}</Text>
-          </View>
-        )}
-        {isFinished && <Text style={styles.finishedText}>종료</Text>}
-        {isUpcoming && (
           <Text style={styles.upcomingText}>{getTimeDisplay()}</Text>
+        ) : (
+          <>
+            <View style={styles.scoreBox}>
+              <Text style={styles.score}>{match.goals.home ?? 0}</Text>
+              <Text style={styles.scoreDivider}> - </Text>
+              <Text style={styles.score}>{match.goals.away ?? 0}</Text>
+            </View>
+            {isLive && (
+              <View style={styles.liveBadge}>
+                <Text style={styles.liveBadgeText}>{getTimeDisplay()}</Text>
+              </View>
+            )}
+            {isFinished && <Text style={styles.finishedText}>종료</Text>}
+          </>
         )}
       </View>
 
@@ -70,7 +82,7 @@ export default function MatchCard({ match }: Props) {
         <Image
           source={match.awayTeam.logo}
           style={styles.teamLogo}
-          resizeMode="contain"
+          contentFit="contain"
         />
         <Text style={styles.teamName} numberOfLines={1}>
           {match.awayTeam.name}
@@ -88,6 +100,21 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    position: "relative",
+  },
+  liveIndicator: {
+    position: "absolute",
+    top: 8,
+    right: 48,
+    backgroundColor: Colors.live,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  liveIndicatorText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#ffffff",
   },
   teamContainer: {
     flex: 1,
@@ -126,12 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.textSecondary,
   },
-  time: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-  },
-  livebage: {
+  liveBadge: {
     backgroundColor: "#fff0f0",
     paddingHorizontal: 8,
     paddingVertical: 2,

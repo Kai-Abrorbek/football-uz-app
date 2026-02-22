@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   // Matches
   matches: "/matches",
   matchDetail: (id: string) => `/matches/${id}`,
+  teamMatchDetail: (id: number) => `/matches/team/${id}?limit=999`,
   liveMatches: "/matches/live",
   upcomingMatches: "/matches/upcoming",
 
@@ -25,6 +26,8 @@ export const ENDPOINTS = {
   teamDetail: (id: number) => `/teams/${id}`,
   topScorers: (leagueId: number | string) => `/players/top-scorers/${leagueId}`,
   topAssists: (leagueId: number | string) => `/players/top-assists/${leagueId}`,
+  teamPlayers: (teamId: number | string) => `/players/team/${teamId}`,
+  teamLeagues: (teamId: number | string) => `/teams/leagues/${teamId}`,
 
   // Players
   players: "/players",
@@ -39,10 +42,13 @@ export const ENDPOINTS = {
   newsDetail: (id: string) => `/news/${id}`,
 
   // Chat
-  chat: "/chat",
+  // chat: "/chat",
+  chat: "/chat/public",
+  chatSession: (sessionId: string) => `/chat/public/session/${sessionId}`,
 
   // Auth
-  login: "/auth/login",
-  register: "/auth/register",
   me: "/users/me",
+  authLogin: "/auth/login",
+  authRegister: "/auth/register",
+  authSocial: "/auth/social",
 };

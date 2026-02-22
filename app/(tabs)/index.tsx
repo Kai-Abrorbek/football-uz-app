@@ -20,6 +20,8 @@ import UzbekPlayers from "../../src/components/home/UzbekPlayers";
 import NewsSection from "../../src/components/home/NewsSection";
 import PredictionSection from "../../src/components/home/PredictionSection";
 import HeroBanner from "../../src/components/home/HeroBanner";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { Redirect, router } from "expo-router";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -37,7 +39,7 @@ const DATES = [
 export default function HomeScreen() {
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
   const [showLeagueModal, setShowLeagueModal] = useState(false);
-
+  const { userData, setUser, logout } = useAuth();
   const { data: leagues } = useFeaturedLeagues();
   const { data: liveMatches } = useLiveMatches();
 
@@ -103,12 +105,6 @@ export default function HomeScreen() {
       <View key={label}>
         <View style={styles.dateHeader}>
           <Text style={styles.dateHeaderText}>{label}</Text>
-          {/* {isToday && liveMatches && liveMatches.length > 0 && (
-            <View style={styles.liveIndicator}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveText}>LIVE {liveMatches.length}</Text>
-            </View>
-          )} */}
         </View>
 
         {groupList.map((group: any, index: number) => (
@@ -230,7 +226,7 @@ export default function HomeScreen() {
         <HeroBanner />
 
         {/* 라이브 경기 */}
-        {/* {liveMatches && liveMatches.length > 0 && (
+        {liveMatches && liveMatches.length > 0 && (
           <View style={styles.section}>
             <View style={styles.liveHeader}>
               <View style={styles.liveBadge}>
@@ -244,7 +240,7 @@ export default function HomeScreen() {
               ))}
             </ScrollView>
           </View>
-        )} */}
+        )}
 
         {/* 오늘 경기 (라이브 포함) */}
         {renderDateSection("오늘", todayMatches || [], true)}
