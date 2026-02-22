@@ -8,15 +8,9 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthResponseDto } from "../types";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
 interface AuthContextType {
   userData: AuthResponseDto | null;
-  setUser: (user: AuthResponseDto | null) => void;
+  setUser: (userData: AuthResponseDto | null) => void;
   logout: () => Promise<void>;
 }
 

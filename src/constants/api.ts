@@ -42,7 +42,6 @@ export const ENDPOINTS = {
   newsDetail: (id: string) => `/news/${id}`,
 
   // Chat
-  // chat: "/chat",
   chat: "/chat/public",
   chatSession: (sessionId: string) => `/chat/public/session/${sessionId}`,
 
@@ -51,4 +50,7 @@ export const ENDPOINTS = {
   authLogin: "/auth/login",
   authRegister: "/auth/register",
   authSocial: "/auth/social",
+
+  // USER
+  userProfile: "/users/profile",
 };

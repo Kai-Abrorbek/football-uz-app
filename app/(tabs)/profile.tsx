@@ -20,6 +20,7 @@ import { Platform } from "react-native";
 import TelegramLoginButton from "../../src/components/common/TelegramLoginButton";
 import { useGoogleAuth } from "../../src/hooks/useGoogleAuth";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { router } from "expo-router";
 
 export default function ProfileScreen() {
   const { userData, setUser, logout } = useAuth();
@@ -296,9 +297,6 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             )}
-            <TouchableOpacity style={styles.editAvatarButton}>
-              <Ionicons name="camera" size={16} color="#ffffff" />
-            </TouchableOpacity>
           </View>
           <Text style={styles.userName}>{userData?.user?.username}</Text>
           <Text style={styles.userEmail}>{userData?.user?.email}</Text>
@@ -326,7 +324,10 @@ export default function ProfileScreen() {
         <View style={styles.menuContainer}>
           <Text style={styles.menuSectionTitle}>설정</Text>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push("/profile/edit")}
+          >
             <View style={styles.menuItemLeft}>
               <Ionicons name="person-outline" size={22} color={Colors.text} />
               <Text style={styles.menuItemText}>프로필 수정</Text>
@@ -338,7 +339,10 @@ export default function ProfileScreen() {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push("/profile/notifications")}
+          >
             <View style={styles.menuItemLeft}>
               <Ionicons
                 name="notifications-outline"
