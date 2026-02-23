@@ -8,6 +8,7 @@ import {
   NativeScrollEvent,
   TouchableOpacity,
   Modal,
+  PanResponder,
 } from "react-native";
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +17,7 @@ import { Colors } from "../../../constants/colors";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
 import { StandingEntry, Team } from "../../../types";
+import { router } from "expo-router";
 
 interface Props {
   teamId: string;
@@ -51,7 +53,45 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
   // ✅ 세로 스크롤 ref
   const verticalRef = useRef<ScrollView | null>(null);
 
-  // 해당 되는 모든 리그 정보 조회
+  // ✅ (추가) 오른쪽 가로 스크롤 1개 + x 추적 + 가운데 divider
+  const rightScrollRef = useRef<ScrollView>(null);
+  const currentXRef = useRef(0);
+  const [showMidDivider, setShowMidDivider] = useState(false);
+  const lastDividerRef = useRef(false);
+
+  const onTableRightScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const x = e.nativeEvent.contentOffset.x;
+    currentXRef.current = x;
+
+    const next = x > 0;
+    if (lastDividerRef.current !== next) {
+      lastDividerRef.current = next;
+      setShowMidDivider(next);
+    }
+  };
+
+  // ✅ (추가) 왼쪽 영역에서도 가로 드래그하면 오른쪽이 같이 움직이게
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) => {
+        const ax = Math.abs(g.dx);
+        const ay = Math.abs(g.dy);
+        return ax > 6 && ax > ay;
+      },
+      onPanResponderMove: (_, g) => {
+        const nextX = Math.max(0, currentXRef.current - g.dx);
+        rightScrollRef.current?.scrollTo({ x: nextX, animated: false });
+
+        const nextDivider = nextX > 0;
+        if (lastDividerRef.current !== nextDivider) {
+          lastDividerRef.current = nextDivider;
+          setShowMidDivider(nextDivider);
+        }
+      },
+    }),
+  ).current;
+
+  // 해당 되는 모든 리그 정보 조회 (✅ 건드리지 않음)
   const { data: leaguesData } = useQuery<any>({
     queryKey: ["team-allleagues", teamId],
     queryFn: () => api.get(ENDPOINTS.teamLeagues(Number(teamId))),
@@ -75,7 +115,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     }
   }, [leaguesList, { ...selectedLeague }]);
 
-  // 순위표 조회
+  // 순위표 조회 (✅ 건드리지 않음)
   const { data: standingsData } = useQuery<any>({
     queryKey: [
       "team-allleague-standings",
@@ -129,36 +169,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     });
   }, [myEntry]);
 
-  // ✅ 오른쪽(헤더 + 모든 행) 가로 스크롤 동기화
-  const headerRightRef = useRef<ScrollView | null>(null);
-  const rowRightRefs = useRef<Record<string, ScrollView | null>>({});
-  const isSyncingRef = useRef(false);
-
-  const syncAllRightScrolls = (x: number, sourceKey: "header" | string) => {
-    isSyncingRef.current = true;
-
-    if (sourceKey !== "header") {
-      headerRightRef.current?.scrollTo({ x, animated: false });
-    }
-
-    Object.entries(rowRightRefs.current).forEach(([key, ref]) => {
-      if (!ref) return;
-      if (sourceKey === key) return;
-      ref.scrollTo({ x, animated: false });
-    });
-
-    requestAnimationFrame(() => {
-      isSyncingRef.current = false;
-    });
-  };
-
-  const onRightScroll =
-    (sourceKey: "header" | string) =>
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (isSyncingRef.current) return;
-      const x = e.nativeEvent.contentOffset.x;
-      syncAllRightScrolls(x, sourceKey);
-    };
+  // ✅ (기존 동기화 로직 제거 대상) -> row별 ScrollView를 없애서 필요 없어짐
 
   const renderFormDot = (r: string) => {
     if (r === "W")
@@ -217,117 +228,163 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.headerRow}>
-          {/* 왼쪽 고정 */}
-          <View style={styles.leftHeader}>
-            <Text style={styles.hText}>#</Text>
-            <Text style={[styles.hText, { marginLeft: 10 }]}>클럽</Text>
+        {/* ✅ 표 본체: 왼쪽 고정 + 오른쪽 가로스크롤 1개 */}
+        <View style={styles.tableBody}>
+          {/* 왼쪽(고정) : 여기서 드래그해도 오른쪽이 같이 움직임 */}
+          <View style={styles.leftPane} {...panResponder.panHandlers}>
+            <View style={styles.leftHeader}>
+              <Text style={styles.hText}>#</Text>
+              <Text style={[styles.hText, { marginLeft: 10 }]}>클럽</Text>
+            </View>
+
+            {!standings || standings.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>순위 정보가 없습니다</Text>
+              </View>
+            ) : (
+              standings.map((entry) => {
+                const rowKey = `${entry.rank}-${entry.team.id}`;
+                const isMine = myRowKey === rowKey;
+
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push({
+                        pathname: `/team/${entry.team.id}`,
+                        params: {
+                          team: JSON.stringify(entry.team),
+                          leagueId: JSON.stringify(standingsData.league.id),
+                        },
+                      });
+                    }}
+                  >
+                    <View
+                      key={rowKey}
+                      style={[styles.leftCell, isMine && styles.rowHighlight]}
+                    >
+                      <Text
+                        style={[styles.rank, isMine && styles.rankHighlight]}
+                      >
+                        {entry.rank}
+                      </Text>
+                      <Image
+                        source={entry.team.logo}
+                        style={styles.teamLogo}
+                        contentFit="contain"
+                      />
+                      <Text
+                        style={styles.teamName}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {entry.team.name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
+            )}
           </View>
 
-          {/* 오른쪽 스크롤(헤더) */}
+          {/* 오른쪽(가로스크롤 1개) : 헤더 + 모든 행 */}
           <ScrollView
-            ref={(r) => {
-              headerRightRef.current = r;
-            }}
+            ref={rightScrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
-            onScroll={onRightScroll("header")}
+            onScroll={onTableRightScroll}
             scrollEventThrottle={16}
           >
-            <View style={styles.rightHeaderRow}>
-              <Text style={[styles.hText, styles.col]}>경기</Text>
-              <Text style={[styles.hText, styles.col]}>승</Text>
-              <Text style={[styles.hText, styles.col]}>무</Text>
-              <Text style={[styles.hText, styles.col]}>패</Text>
-              <Text style={[styles.hText, styles.colPts]}>승점</Text>
-              <Text style={[styles.hText, styles.col]}>득점</Text>
-              <Text style={[styles.hText, styles.col]}>실점</Text>
-              <Text style={[styles.hText, styles.col]}>득실</Text>
-              <Text style={[styles.hText, styles.colForm]}>최근 5경기</Text>
+            <View>
+              <View style={styles.rightHeaderRow}>
+                <Text style={[styles.hText, styles.col]}>경기</Text>
+                <Text style={[styles.hText, styles.col]}>승</Text>
+                <Text style={[styles.hText, styles.col]}>무</Text>
+                <Text style={[styles.hText, styles.col]}>패</Text>
+                <Text style={[styles.hText, styles.colPts]}>승점</Text>
+                <Text style={[styles.hText, styles.col]}>득점</Text>
+                <Text style={[styles.hText, styles.col]}>실점</Text>
+                <Text style={[styles.hText, styles.col]}>득실</Text>
+                <Text style={[styles.hText, styles.colForm]}>최근 5경기</Text>
+              </View>
+
+              {!standings || standings.length === 0
+                ? null
+                : standings.map((entry) => {
+                    const formArr = (entry.form || "")
+                      .split("")
+                      .filter(Boolean)
+                      .slice(-5);
+
+                    const rowKey = `${entry.rank}-${entry.team.id}`;
+                    const isMine = myRowKey === rowKey;
+
+                    return (
+                      <TouchableOpacity
+                        onPress={() => {
+                          router.push({
+                            pathname: `/team/${entry.team.id}`,
+                            params: {
+                              team: JSON.stringify(entry.team),
+                              leagueId: JSON.stringify(standingsData.league.id),
+                            },
+                          });
+                        }}
+                      >
+                        <View
+                          key={rowKey}
+                          style={[
+                            styles.rightRow,
+                            isMine && styles.rowHighlight,
+                          ]}
+                        >
+                          <Text style={[styles.bText, styles.col]}>
+                            {entry.played}
+                          </Text>
+                          <Text style={[styles.bText, styles.col]}>
+                            {entry.win}
+                          </Text>
+                          <Text style={[styles.bText, styles.col]}>
+                            {entry.draw}
+                          </Text>
+                          <Text style={[styles.bText, styles.col]}>
+                            {entry.lose}
+                          </Text>
+
+                          <Text
+                            style={[styles.bText, styles.colPts, styles.pts]}
+                          >
+                            {entry.points}
+                          </Text>
+
+                          <Text style={[styles.bText, styles.col]}>
+                            {entry.goalsFor ?? "-"}
+                          </Text>
+                          <Text style={[styles.bText, styles.col]}>
+                            {entry.goalsAgainst ?? "-"}
+                          </Text>
+                          <Text style={[styles.bText, styles.col]}>
+                            {entry.goalsDiff ?? "-"}
+                          </Text>
+
+                          <View style={[styles.colForm, styles.formCell]}>
+                            <View style={styles.formRow}>
+                              {formArr.map((r, i) => (
+                                <View key={i}>{renderFormDot(r)}</View>
+                              ))}
+                            </View>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
             </View>
           </ScrollView>
+
+          {/* ✅ 가운데 세로줄: 스크롤 시작하면 등장 */}
+          {showMidDivider && (
+            <View pointerEvents="none" style={styles.midDivider} />
+          )}
         </View>
-
-        {/* 바디 */}
-        {!standings || standings.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>순위 정보가 없습니다</Text>
-          </View>
-        ) : (
-          standings.map((entry) => {
-            const formArr = (entry.form || "")
-              .split("")
-              .filter(Boolean)
-              .slice(-5);
-
-            const rowKey = `${entry.rank}-${entry.team.id}`;
-            const isMine = myRowKey === rowKey;
-
-            return (
-              <View
-                key={rowKey}
-                style={[styles.bodyRow, isMine && styles.rowHighlight]}
-              >
-                {/* 왼쪽 고정 */}
-                <View style={styles.leftCell}>
-                  <Text style={[styles.rank, isMine && styles.rankHighlight]}>
-                    {entry.rank}
-                  </Text>
-                  <Image
-                    source={entry.team.logo}
-                    style={styles.teamLogo}
-                    contentFit="contain"
-                  />
-                  <Text style={styles.teamName} numberOfLines={1}>
-                    {entry.team.name}
-                  </Text>
-                </View>
-
-                {/* 오른쪽 스크롤(행) */}
-                <ScrollView
-                  ref={(r) => {
-                    rowRightRefs.current[rowKey] = r;
-                  }}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  onScroll={onRightScroll(rowKey)}
-                  scrollEventThrottle={16}
-                >
-                  <View style={styles.rightRow}>
-                    <Text style={[styles.bText, styles.col]}>
-                      {entry.played}
-                    </Text>
-                    <Text style={[styles.bText, styles.col]}>{entry.win}</Text>
-                    <Text style={[styles.bText, styles.col]}>{entry.draw}</Text>
-                    <Text style={[styles.bText, styles.col]}>{entry.lose}</Text>
-
-                    <Text style={[styles.bText, styles.colPts, styles.pts]}>
-                      {entry.points}
-                    </Text>
-
-                    <Text style={[styles.bText, styles.col]}>
-                      {entry.goalsFor ?? "-"}
-                    </Text>
-                    <Text style={[styles.bText, styles.col]}>
-                      {entry.goalsAgainst ?? "-"}
-                    </Text>
-                    <Text style={[styles.bText, styles.col]}>
-                      {entry.goalsDiff ?? "-"}
-                    </Text>
-
-                    <View style={[styles.colForm, styles.formCell]}>
-                      <View style={styles.formRow}>
-                        {formArr.map((r, i) => (
-                          <View key={i}>{renderFormDot(r)}</View>
-                        ))}
-                      </View>
-                    </View>
-                  </View>
-                </ScrollView>
-              </View>
-            );
-          })
-        )}
       </View>
 
       {/* 시즌 선택 모달 */}
@@ -458,37 +515,52 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 40,
     marginTop: 150,
+    width: 400,
   },
+
   emptyText: { fontSize: 14, color: Colors.textSecondary },
 
   tableWrap: { backgroundColor: Colors.surface },
 
-  headerRow: {
-    height: HEADER_H,
+  // ✅ 표 레이아웃 (추가)
+  tableBody: {
     flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    alignItems: "flex-start",
+    position: "relative",
+    backgroundColor: Colors.surface,
+  },
+
+  // ✅ 왼쪽 고정 패널 (추가)
+  leftPane: {
+    width: LEFT_W,
+    backgroundColor: Colors.surface,
   },
 
   leftHeader: {
+    height: HEADER_H,
     width: LEFT_W,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 14,
     paddingVertical: 10,
+    backgroundColor: "#f5f5f5",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
 
   rightHeaderRow: {
+    height: HEADER_H,
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
     paddingRight: 14,
+    backgroundColor: "#f5f5f5",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
 
   bodyRow: {
-    height: ROW_H, // ✅ 스크롤 계산용
+    height: ROW_H,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.surface,
@@ -500,17 +572,40 @@ const styles = StyleSheet.create({
   rowHighlight: { backgroundColor: "#c2dbfb" },
 
   leftCell: {
+    height: ROW_H,
     width: LEFT_W,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    backgroundColor: Colors.surface,
   },
 
   rightRow: {
+    height: ROW_H,
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    backgroundColor: Colors.surface,
+  },
+
+  // ✅ 가운데 세로 줄 (추가)
+  midDivider: {
+    position: "absolute",
+    left: LEFT_W,
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: Colors.border,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 2, height: 0 },
+    elevation: 3,
   },
 
   hText: { fontSize: 12, fontWeight: "700", color: Colors.textSecondary },

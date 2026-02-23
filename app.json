@@ -38,7 +38,8 @@
         {
           "icon": "./assets/notification-icon.png"
         }
-      ]
+      ],
+      "expo-localization"
     ]
   }
 }

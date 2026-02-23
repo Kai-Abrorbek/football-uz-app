@@ -358,7 +358,10 @@ export default function ProfileScreen() {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push("/profile/language")}
+          >
             <View style={styles.menuItemLeft}>
               <Ionicons name="language-outline" size={22} color={Colors.text} />
               <Text style={styles.menuItemText}>언어 설정</Text>
@@ -370,10 +373,13 @@ export default function ProfileScreen() {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push("/profile/theme")}
+          >
             <View style={styles.menuItemLeft}>
               <Ionicons name="moon-outline" size={22} color={Colors.text} />
-              <Text style={styles.menuItemText}>다크 모드</Text>
+              <Text style={styles.menuItemText}>테마 설정</Text>
             </View>
             <Ionicons
               name="chevron-forward"

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  PanResponder,
 } from "react-native";
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
@@ -38,7 +39,12 @@ const LEFT_W = 190;
 const COL_W = 32;
 const FORM_W = 140;
 
+// ✅ 줄 어긋남 방지 (왼쪽/오른쪽 높이 고정)
+const ROW_H = 46;
+const HEADER_H = 42;
+
 export default function StandingsTab({ match }: Props) {
+  // ✅ (서버 데이터 가져오는 부분 건드리지 않음)
   const { data: standing } = useQuery<any>({
     queryKey: ["standings", match.league.id],
     queryFn: () => api.get(ENDPOINTS.leagueStandings(match.league.id)),
@@ -65,39 +71,47 @@ export default function StandingsTab({ match }: Props) {
   const homeTeamId = match.homeTeam.id;
   const awayTeamId = match.awayTeam.id;
 
-  // ✅ 오른쪽(헤더 + 모든 행) 가로 스크롤 동기화
-  const headerRightRef = useRef<ScrollView | null>(null);
-  const rowRightRefs = useRef<Record<string, ScrollView | null>>({});
-  const isSyncingRef = useRef(false);
+  // ✅ 오른쪽 가로 스크롤 1개
+  const rightScrollRef = useRef<ScrollView>(null);
 
-  const syncAllRightScrolls = (x: number, sourceKey: "header" | string) => {
-    isSyncingRef.current = true;
+  // ✅ 현재 x 추적 (왼쪽 드래그 시 scrollTo)
+  const currentXRef = useRef(0);
 
-    // 헤더 동기화
-    if (sourceKey !== "header") {
-      headerRightRef.current?.scrollTo({ x, animated: false });
+  // ✅ 가운데 구분선 (x>0)
+  const [showMidDivider, setShowMidDivider] = useState(false);
+  const lastDividerRef = useRef(false);
+
+  const onTableRightScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const x = e.nativeEvent.contentOffset.x;
+    currentXRef.current = x;
+
+    const next = x > 0;
+    if (lastDividerRef.current !== next) {
+      lastDividerRef.current = next;
+      setShowMidDivider(next);
     }
-
-    // 행 동기화
-    Object.entries(rowRightRefs.current).forEach(([key, ref]) => {
-      if (!ref) return;
-      if (sourceKey === key) return;
-      ref.scrollTo({ x, animated: false });
-    });
-
-    // 다음 프레임에서 해제 (루프 방지)
-    requestAnimationFrame(() => {
-      isSyncingRef.current = false;
-    });
   };
 
-  const onRightScroll =
-    (sourceKey: "header" | string) =>
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (isSyncingRef.current) return;
-      const x = e.nativeEvent.contentOffset.x;
-      syncAllRightScrolls(x, sourceKey);
-    };
+  // ✅ 왼쪽 영역에서도 가로 드래그하면 오른쪽 스크롤이 움직이게
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) => {
+        const ax = Math.abs(g.dx);
+        const ay = Math.abs(g.dy);
+        return ax > 6 && ax > ay;
+      },
+      onPanResponderMove: (_, g) => {
+        const nextX = Math.max(0, currentXRef.current - g.dx);
+        rightScrollRef.current?.scrollTo({ x: nextX, animated: false });
+
+        const nextDivider = nextX > 0;
+        if (lastDividerRef.current !== nextDivider) {
+          lastDividerRef.current = nextDivider;
+          setShowMidDivider(nextDivider);
+        }
+      },
+    }),
+  ).current;
 
   const renderFormDot = (r: string) => {
     if (r === "W")
@@ -130,109 +144,130 @@ export default function StandingsTab({ match }: Props) {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.tableWrap}>
-        {/* 헤더 */}
-        <View style={styles.headerRow}>
-          {/* 왼쪽 고정 */}
-          <View style={styles.leftHeader}>
-            <Text style={styles.hText}>#</Text>
-            <Text style={[styles.hText, { marginLeft: 10 }]}>클럽</Text>
+        {/* ✅ 표 본체: 왼쪽(고정) + 오른쪽(가로 스크롤 1개) */}
+        <View style={styles.tableBody}>
+          {/* 왼쪽 고정 (여기서 드래그해도 오른쪽이 움직임) */}
+          <View style={styles.leftPane} {...panResponder.panHandlers}>
+            {/* 헤더 */}
+            <View style={styles.leftHeader}>
+              <Text style={styles.hText}>#</Text>
+              <Text style={[styles.hText, { marginLeft: 10 }]}>클럽</Text>
+            </View>
+
+            {/* 바디 */}
+            {standings.map((entry) => {
+              const isHighlighted =
+                entry.team.id === homeTeamId || entry.team.id === awayTeamId;
+
+              const rowKey = `${entry.rank}-${entry.team.id}`;
+
+              return (
+                <View
+                  key={rowKey}
+                  style={[
+                    styles.leftCell,
+                    isHighlighted && styles.rowHighlight,
+                  ]}
+                >
+                  <Text style={styles.rank}>{entry.rank}</Text>
+                  <Image
+                    source={entry.team.logo}
+                    style={styles.teamLogo}
+                    contentFit="contain"
+                  />
+                  <Text
+                    style={styles.teamName}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {entry.team.name}
+                  </Text>
+                </View>
+              );
+            })}
           </View>
 
-          {/* 오른쪽 스크롤(헤더) */}
+          {/* 오른쪽 가로 스크롤 영역 (헤더 + 바디) - ✅ ScrollView는 딱 1개 */}
           <ScrollView
-            ref={(r) => {
-              headerRightRef.current = r;
-            }}
+            ref={rightScrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
-            onScroll={onRightScroll("header")}
+            onScroll={onTableRightScroll}
             scrollEventThrottle={16}
           >
-            <View style={styles.rightHeaderRow}>
-              <Text style={[styles.hText, styles.col]}>경기</Text>
-              <Text style={[styles.hText, styles.col]}>승</Text>
-              <Text style={[styles.hText, styles.col]}>무</Text>
-              <Text style={[styles.hText, styles.col]}>패</Text>
-              <Text style={[styles.hText, styles.colPts]}>승점</Text>
-              <Text style={[styles.hText, styles.col]}>득점</Text>
-              <Text style={[styles.hText, styles.col]}>실점</Text>
-              <Text style={[styles.hText, styles.col]}>득실</Text>
-              <Text style={[styles.hText, styles.colForm]}>최근 5경기</Text>
-            </View>
-          </ScrollView>
-        </View>
-        {/* 바디 */}
-        {standings.map((entry) => {
-          const isHighlighted =
-            entry.team.id === homeTeamId || entry.team.id === awayTeamId;
-
-          const formArr = (entry.form || "")
-            .split("")
-            .filter(Boolean)
-            .slice(-5);
-
-          const rowKey = `${entry.rank}-${entry.team.id}`;
-
-          return (
-            <View
-              key={rowKey}
-              style={[styles.bodyRow, isHighlighted && styles.rowHighlight]}
-            >
-              {/* 왼쪽 고정 */}
-              <View style={styles.leftCell}>
-                <Text style={styles.rank}>{entry.rank}</Text>
-                <Image
-                  source={entry.team.logo}
-                  style={styles.teamLogo}
-                  contentFit="contain"
-                />
-                <Text style={styles.teamName} numberOfLines={1}>
-                  {entry.team.name}
-                </Text>
+            <View>
+              {/* 헤더 */}
+              <View style={styles.rightHeaderRow}>
+                <Text style={[styles.hText, styles.col]}>경기</Text>
+                <Text style={[styles.hText, styles.col]}>승</Text>
+                <Text style={[styles.hText, styles.col]}>무</Text>
+                <Text style={[styles.hText, styles.col]}>패</Text>
+                <Text style={[styles.hText, styles.colPts]}>승점</Text>
+                <Text style={[styles.hText, styles.col]}>득점</Text>
+                <Text style={[styles.hText, styles.col]}>실점</Text>
+                <Text style={[styles.hText, styles.col]}>득실</Text>
+                <Text style={[styles.hText, styles.colForm]}>최근 5경기</Text>
               </View>
 
-              {/* 오른쪽 스크롤(행) */}
-              <ScrollView
-                ref={(r) => {
-                  rowRightRefs.current[rowKey] = r;
-                }}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                onScroll={onRightScroll(rowKey)}
-                scrollEventThrottle={16}
-              >
-                <View style={styles.rightRow}>
-                  <Text style={[styles.bText, styles.col]}>{entry.played}</Text>
-                  <Text style={[styles.bText, styles.col]}>{entry.win}</Text>
-                  <Text style={[styles.bText, styles.col]}>{entry.draw}</Text>
-                  <Text style={[styles.bText, styles.col]}>{entry.lose}</Text>
+              {/* 바디 */}
+              {standings.map((entry) => {
+                const isHighlighted =
+                  entry.team.id === homeTeamId || entry.team.id === awayTeamId;
 
-                  <Text style={[styles.bText, styles.colPts, styles.pts]}>
-                    {entry.points}
-                  </Text>
+                const formArr = (entry.form || "")
+                  .split("")
+                  .filter(Boolean)
+                  .slice(-5);
 
-                  <Text style={[styles.bText, styles.col]}>
-                    {entry.goalsFor ?? "-"}
-                  </Text>
-                  <Text style={[styles.bText, styles.col]}>
-                    {entry.goalsAgainst ?? "-"}
-                  </Text>
-                  <Text style={[styles.bText, styles.col]}>
-                    {entry.goalsDiff ?? "-"}
-                  </Text>
+                const rowKey = `${entry.rank}-${entry.team.id}`;
 
-                  <View style={[styles.colForm, styles.formCell]}>
-                    <View style={styles.formRow}>
-                      {formArr.map((r, i) => (
-                        <View key={i}>{renderFormDot(r)}</View>
-                      ))}
+                return (
+                  <View
+                    key={rowKey}
+                    style={[
+                      styles.rightRow,
+                      isHighlighted && styles.rowHighlight,
+                    ]}
+                  >
+                    <Text style={[styles.bText, styles.col]}>
+                      {entry.played}
+                    </Text>
+                    <Text style={[styles.bText, styles.col]}>{entry.win}</Text>
+                    <Text style={[styles.bText, styles.col]}>{entry.draw}</Text>
+                    <Text style={[styles.bText, styles.col]}>{entry.lose}</Text>
+
+                    <Text style={[styles.bText, styles.colPts, styles.pts]}>
+                      {entry.points}
+                    </Text>
+
+                    <Text style={[styles.bText, styles.col]}>
+                      {entry.goalsFor ?? "-"}
+                    </Text>
+                    <Text style={[styles.bText, styles.col]}>
+                      {entry.goalsAgainst ?? "-"}
+                    </Text>
+                    <Text style={[styles.bText, styles.col]}>
+                      {entry.goalsDiff ?? "-"}
+                    </Text>
+
+                    <View style={[styles.colForm, styles.formCell]}>
+                      <View style={styles.formRow}>
+                        {formArr.map((r, i) => (
+                          <View key={i}>{renderFormDot(r)}</View>
+                        ))}
+                      </View>
                     </View>
                   </View>
-                </View>
-              </ScrollView>
+                );
+              })}
             </View>
-          );
-        })}
+          </ScrollView>
+
+          {/* ✅ 가운데 세로 구분선 (스크롤 시작 시 등장) */}
+          {showMidDivider && (
+            <View pointerEvents="none" style={styles.midDivider} />
+          )}
+        </View>
       </View>
 
       <View style={{ height: 20 }} />
@@ -253,52 +288,79 @@ const styles = StyleSheet.create({
 
   tableWrap: { backgroundColor: Colors.surface },
 
-  headerRow: {
+  // ✅ 표 레이아웃
+  tableBody: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    position: "relative",
+    backgroundColor: Colors.surface,
+  },
+
+  leftPane: {
+    width: LEFT_W,
+    backgroundColor: Colors.surface,
+  },
+
+  // ✅ 높이 고정
+  leftHeader: {
+    height: HEADER_H,
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 14,
     backgroundColor: "#f5f5f5",
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
 
-  leftHeader: {
-    width: LEFT_W,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-
   rightHeaderRow: {
+    height: HEADER_H,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 0,
     paddingRight: 14,
-  },
-
-  bodyRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.surface,
+    backgroundColor: "#f5f5f5",
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
+
   rowHighlight: { backgroundColor: "#e8f0fe" },
 
+  // ✅ 높이 고정
   leftCell: {
-    width: LEFT_W,
+    height: ROW_H,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
 
   rightRow: {
+    height: ROW_H,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 0,
     paddingRight: 14,
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+
+  // ✅ 가운데 세로 구분선 (x>0일 때만 렌더)
+  midDivider: {
+    position: "absolute",
+    left: LEFT_W,
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: Colors.border,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 2, height: 0 },
+    elevation: 3,
   },
 
   hText: { fontSize: 12, fontWeight: "700", color: Colors.textSecondary },
