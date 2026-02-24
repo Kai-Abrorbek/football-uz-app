@@ -15,6 +15,7 @@ import { ENDPOINTS } from "../../../constants/api";
 import { Colors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import AllMatchesModal from "../AllMatchesModal";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   leagueId: string;
@@ -22,7 +23,7 @@ interface Props {
 
 export default function LeagueMatchesTab({ leagueId }: Props) {
   const [showAllMatches, setShowAllMatches] = useState(false);
-
+  const { t, i18n } = useTranslation();
   // 경기 목록
   const { data: matches } = useQuery<Match[]>({
     queryKey: ["league-matches-tab", leagueId],
@@ -36,7 +37,10 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
     matches?.reduce((acc: any, match) => {
       const totalMatches = matches.length;
       const currentIndex = matches.indexOf(match) + 1;
-      const key = `경기일(${currentIndex}/${totalMatches})`;
+      const key = t("leagueMatches.matchday", {
+        current: currentIndex,
+        total: totalMatches,
+      });
 
       if (!acc[key]) {
         acc[key] = [];
@@ -109,7 +113,9 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
                 </View>
               </>
             ) : (
-              <Text style={styles.scheduledText}>예정</Text>
+              <Text style={styles.scheduledText}>
+                {t("leagueMatches.scheduled")}
+              </Text>
             )}
           </View>
 
@@ -125,10 +131,14 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
             ) : (
               <View style={styles.dateBox}>
                 <Text style={styles.statusText}>
-                  {isFinished ? "풀타임" : isLive ? "LIVE" : "내일"}
+                  {isFinished
+                    ? t("leagueMatches.fulltime")
+                    : isLive
+                      ? "LIVE"
+                      : t("leagueMatches.tomorrow")}
                 </Text>
                 <Text style={styles.timeText}>
-                  {new Date(match.date).toLocaleString("ko-KR", {
+                  {new Date(match.date).toLocaleString(i18n.language, {
                     month: "numeric",
                     day: "numeric",
                     weekday: "short",
@@ -151,7 +161,7 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
         style={styles.moreButton}
         onPress={() => setShowAllMatches(true)}
       >
-        <Text style={styles.moreButtonText}>경기 더보기</Text>
+        <Text style={styles.moreButtonText}>{t("leagueMatches.seeMore")}</Text>
         <Ionicons name="chevron-forward" size={16} color={Colors.text} />
       </TouchableOpacity>
 

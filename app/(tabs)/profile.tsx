@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Colors } from "../../src/constants/colors";
+import { Colors, getColors } from "../../src/constants/colors";
 import { ENDPOINTS } from "../../src/constants/api";
 import api from "../../src/services/api";
 import { AuthResponseDto } from "../../src/types";
@@ -22,6 +22,7 @@ import { useGoogleAuth } from "../../src/hooks/useGoogleAuth";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useColors } from "../../src/hooks/useColors";
 
 export default function ProfileScreen() {
   const { userData, setUser, logout } = useAuth();
@@ -29,8 +30,9 @@ export default function ProfileScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const { t } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -458,177 +460,178 @@ export default function ProfileScreen() {
 }
 
 // styles 그대로
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: Colors.background },
 
-  authContainer: { padding: 24 },
-  authHeader: { alignItems: "center", marginTop: 40, marginBottom: 40 },
-  logoCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#f0e6ff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  authTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: Colors.text,
-    marginBottom: 8,
-  },
-  authSubtitle: { fontSize: 14, color: Colors.textSecondary },
-  formContainer: { marginBottom: 32 },
-  inputGroup: { marginBottom: 20 },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  input: { flex: 1, fontSize: 15, color: Colors.text },
-  submitButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  submitButtonText: { fontSize: 16, fontWeight: "700", color: "#ffffff" },
-  switchButton: { marginTop: 20, alignItems: "center" },
-  switchButtonText: { fontSize: 14, color: Colors.textSecondary },
-  switchButtonTextBold: { fontWeight: "700", color: Colors.primary },
-  socialContainer: { marginTop: 12 },
-  divider: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
-  dividerText: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    paddingHorizontal: 16,
-  },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginBottom: 12,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  socialButtonText: { fontSize: 15, fontWeight: "600", color: Colors.text },
+    authContainer: { padding: 24 },
+    authHeader: { alignItems: "center", marginTop: 40, marginBottom: 40 },
+    logoCircle: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      backgroundColor: "#f0e6ff",
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 20,
+    },
+    authTitle: {
+      fontSize: 28,
+      fontWeight: "800",
+      color: Colors.text,
+      marginBottom: 8,
+    },
+    authSubtitle: { fontSize: 14, color: Colors.textSecondary },
+    formContainer: { marginBottom: 32 },
+    inputGroup: { marginBottom: 20 },
+    inputLabel: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+      marginBottom: 8,
+    },
+    inputWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      gap: 12,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    input: { flex: 1, fontSize: 15, color: Colors.text },
+    submitButton: {
+      backgroundColor: Colors.primary,
+      borderRadius: 12,
+      paddingVertical: 16,
+      alignItems: "center",
+      marginTop: 8,
+    },
+    submitButtonText: { fontSize: 16, fontWeight: "700", color: "#ffffff" },
+    switchButton: { marginTop: 20, alignItems: "center" },
+    switchButtonText: { fontSize: 14, color: Colors.textSecondary },
+    switchButtonTextBold: { fontWeight: "700", color: Colors.primary },
+    socialContainer: { marginTop: 12 },
+    divider: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
+    dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
+    dividerText: {
+      fontSize: 13,
+      color: Colors.textSecondary,
+      paddingHorizontal: 16,
+    },
+    socialButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      paddingVertical: 14,
+      marginBottom: 12,
+      gap: 12,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    socialButtonText: { fontSize: 15, fontWeight: "600", color: Colors.text },
 
-  profileHeader: {
-    alignItems: "center",
-    paddingVertical: 32,
-    backgroundColor: Colors.surface,
-  },
-  avatarContainer: { position: "relative", marginBottom: 16 },
-  avatar: { width: 100, height: 100, borderRadius: 50 },
-  avatarPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: Colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: { fontSize: 36, fontWeight: "700", color: "#ffffff" },
-  editAvatarButton: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 3,
-    borderColor: Colors.surface,
-  },
-  userName: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  userEmail: { fontSize: 14, color: Colors.textSecondary },
+    profileHeader: {
+      alignItems: "center",
+      paddingVertical: 32,
+      backgroundColor: Colors.surface,
+    },
+    avatarContainer: { position: "relative", marginBottom: 16 },
+    avatar: { width: 100, height: 100, borderRadius: 50 },
+    avatarPlaceholder: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      backgroundColor: Colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarText: { fontSize: 36, fontWeight: "700", color: "#ffffff" },
+    editAvatarButton: {
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: Colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 3,
+      borderColor: Colors.surface,
+    },
+    userName: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: Colors.text,
+      marginBottom: 4,
+    },
+    userEmail: { fontSize: 14, color: Colors.textSecondary },
 
-  statsContainer: {
-    flexDirection: "row",
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 16,
-    padding: 20,
-  },
-  statBox: { flex: 1, alignItems: "center" },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  statLabel: { fontSize: 12, color: Colors.textSecondary },
-  statDivider: {
-    width: 1,
-    backgroundColor: Colors.border,
-    marginHorizontal: 8,
-  },
+    statsContainer: {
+      flexDirection: "row",
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginTop: 16,
+      borderRadius: 16,
+      padding: 20,
+    },
+    statBox: { flex: 1, alignItems: "center" },
+    statValue: {
+      fontSize: 24,
+      fontWeight: "800",
+      color: Colors.text,
+      marginBottom: 4,
+    },
+    statLabel: { fontSize: 12, color: Colors.textSecondary },
+    statDivider: {
+      width: 1,
+      backgroundColor: Colors.border,
+      marginHorizontal: 8,
+    },
 
-  menuContainer: { marginTop: 24, paddingHorizontal: 16 },
-  menuSectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-    marginBottom: 12,
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: Colors.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  menuItemLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
-  menuItemText: { fontSize: 15, fontWeight: "500", color: Colors.text },
+    menuContainer: { marginTop: 24, paddingHorizontal: 16 },
+    menuSectionTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+      marginBottom: 12,
+    },
+    menuItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: Colors.surface,
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      borderRadius: 12,
+      marginBottom: 8,
+    },
+    menuItemLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+    menuItemText: { fontSize: 15, fontWeight: "500", color: Colors.text },
 
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginTop: 24,
-    paddingVertical: 16,
-    borderRadius: 12,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#ff3b30",
-  },
-  logoutButtonText: { fontSize: 15, fontWeight: "600", color: "#ff3b30" },
-  version: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    textAlign: "center",
-    marginTop: 24,
-  },
-});
+    logoutButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginTop: 24,
+      paddingVertical: 16,
+      borderRadius: 12,
+      gap: 8,
+      borderWidth: 1,
+      borderColor: "#ff3b30",
+    },
+    logoutButtonText: { fontSize: 15, fontWeight: "600", color: "#ff3b30" },
+    version: {
+      fontSize: 12,
+      color: Colors.textSecondary,
+      textAlign: "center",
+      marginTop: 24,
+    },
+  });

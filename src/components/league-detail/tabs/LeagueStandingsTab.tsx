@@ -17,6 +17,7 @@ import { Colors } from "../../../constants/colors";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   leagueId: string;
@@ -51,7 +52,7 @@ const HEADER_H = 40;
 export default function LeagueStandingsTab({ leagueId }: Props) {
   const [selectedSeason, setSelectedSeason] = useState("2024");
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
-
+  const { t } = useTranslation();
   // ✅ 오른쪽 “단 하나”의 가로 스크롤
   const rightScrollRef = useRef<ScrollView>(null);
 
@@ -156,7 +157,7 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
           onPress={() => setShowSeasonPicker(true)}
         >
           <View>
-            <Text style={styles.seasonLabel}>시즌</Text>
+            <Text style={styles.seasonLabel}>{t("standings.season")}</Text>
             <View style={styles.seasonValue}>
               <Text style={styles.seasonText}>
                 {SEASONS.find((s) => s.value === selectedSeason)?.label}
@@ -172,18 +173,21 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
           <View style={styles.leftPane} {...panResponder.panHandlers}>
             <View style={styles.leftHeader}>
               <Text style={styles.hText}>#</Text>
-              <Text style={[styles.hText, { marginLeft: 10 }]}>클럽</Text>
+              <Text style={[styles.hText, { marginLeft: 10 }]}>
+                {t("standings.club")}
+              </Text>
             </View>
 
             {!standings || standings.length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>순위 정보가 없습니다</Text>
+                <Text style={styles.emptyText}>{t("standings.empty")}</Text>
               </View>
             ) : (
               standings.map((entry) => {
                 const rowKey = `${entry.rank}-${entry.team.id}`;
                 return (
                   <TouchableOpacity
+                    key={entry.team.id}
                     onPress={() => {
                       router.push({
                         pathname: `/team/${entry.team.id}`,
@@ -226,15 +230,33 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
             <View>
               {/* 오른쪽 헤더 */}
               <View style={styles.rightHeaderRow}>
-                <Text style={[styles.hText, styles.col]}>경기</Text>
-                <Text style={[styles.hText, styles.col]}>승</Text>
-                <Text style={[styles.hText, styles.col]}>무</Text>
-                <Text style={[styles.hText, styles.col]}>패</Text>
-                <Text style={[styles.hText, styles.colPts]}>승점</Text>
-                <Text style={[styles.hText, styles.col]}>득점</Text>
-                <Text style={[styles.hText, styles.col]}>실점</Text>
-                <Text style={[styles.hText, styles.col]}>득실</Text>
-                <Text style={[styles.hText, styles.colForm]}>최근 5경기</Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("standings.columns.played")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("standings.columns.win")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("standings.columns.draw")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("standings.columns.lose")}
+                </Text>
+                <Text style={[styles.hText, styles.colPts]}>
+                  {t("standings.columns.points")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("standings.columns.goalsFor")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("standings.columns.goalsAgainst")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("standings.columns.goalDiff")}
+                </Text>
+                <Text style={[styles.hText, styles.colForm]}>
+                  {t("standings.columns.form5")}
+                </Text>
               </View>
 
               {/* 오른쪽 바디 */}
@@ -249,6 +271,7 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
                     const rowKey = `${entry.rank}-${entry.team.id}`;
                     return (
                       <TouchableOpacity
+                        key={entry.team.id}
                         onPress={() => {
                           router.push({
                             pathname: `/team/${entry.team.id}`,

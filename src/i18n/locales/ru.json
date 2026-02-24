@@ -159,5 +159,67 @@
       "saudiPro": { "title": "Saudi Pro League", "subtitle": "Новая эра футбола" },
       "europaLeague": { "title": "Europa League", "subtitle": "Путь к славе" }
     }
+  },
+  "leagueMatches": {
+    "matchday": "Тур ({{current}}/{{total}})",
+    "scheduled": "Запланировано",
+    "fulltime": "Финальный свисток",
+    "tomorrow": "Завтра",
+    "seeMore": "Все матчи"
+  },
+  "leaguePlayers": {
+    "empty": "Нет информации об игроках",
+    "defaultPosition": "Нападающий",
+    "defaultTeamName": "Команда"
+  },
+  "standings": {
+    "season": "Сезон",
+    "club": "Клуб",
+    "empty": "Нет данных таблицы",
+    "columns": {
+      "played": "И",
+      "win": "В",
+      "draw": "Н",
+      "lose": "П",
+      "points": "Оч",
+      "goalsFor": "ЗМ",
+      "goalsAgainst": "ПМ",
+      "goalDiff": "РМ",
+      "form5": "Последние 5"
+    }
+  },
+  "leagueStats": {
+    "tabs": {
+      "goals": "Голы",
+      "assists": "Ассисты",
+      "yellowCards": "Жёлтые карточки",
+      "redCards": "Красные карточки"
+    },
+    "empty": "Нет данных",
+    "headers": {
+      "player": "Игрок",
+      "value": "Показатель"
+    }
+  },
+
+  "allMatchesModal": {
+    "title": "Матчи: {{league}}",
+    "matchday": "Тур ({{current}}/{{total}})",
+    "fulltime": "Финальный свисток"
+  },
+
+  "leagueTabs": {
+    "overview": "Обзор",
+    "stats": "Статистика",
+    "players": "Игроки",
+    "matches": "Матчи",
+    "standings": "Таблица"
+  },
+
+  "leagueDetail": {
+    "error404": "Нет данных таблицы (404)",
+    "goHome": "На главную",
+    "follow": "Подписаться",
+    "following": "Вы подписаны"
   }
 }

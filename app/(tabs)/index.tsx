@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../src/constants/colors";
+// import { Colors } from "../../src/constants/colors";
 import { useMatches, useLiveMatches } from "../../src/hooks/useMatches";
 import { useFeaturedLeagues } from "../../src/hooks/useLeagues";
 import MatchCard from "../../src/components/match/MatchCard";
@@ -22,6 +22,8 @@ import PredictionSection from "../../src/components/home/PredictionSection";
 import HeroBanner from "../../src/components/home/HeroBanner";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
+import { useColors } from "../../src/hooks/useColors";
+import { getColors } from "../../src/constants/colors";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -34,6 +36,8 @@ export default function HomeScreen() {
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
   const { data: leagues } = useFeaturedLeagues();
   const { data: liveMatches } = useLiveMatches();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   // 오늘/내일/모레 3일치
   const DATES = [
@@ -284,182 +288,183 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    paddingTop: 40,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.text,
-  },
-  leagueChipContainer: {
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    paddingVertical: 10,
-  },
-  leagueChipContent: {
-    paddingHorizontal: 16,
-    alignItems: "center",
-    gap: 8,
-  },
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: Colors.background,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    gap: 5,
-  },
-  chipActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  chipLogo: {
-    width: 16,
-    height: 16,
-  },
-  chipText: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    fontWeight: "500",
-  },
-  chipTextActive: {
-    color: "#fff",
-  },
-  allLeaguesBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    gap: 4,
-  },
-  allLeaguesBtnText: {
-    fontSize: 12,
-    color: Colors.primary,
-    fontWeight: "500",
-  },
-  section: {
-    marginTop: 12,
-  },
-  liveHeader: {
-    paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  liveBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    backgroundColor: "#fff0f0",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 5,
-  },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.live,
-  },
-  liveText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: Colors.live,
-  },
-  dateHeader: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginTop: 8,
-  },
-  dateHeaderText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  liveIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff0f0",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 5,
-  },
-  leagueGroup: {
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  leagueHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: "#f8f9fa",
-    gap: 8,
-  },
-  leagueLogo: {
-    width: 20,
-    height: 20,
-  },
-  leagueName: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: Colors.text,
-    flex: 1,
-  },
-  leagueCountry: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-  emptyContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 80,
-    gap: 12,
-  },
-  emptyText: {
-    color: Colors.textSecondary,
-    fontSize: 15,
-  },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+      paddingTop: 40,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: "bold",
+      color: Colors.text,
+    },
+    leagueChipContainer: {
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+      paddingVertical: 10,
+    },
+    leagueChipContent: {
+      paddingHorizontal: 16,
+      alignItems: "center",
+      gap: 8,
+    },
+    chip: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 20,
+      backgroundColor: Colors.background,
+      borderWidth: 1,
+      borderColor: Colors.border,
+      gap: 5,
+    },
+    chipActive: {
+      backgroundColor: Colors.primary,
+      borderColor: Colors.primary,
+    },
+    chipLogo: {
+      width: 16,
+      height: 16,
+    },
+    chipText: {
+      fontSize: 12,
+      color: Colors.textSecondary,
+      fontWeight: "500",
+    },
+    chipTextActive: {
+      color: "#fff",
+    },
+    allLeaguesBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: Colors.primary,
+      gap: 4,
+    },
+    allLeaguesBtnText: {
+      fontSize: 12,
+      color: Colors.primary,
+      fontWeight: "500",
+    },
+    section: {
+      marginTop: 12,
+    },
+    liveHeader: {
+      paddingHorizontal: 16,
+      marginBottom: 8,
+    },
+    liveBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "flex-start",
+      backgroundColor: "#fff0f0",
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 12,
+      gap: 5,
+    },
+    liveDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: Colors.live,
+    },
+    liveText: {
+      fontSize: 12,
+      fontWeight: "700",
+      color: Colors.live,
+    },
+    dateHeader: {
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      marginTop: 8,
+    },
+    dateHeaderText: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    liveIndicator: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "#fff0f0",
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 12,
+      gap: 5,
+    },
+    leagueGroup: {
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginBottom: 8,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    leagueHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      backgroundColor: "#f8f9fa",
+      gap: 8,
+    },
+    leagueLogo: {
+      width: 20,
+      height: 20,
+    },
+    leagueName: {
+      fontSize: 13,
+      fontWeight: "700",
+      color: Colors.text,
+      flex: 1,
+    },
+    leagueCountry: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+    emptyContainer: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 80,
+      gap: 12,
+    },
+    emptyText: {
+      color: Colors.textSecondary,
+      fontSize: 15,
+    },
 
-  adBanner: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    height: 60,
-    backgroundColor: "#e8f0fe",
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderStyle: "dashed",
-  },
-  adText: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    fontWeight: "500",
-  },
-});
+    adBanner: {
+      marginHorizontal: 16,
+      marginVertical: 8,
+      height: 60,
+      backgroundColor: "#e8f0fe",
+      borderRadius: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: Colors.border,
+      borderStyle: "dashed",
+    },
+    adText: {
+      fontSize: 12,
+      color: Colors.textSecondary,
+      fontWeight: "500",
+    },
+  });

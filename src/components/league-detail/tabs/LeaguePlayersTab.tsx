@@ -9,13 +9,15 @@ import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { Colors } from "../../../constants/colors";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   leagueId: string;
 }
 
 export default function LeaguePlayersTab({ leagueId }: Props) {
-  // 리그 선수 목록
+  const { t } = useTranslation();
+
   const { data: players } = useQuery<any>({
     queryKey: ["league-players", leagueId],
     queryFn: () => api.get(`/players/league/${leagueId}`),
@@ -25,12 +27,11 @@ export default function LeaguePlayersTab({ leagueId }: Props) {
   if (!players || players.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>선수 정보가 없습니다</Text>
+        <Text style={styles.emptyText}>{t("leaguePlayers.empty")}</Text>
       </View>
     );
   }
 
-  console.log(players);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.grid}>
@@ -40,7 +41,6 @@ export default function LeaguePlayersTab({ leagueId }: Props) {
             style={styles.playerCard}
             activeOpacity={0.7}
           >
-            {/* 선수 사진 */}
             {player.photo ? (
               <Image
                 source={player.photo}
@@ -55,16 +55,15 @@ export default function LeaguePlayersTab({ leagueId }: Props) {
               </View>
             )}
 
-            {/* 선수 정보 */}
             <View style={styles.playerInfo}>
               <Text style={styles.playerName} numberOfLines={1}>
                 {player.name}
               </Text>
+
               <Text style={styles.playerPosition}>
-                {player.position || "공격수"}
+                {player.position || t("leaguePlayers.defaultPosition")}
               </Text>
 
-              {/* 팀 정보 */}
               <View style={styles.teamRow}>
                 {player.statistics?.[0].team.logo && (
                   <Image
@@ -75,7 +74,8 @@ export default function LeaguePlayersTab({ leagueId }: Props) {
                 )}
 
                 <Text style={styles.teamName} numberOfLines={1}>
-                  {player.statistics?.[0].team.name || "팀명"}
+                  {player.statistics?.[0].team.name ||
+                    t("leaguePlayers.defaultTeamName")}
                 </Text>
               </View>
             </View>

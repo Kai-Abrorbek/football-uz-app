@@ -15,6 +15,7 @@ import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
 import { Colors } from "../../../constants/colors";
 import { Match } from "../../../types";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   leagueId: string;
@@ -23,6 +24,7 @@ interface Props {
 
 export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
   const [showAllMatches, setShowAllMatches] = useState(false);
+  const { t, i18n } = useTranslation();
 
   // 팀 경기 조회 (테스트용으로 과거 경기 포함)
   const { data: matches } = useQuery<Match[]>({
@@ -59,10 +61,12 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
         <Text style={styles.featuredHeader}>
           {featuredMatch.league.name} ·{" "}
           {isFinished
-            ? "풀타임"
+            ? t("leagueOverview.fulltime")
             : isLive
-              ? `라이브 ${featuredMatch.status.elapsed}'`
-              : new Date(featuredMatch.date).toLocaleDateString("ko-KR", {
+              ? t("leagueOverview.liveWithMinute", {
+                  minute: featuredMatch.status.elapsed,
+                })
+              : new Date(featuredMatch.date).toLocaleDateString(i18n.language, {
                   month: "long",
                   day: "numeric",
                   hour: "2-digit",
@@ -93,7 +97,7 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
                 <Text style={styles.featuredScore}>{awayGoals}</Text>
               </>
             ) : (
-              <Text style={styles.featuredVs}>대</Text>
+              <Text style={styles.featuredVs}>{t("leagueOverview.vs")}</Text>
             )}
           </View>
 
@@ -114,7 +118,9 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
         {!isFinished && !isLive && (
           <TouchableOpacity style={styles.ticketButton}>
             <Ionicons name="ticket-outline" size={16} color={Colors.primary} />
-            <Text style={styles.ticketText}>티켓 구매</Text>
+            <Text style={styles.ticketText}>
+              {t("leagueOverview.buyTickets")}
+            </Text>
           </TouchableOpacity>
         )}
       </TouchableOpacity>
@@ -164,18 +170,20 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
         {/* 날짜/시간 or 상태 */}
         <View style={styles.smallRight}>
           {isFinished ? (
-            <Text style={styles.smallStatus}>풀타임</Text>
+            <Text style={styles.smallStatus}>
+              {t("leagueOverview.fulltime")}
+            </Text>
           ) : (
             <>
               <Text style={styles.smallDate}>
-                {new Date(match.date).toLocaleDateString("ko-KR", {
+                {new Date(match.date).toLocaleDateString(i18n.language, {
                   month: "numeric",
                   day: "numeric",
                   weekday: "short",
                 })}
               </Text>
               <Text style={styles.smallTime}>
-                {new Date(match.date).toLocaleTimeString("ko-KR", {
+                {new Date(match.date).toLocaleTimeString(i18n.language, {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
@@ -190,7 +198,9 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 경기 섹션 타이틀 */}
-        <Text style={styles.sectionTitle}>경기</Text>
+        <Text style={styles.sectionTitle}>
+          {t("leagueOverview.sectionTitle")}
+        </Text>
 
         {/* 하이라이트 경기 */}
         {renderFeaturedMatch()}
@@ -203,7 +213,9 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
           style={styles.moreButton}
           onPress={() => setShowAllMatches(true)}
         >
-          <Text style={styles.moreButtonText}>경기 더보기</Text>
+          <Text style={styles.moreButtonText}>
+            {t("leagueOverview.seeMore")}
+          </Text>
           <Ionicons name="chevron-forward" size={16} color={Colors.text} />
         </TouchableOpacity>
 
@@ -228,7 +240,11 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
           <View style={styles.modalSheet}>
             {/* 헤더 */}
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>프리미어리그 경기</Text>
+              <Text style={styles.modalTitle}>
+                {t("leagueOverview.modalTitle", {
+                  league: matches?.[0]?.league?.name ?? "",
+                })}
+              </Text>
               <TouchableOpacity
                 style={styles.modalClose}
                 onPress={() => setShowAllMatches(false)}
@@ -304,10 +320,12 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
                       <View style={styles.modalRight}>
                         {isFinished ? (
                           <>
-                            <Text style={styles.modalRightStatus}>풀타임</Text>
+                            <Text style={styles.modalRightStatus}>
+                              {t("leagueOverview.fulltime")}
+                            </Text>
                             <Text style={styles.modalRightDate}>
                               {new Date(match.date).toLocaleDateString(
-                                "ko-KR",
+                                i18n.language,
                                 {
                                   month: "numeric",
                                   day: "numeric",
@@ -320,7 +338,7 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
                           <>
                             <Text style={styles.modalRightDate}>
                               {new Date(match.date).toLocaleDateString(
-                                "ko-KR",
+                                i18n.language,
                                 {
                                   month: "numeric",
                                   day: "numeric",
@@ -330,7 +348,7 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
                             </Text>
                             <Text style={styles.modalRightTime}>
                               {new Date(match.date).toLocaleTimeString(
-                                "ko-KR",
+                                i18n.language,
                                 {
                                   hour: "2-digit",
                                   minute: "2-digit",

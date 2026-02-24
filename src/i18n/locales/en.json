@@ -168,5 +168,68 @@
       "saudiPro": { "title": "Saudi Pro League", "subtitle": "New era of football" },
       "europaLeague": { "title": "Europa League", "subtitle": "Road to glory" }
     }
+  },
+  "leagueMatches": {
+    "matchday": "Matchday ({{current}}/{{total}})",
+    "scheduled": "Scheduled",
+    "fulltime": "Full Time",
+    "tomorrow": "Tomorrow",
+    "seeMore": "See more matches"
+  },
+  "leaguePlayers": {
+    "empty": "No player information available",
+    "defaultPosition": "Forward",
+    "defaultTeamName": "Team"
+  },
+  "standings": {
+    "season": "Season",
+    "club": "Club",
+    "empty": "No standings available",
+    "columns": {
+      "played": "P",
+      "win": "W",
+      "draw": "D",
+      "lose": "L",
+      "points": "Pts",
+      "goalsFor": "GF",
+      "goalsAgainst": "GA",
+      "goalDiff": "GD",
+      "form5": "Last 5"
+    }
+  },
+  "leagueStats": {
+    "tabs": {
+      "goals": "Goals",
+      "assists": "Assists",
+      "yellowCards": "Yellow cards",
+      "redCards": "Red cards"
+    },
+    "empty": "No data available",
+    "headers": {
+      "player": "Player",
+      "value": "Value"
+    }
+  },
+
+  "allMatchesModal": {
+    "title": "{{league}} matches",
+    "matchday": "Matchday ({{current}}/{{total}})",
+    "fulltime": "Full Time"
+  },
+
+  "leagueTabs": {
+    "overview": "Overview",
+    "stats": "Stats",
+    "players": "Players",
+    "matches": "Matches",
+    "standings": "Standings"
+  },
+
+  "leagueDetail": {
+    "error404": "No standings available (404)",
+    "goHome": "Go to home",
+    "follow": "Follow",
+    "following": "Following"
   }
+  
 }

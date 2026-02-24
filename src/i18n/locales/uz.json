@@ -159,5 +159,67 @@
       "saudiPro": { "title": "Saudi Pro League", "subtitle": "Futbolning yangi davri" },
       "europaLeague": { "title": "Europa League", "subtitle": "Shon-sharaf sari yo‘l" }
     }
+  },
+  "leagueMatches": {
+    "matchday": "O‘yin kuni ({{current}}/{{total}})",
+    "scheduled": "Rejalashtirilgan",
+    "fulltime": "To‘liq vaqt",
+    "tomorrow": "Ertaga",
+    "seeMore": "Barcha o‘yinlar"
+  },
+  "leaguePlayers": {
+    "empty": "O‘yinchilar haqida ma’lumot yo‘q",
+    "defaultPosition": "Hujumchi",
+    "defaultTeamName": "Jamoa"
+  },
+  "standings": {
+    "season": "Mavsum",
+    "club": "Klub",
+    "empty": "Jadval ma’lumoti yo‘q",
+    "columns": {
+      "played": "O‘",
+      "win": "G",
+      "draw": "D",
+      "lose": "M",
+      "points": "Ochk",
+      "goalsFor": "GF",
+      "goalsAgainst": "GA",
+      "goalDiff": "GD",
+      "form5": "So‘nggi 5"
+    }
+  },
+  "leagueStats": {
+    "tabs": {
+      "goals": "Gollar",
+      "assists": "Assistlar",
+      "yellowCards": "Sariq kartalar",
+      "redCards": "Qizil kartalar"
+    },
+    "empty": "Ma’lumot yo‘q",
+    "headers": {
+      "player": "O‘yinchi",
+      "value": "Ko‘rsatkich"
+    }
+  },
+
+  "allMatchesModal": {
+    "title": "{{league}} o‘yinlari",
+    "matchday": "O‘yin kuni ({{current}}/{{total}})",
+    "fulltime": "To‘liq vaqt"
+  },
+
+  "leagueTabs": {
+    "overview": "Umumiy",
+    "stats": "Statistika",
+    "players": "O‘yinchilar",
+    "matches": "O‘yinlar",
+    "standings": "Jadval"
+  },
+
+  "leagueDetail": {
+    "error404": "Jadval ma’lumoti yo‘q (404)",
+    "goHome": "Bosh sahifaga",
+    "follow": "Kuzatish",
+    "following": "Kuzatilmoqda"
   }
 }
