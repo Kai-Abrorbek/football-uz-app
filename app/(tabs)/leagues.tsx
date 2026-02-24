@@ -16,6 +16,7 @@ import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
 import { Colors } from "../../src/constants/colors";
 import { CONTINENTS } from "../../src/constants/leauges";
+import { useTranslation } from "react-i18next";
 
 interface League {
   _id: string;
@@ -30,7 +31,7 @@ interface League {
 export default function LeaguesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeContinent, setActiveContinent] = useState("all");
-
+  const { t } = useTranslation();
   // 인기 리그
   const { data: featuredLeagues } = useQuery<League[]>({
     queryKey: ["featured-leagues"],
@@ -86,7 +87,7 @@ export default function LeaguesScreen() {
         >
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>전 세계 축구 리그</Text>
+        <Text style={styles.headerTitle}>{t("leagues.title")}</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -95,7 +96,7 @@ export default function LeaguesScreen() {
           <Ionicons name="search" size={20} color={Colors.textSecondary} />
           <TextInput
             style={styles.searchInput}
-            placeholder="리그 검색..."
+            placeholder={t("leagues.searchPlaceholder")}
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor={Colors.textSecondary}
@@ -116,7 +117,9 @@ export default function LeaguesScreen() {
         {/* 인기 리그 */}
         {!searchQuery && activeContinent === "all" && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>인기 리그</Text>
+            <Text style={styles.sectionTitle}>
+              {t("leagues.sections.featured")}
+            </Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -149,8 +152,12 @@ export default function LeaguesScreen() {
           <TouchableOpacity style={styles.worldCupBanner} activeOpacity={0.8}>
             <View style={styles.worldCupContent}>
               <Text style={styles.worldCupYear}>2026</Text>
-              <Text style={styles.worldCupTitle}>FIFA World Cup</Text>
-              <Text style={styles.worldCupLocation}>USA · Canada · Mexico</Text>
+              <Text style={styles.worldCupTitle}>
+                {t("leagues.worldCup.title")}
+              </Text>
+              <Text style={styles.worldCupLocation}>
+                {t("leagues.worldCup.location")}
+              </Text>
             </View>
             <Text style={styles.worldCupEmoji}>🏆</Text>
           </TouchableOpacity>
@@ -178,7 +185,7 @@ export default function LeaguesScreen() {
                     styles.continentTabTextActive,
                 ]}
               >
-                {continent.label}
+                {t(continent.i18nKey)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -187,7 +194,7 @@ export default function LeaguesScreen() {
         {/* 전체 리그 그리드 */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            모든 리그 ({filteredLeagues.length})
+            {t("leagues.sections.all", { count: filteredLeagues.length })}
           </Text>
 
           {leagueGrid.map((row, rowIndex) => (
@@ -212,6 +219,7 @@ export default function LeaguesScreen() {
                   </Text>
                 </TouchableOpacity>
               ))}
+
               {/* 빈 칸 채우기 */}
               {row.length < 4 &&
                 Array.from({ length: 4 - row.length }).map((_, i) => (
@@ -225,12 +233,14 @@ export default function LeaguesScreen() {
         {!searchQuery && activeContinent === "all" && (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>오늘의 주요 경기</Text>
+              <Text style={styles.sectionTitle}>
+                {t("leagues.sections.todayMatches")}
+              </Text>
               <TouchableOpacity onPress={() => router.push("/")}>
-                <Text style={styles.sectionMore}>더보기 →</Text>
+                <Text style={styles.sectionMore}>{t("leagues.more")}</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.comingSoon}>곧 업데이트 예정</Text>
+            <Text style={styles.comingSoon}>{t("leagues.comingSoon")}</Text>
           </View>
         )}
 

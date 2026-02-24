@@ -6,15 +6,17 @@ import {
   ScrollView,
 } from "react-native";
 import { Image } from "expo-image";
-import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../constants/colors";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
 import { Player } from "../../types";
+import { useTranslation } from "react-i18next";
 
 export default function UzbekPlayers() {
+  const { t } = useTranslation();
+
   const { data: players } = useQuery<Player[]>({
     queryKey: ["players", "uzbek"],
     queryFn: () => api.get(`${ENDPOINTS.players}/uzbek`),
@@ -29,10 +31,10 @@ export default function UzbekPlayers() {
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <Text style={styles.flag}>🇺🇿</Text>
-          <Text style={styles.title}>Uzbek Players Abroad</Text>
+          <Text style={styles.title}>{t("players.uzbekAbroad")}</Text>
         </View>
         <TouchableOpacity style={styles.moreBtn}>
-          <Text style={styles.moreText}>See all</Text>
+          <Text style={styles.moreText}>{t("players.seeAll")}</Text>
           <Ionicons name="chevron-forward" size={14} color={Colors.primary} />
         </TouchableOpacity>
       </View>
@@ -69,7 +71,6 @@ export default function UzbekPlayers() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     marginVertical: 8,

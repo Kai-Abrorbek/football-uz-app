@@ -6,8 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
 import { News } from "../../types";
+import { useTranslation } from "react-i18next";
 
 export default function NewsSection() {
+  const { t } = useTranslation();
+
   const { data: news } = useQuery<News[]>({
     queryKey: ["news", "latest"],
     queryFn: () => api.get(`${ENDPOINTS.news}?limit=3`),
@@ -20,12 +23,12 @@ export default function NewsSection() {
     <View style={styles.container}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <Text style={styles.title}>Latest News</Text>
+        <Text style={styles.title}>{t("newsSection.title")}</Text>
         <TouchableOpacity
           onPress={() => router.push("/(tabs)/news")}
           style={styles.moreBtn}
         >
-          <Text style={styles.moreText}>See all</Text>
+          <Text style={styles.moreText}>{t("newsSection.seeAll")}</Text>
           <Ionicons name="chevron-forward" size={14} color={Colors.primary} />
         </TouchableOpacity>
       </View>
@@ -45,13 +48,18 @@ export default function NewsSection() {
             <View style={styles.categoryBadge}>
               <Text style={styles.categoryText}>{item.category}</Text>
             </View>
+
+            {/* 여기 item.title.en 은 i18n이 아니라 "콘텐츠 언어" 문제라서,
+                나중에 language 상태로 item.title[language]로 바꾸는 게 맞음 */}
             <Text style={styles.newsTitle} numberOfLines={2}>
               {item.title.en}
             </Text>
+
             <Text style={styles.newsDate}>
               {new Date(item.publishedAt).toLocaleDateString()}
             </Text>
           </View>
+
           {item.imageUrl && (
             <Image
               source={{ uri: item.imageUrl }}

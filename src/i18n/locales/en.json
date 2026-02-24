@@ -1,51 +1,172 @@
 {
-  "common": {
-    "home": "Home",
-    "standings": "Standings",
-    "leagues": "Leagues",
-    "news": "News",
-    "chat": "AI Chatbot",
-    "profile": "Profile",
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "logout": "Logout",
-    "login": "Login",
-    "register": "Register"
+  "auth": {
+    "brandTitle": "Football UZ",
+    "loginSubtitle": "Log in to continue",
+    "registerSubtitle": "Create an account to get started",
+
+    "nameLabel": "Name",
+    "namePlaceholder": "John Doe",
+    "emailLabel": "Email",
+    "emailPlaceholder": "example@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+
+    "login": "Log in",
+    "register": "Sign up",
+
+    "noAccount": "Don't have an account? ",
+    "haveAccount": "Already have an account? ",
+
+    "or": "OR",
+    "continueWithGoogle": "Continue with Google",
+
+    "validation": {
+      "emailPasswordRequired": "Please enter your email and password.",
+      "allFieldsRequired": "Please fill in all fields.",
+      "nameMinLength": "Name must be at least 3 characters.",
+      "passwordMinLength": "Password must be at least 6 characters."
+    },
+
+    "errors": {
+      "loginFailed": "Login failed.",
+      "registerFailed": "Sign up failed.",
+      "telegramLoginFailed": "Telegram login failed.",
+      "googleLoginFailed": "Google login failed."
+    },
+
+    "logout": {
+      "confirm": "Are you sure you want to log out?",
+      "title": "Log out",
+      "cancel": "Cancel",
+      "action": "Log out"
+    }
   },
+
   "profile": {
-    "editProfile": "Edit Profile",
-    "notifications": "Notifications",
-    "language": "Language Settings",
-    "theme": "Theme Settings",
-    "help": "Help",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "version": "Version"
+    "stats": {
+      "followingTeams": "Following teams",
+      "savedMatches": "Saved matches",
+      "readNews": "Read news"
+    },
+    "sections": {
+      "settings": "Settings",
+      "support": "Support"
+    },
+    "menu": {
+      "editProfile": "Edit profile",
+      "notifications": "Notification settings",
+      "language": "Language",
+      "theme": "Theme",
+      "help": "Help",
+      "privacy": "Privacy policy",
+      "terms": "Terms of service"
+    },
+    "version": "Version {{version}}"
   },
-  "notifications": {
-    "matchStart": "Match Start",
-    "goals": "Goals",
-    "matchEnd": "Match End",
-    "news": "News",
-    "predictions": "AI Predictions"
+
+  "news": {
+    "category": {
+      "all": "All",
+      "premier": "EPL",
+      "laliga": "LaLiga",
+      "ligue1": "Ligue 1",
+      "bundesliga": "Bundesliga",
+      "seriea": "Serie A",
+      "saudi": "Saudi",
+      "ucl": "UCL",
+      "uel": "UEL",
+      "turkey": "Turkey",
+      "worldcup": "World Cup",
+      "euro": "EURO",
+      "copa": "Copa",
+      "afcon": "AFCON"
+    },
+    "heroBadge": "Top story",
+    "adLabel": "Ad",
+    "adText": "Advertisement",
+    "timeAgo": {
+      "minutes": "{{count}} min ago",
+      "hours": "{{count}} hr ago",
+      "days": "{{count}} day ago",
+      "days_plural": "{{count}} days ago",
+      "justNow": "Just now"
+    }
   },
-  "language": {
-    "title": "Language Settings",
-    "description": "Choose your app language"
+
+  "leagues": {
+    "title": "Global Leagues",
+    "searchPlaceholder": "Search leagues...",
+    "sections": {
+      "featured": "Featured leagues",
+      "all": "All leagues ({{count}})",
+      "todayMatches": "Today's top matches"
+    },
+    "more": "See more →",
+    "comingSoon": "Coming soon",
+    "worldCup": {
+      "title": "FIFA World Cup",
+      "location": "USA · Canada · Mexico"
+    }
   },
-  "theme": {
-    "title": "Theme Settings",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System"
+
+  "continent": {
+    "all": "All",
+    "europe": "Europe",
+    "asia": "Asia",
+    "southAmerica": "South America",
+    "northAmerica": "North America",
+    "africa": "Africa"
   },
-  "help": {
-    "title": "Help & Support",
-    "faq": "Frequently Asked Questions",
-    "contact": "Contact Us"
+
+  "home": {
+    "dates": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "dayAfterTomorrow": "Day after tomorrow"
+    },
+    "leagueFilter": {
+      "all": "All",
+      "allLeagues": "All leagues"
+    },
+    "empty": {
+      "noMatches": "No matches"
+    },
+    "ad": {
+      "label": "Advertisement"
+    }
+  },
+
+  "worldcup": {
+    "banner": {
+      "title": "FIFA World Cup",
+      "location": "USA · Canada · Mexico",
+      "teamBadge": "🇺🇿 Uzbekistan"
+    }
+  },
+  "players": {
+    "uzbekAbroad": "Uzbek Players Abroad",
+    "seeAll": "See all"
+  },
+  "newsSection": {
+    "title": "Latest News",
+    "seeAll": "See all"
+  },
+  "predictionsSection": {
+    "title": "AI Predictions",
+    "seeAll": "See all",
+    "confidence": "Confidence: {{value}}%"
+  },
+  "hero": {
+    "banners": {
+      "premierLeague": { "title": "Premier League", "subtitle": "The best league in the world" },
+      "worldCup2026": { "title": "FIFA World Cup 2026", "subtitle": "Uzbekistan is ready!" },
+      "laLiga": { "title": "La Liga", "subtitle": "Real Madrid vs Barcelona" },
+      "championsLeague": { "title": "Champions League", "subtitle": "Europe's finest competition" },
+      "serieA": { "title": "Serie A", "subtitle": "Italian football passion" },
+      "bundesliga": { "title": "Bundesliga", "subtitle": "Fast and fearless" },
+      "ligue1": { "title": "Ligue 1", "subtitle": "Rising young stars" },
+      "saudiPro": { "title": "Saudi Pro League", "subtitle": "New era of football" },
+      "europaLeague": { "title": "Europa League", "subtitle": "Road to glory" }
+    }
   }
 }

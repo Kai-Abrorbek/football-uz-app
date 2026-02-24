@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,26 +17,24 @@ import { Colors } from "../../src/constants/colors";
 import { ENDPOINTS } from "../../src/constants/api";
 import api from "../../src/services/api";
 import { AuthResponseDto } from "../../src/types";
-import { Platform } from "react-native";
 import TelegramLoginButton from "../../src/components/common/TelegramLoginButton";
 import { useGoogleAuth } from "../../src/hooks/useGoogleAuth";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function ProfileScreen() {
   const { userData, setUser, logout } = useAuth();
-
-  // const [userData, setUser] = useState<AuthResponseDto | null>(null);
-  const [isLogin, setIsLogin] = useState(true); // true: 로그인, false: 회원가입
-
-  // 폼 상태
+  const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { t } = useTranslation();
+
   const handleLogin = async () => {
     if (!email || !password) {
-      alert("이메일과 비밀번호를 입력해주세요");
+      alert(t("auth.validation.emailPasswordRequired"));
       return;
     }
 
@@ -49,25 +48,26 @@ export default function ProfileScreen() {
       await AsyncStorage.setItem("user_data", JSON.stringify(response));
       setUser(response);
     } catch (error: any) {
-      console.error("로그인 실패:", error);
-      const message = error.response?.data?.message || "로그인에 실패했습니다";
+      console.error("Login failed:", error);
+      const message =
+        error.response?.data?.message || t("auth.errors.loginFailed");
       alert(message);
     }
   };
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
-      alert("모든 필드를 입력해주세요");
+      alert(t("auth.validation.allFieldsRequired"));
       return;
     }
 
     if (name.length < 3) {
-      alert("이름은 3자 이상이어야 합니다");
+      alert(t("auth.validation.nameMinLength"));
       return;
     }
 
     if (password.length < 6) {
-      alert("비밀번호는 6자 이상이어야 합니다");
+      alert(t("auth.validation.passwordMinLength"));
       return;
     }
 
@@ -83,16 +83,16 @@ export default function ProfileScreen() {
       await AsyncStorage.setItem("user_data", JSON.stringify(response));
       setUser(response);
     } catch (error: any) {
-      console.error("회원가입 실패:", error);
+      console.error("Sign up failed:", error);
       const message =
-        error.response?.data?.message || "회원가입에 실패했습니다";
+        error.response?.data?.message || t("auth.errors.registerFailed");
       alert(message);
     }
   };
 
   const handleTelegramLogin = async (telegramUser: any) => {
     try {
-      console.log("Telegram 유저:", telegramUser);
+      console.log("Telegram user:", telegramUser);
 
       const response: AuthResponseDto = await api.post(ENDPOINTS.authSocial, {
         provider: "telegram",
@@ -104,8 +104,8 @@ export default function ProfileScreen() {
       await AsyncStorage.setItem("user_data", JSON.stringify(response));
       setUser(response);
     } catch (error: any) {
-      console.error("Telegram 로그인 실패:", error);
-      alert("Telegram 로그인에 실패했습니다");
+      console.error("Telegram login failed:", error);
+      alert(t("auth.errors.telegramLoginFailed"));
     }
   };
 
@@ -121,55 +121,50 @@ export default function ProfileScreen() {
       await AsyncStorage.setItem("user_data", JSON.stringify(response));
       setUser(response);
     } catch (error: any) {
-      console.error("Google 로그인 실패:", error);
-      alert("Google 로그인에 실패했습니다");
+      console.error("Google login failed:", error);
+      alert(t("auth.errors.googleLoginFailed"));
     }
   };
 
   const { promptAsync, isReady } = useGoogleAuth(handleGoogleSuccess);
 
   const handleLogout = async () => {
-    console.log("로그아웃 버튼 클릭");
+    console.log("Logout clicked");
 
     if (Platform.OS === "web") {
-      if (window.confirm("정말 로그아웃 하시겠습니까?")) {
+      if (window.confirm(t("auth.logout.confirm"))) {
         logout();
       }
     } else {
-      Alert.alert("로그아웃", "정말 로그아웃 하시겠습니까?", [
-        { text: "취소", style: "cancel" },
+      Alert.alert(t("auth.logout.title"), t("auth.logout.confirm"), [
+        { text: t("auth.logout.cancel"), style: "cancel" },
         {
-          text: "로그아웃",
+          text: t("auth.logout.action"),
           style: "destructive",
-          onPress: async () => {
-            logout();
-          },
+          onPress: async () => logout(),
         },
       ]);
     }
   };
 
-  // 로그인/회원가입 화면
   if (!userData?.user) {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <ScrollView contentContainerStyle={styles.authContainer}>
-          {/* 로고/아이콘 */}
           <View style={styles.authHeader}>
             <View style={styles.logoCircle}>
               <Ionicons name="football" size={60} color={Colors.primary} />
             </View>
-            <Text style={styles.authTitle}>Football UZ</Text>
+            <Text style={styles.authTitle}>{t("auth.brandTitle")}</Text>
             <Text style={styles.authSubtitle}>
-              {isLogin ? "로그인하여 계속하세요" : "계정을 만들어 시작하세요"}
+              {isLogin ? t("auth.loginSubtitle") : t("auth.registerSubtitle")}
             </Text>
           </View>
 
-          {/* 폼 */}
           <View style={styles.formContainer}>
             {!isLogin && (
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>이름</Text>
+                <Text style={styles.inputLabel}>{t("auth.nameLabel")}</Text>
                 <View style={styles.inputWrapper}>
                   <Ionicons
                     name="person-outline"
@@ -178,7 +173,7 @@ export default function ProfileScreen() {
                   />
                   <TextInput
                     style={styles.input}
-                    placeholder="홍길동"
+                    placeholder={t("auth.namePlaceholder")}
                     value={name}
                     onChangeText={setName}
                     placeholderTextColor={Colors.textSecondary}
@@ -188,7 +183,7 @@ export default function ProfileScreen() {
             )}
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>이메일</Text>
+              <Text style={styles.inputLabel}>{t("auth.emailLabel")}</Text>
               <View style={styles.inputWrapper}>
                 <Ionicons
                   name="mail-outline"
@@ -197,7 +192,7 @@ export default function ProfileScreen() {
                 />
                 <TextInput
                   style={styles.input}
-                  placeholder="example@email.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -208,7 +203,7 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>비밀번호</Text>
+              <Text style={styles.inputLabel}>{t("auth.passwordLabel")}</Text>
               <View style={styles.inputWrapper}>
                 <Ionicons
                   name="lock-closed-outline"
@@ -217,7 +212,7 @@ export default function ProfileScreen() {
                 />
                 <TextInput
                   style={styles.input}
-                  placeholder="••••••••"
+                  placeholder={t("auth.passwordPlaceholder")}
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
@@ -231,7 +226,7 @@ export default function ProfileScreen() {
               onPress={isLogin ? handleLogin : handleRegister}
             >
               <Text style={styles.submitButtonText}>
-                {isLogin ? "로그인" : "회원가입"}
+                {isLogin ? t("auth.login") : t("auth.register")}
               </Text>
             </TouchableOpacity>
 
@@ -240,28 +235,20 @@ export default function ProfileScreen() {
               onPress={() => setIsLogin(!isLogin)}
             >
               <Text style={styles.switchButtonText}>
-                {isLogin ? "계정이 없으신가요? " : "이미 계정이 있으신가요? "}
+                {isLogin ? t("auth.noAccount") : t("auth.haveAccount")}
                 <Text style={styles.switchButtonTextBold}>
-                  {isLogin ? "회원가입" : "로그인"}
+                  {isLogin ? t("auth.register") : t("auth.login")}
                 </Text>
               </Text>
             </TouchableOpacity>
           </View>
 
-          {/* 소셜 로그인 */}
           <View style={styles.socialContainer}>
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>또는</Text>
+              <Text style={styles.dividerText}>{t("auth.or")}</Text>
               <View style={styles.dividerLine} />
             </View>
-
-            {/* <View style={{ marginBottom: 12 }}>
-              <TelegramLoginButton
-                botName="footballuz2026_bot"
-                onAuth={handleTelegramLogin}
-              />
-            </View> */}
 
             <TouchableOpacity
               style={styles.socialButton}
@@ -269,7 +256,9 @@ export default function ProfileScreen() {
               disabled={!isReady}
             >
               <Ionicons name="logo-google" size={20} color="#DB4437" />
-              <Text style={styles.socialButtonText}>Google로 계속하기</Text>
+              <Text style={styles.socialButtonText}>
+                {t("auth.continueWithGoogle")}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -277,11 +266,9 @@ export default function ProfileScreen() {
     );
   }
 
-  // 프로필 화면 (로그인 후)
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView>
-        {/* 헤더 */}
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
             {userData.user?.avatar ? (
@@ -302,27 +289,31 @@ export default function ProfileScreen() {
           <Text style={styles.userEmail}>{userData?.user?.email}</Text>
         </View>
 
-        {/* 통계 */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>12</Text>
-            <Text style={styles.statLabel}>팔로잉 팀</Text>
+            <Text style={styles.statLabel}>
+              {t("profile.stats.followingTeams")}
+            </Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
             <Text style={styles.statValue}>45</Text>
-            <Text style={styles.statLabel}>저장된 경기</Text>
+            <Text style={styles.statLabel}>
+              {t("profile.stats.savedMatches")}
+            </Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
             <Text style={styles.statValue}>89</Text>
-            <Text style={styles.statLabel}>읽은 뉴스</Text>
+            <Text style={styles.statLabel}>{t("profile.stats.readNews")}</Text>
           </View>
         </View>
 
-        {/* 메뉴 */}
         <View style={styles.menuContainer}>
-          <Text style={styles.menuSectionTitle}>설정</Text>
+          <Text style={styles.menuSectionTitle}>
+            {t("profile.sections.settings")}
+          </Text>
 
           <TouchableOpacity
             style={styles.menuItem}
@@ -330,7 +321,9 @@ export default function ProfileScreen() {
           >
             <View style={styles.menuItemLeft}>
               <Ionicons name="person-outline" size={22} color={Colors.text} />
-              <Text style={styles.menuItemText}>프로필 수정</Text>
+              <Text style={styles.menuItemText}>
+                {t("profile.menu.editProfile")}
+              </Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -349,7 +342,9 @@ export default function ProfileScreen() {
                 size={22}
                 color={Colors.text}
               />
-              <Text style={styles.menuItemText}>알림 설정</Text>
+              <Text style={styles.menuItemText}>
+                {t("profile.menu.notifications")}
+              </Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -364,7 +359,9 @@ export default function ProfileScreen() {
           >
             <View style={styles.menuItemLeft}>
               <Ionicons name="language-outline" size={22} color={Colors.text} />
-              <Text style={styles.menuItemText}>언어 설정</Text>
+              <Text style={styles.menuItemText}>
+                {t("profile.menu.language")}
+              </Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -379,7 +376,7 @@ export default function ProfileScreen() {
           >
             <View style={styles.menuItemLeft}>
               <Ionicons name="moon-outline" size={22} color={Colors.text} />
-              <Text style={styles.menuItemText}>테마 설정</Text>
+              <Text style={styles.menuItemText}>{t("profile.menu.theme")}</Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -390,7 +387,9 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.menuContainer}>
-          <Text style={styles.menuSectionTitle}>지원</Text>
+          <Text style={styles.menuSectionTitle}>
+            {t("profile.sections.support")}
+          </Text>
 
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
@@ -399,7 +398,7 @@ export default function ProfileScreen() {
                 size={22}
                 color={Colors.text}
               />
-              <Text style={styles.menuItemText}>도움말</Text>
+              <Text style={styles.menuItemText}>{t("profile.menu.help")}</Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -415,7 +414,9 @@ export default function ProfileScreen() {
                 size={22}
                 color={Colors.text}
               />
-              <Text style={styles.menuItemText}>개인정보 처리방침</Text>
+              <Text style={styles.menuItemText}>
+                {t("profile.menu.privacy")}
+              </Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -431,7 +432,7 @@ export default function ProfileScreen() {
                 size={22}
                 color={Colors.text}
               />
-              <Text style={styles.menuItemText}>이용약관</Text>
+              <Text style={styles.menuItemText}>{t("profile.menu.terms")}</Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -441,13 +442,14 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* 로그아웃 */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={22} color="#ff3b30" />
-          <Text style={styles.logoutButtonText}>로그아웃</Text>
+          <Text style={styles.logoutButtonText}>{t("auth.logout.action")}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.version}>버전 1.0.0</Text>
+        <Text style={styles.version}>
+          {t("profile.version", { version: "1.0.0" })}
+        </Text>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -455,21 +457,12 @@ export default function ProfileScreen() {
   );
 }
 
+// styles 그대로
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
+  container: { flex: 1, backgroundColor: Colors.background },
 
-  // 인증 화면
-  authContainer: {
-    padding: 24,
-  },
-  authHeader: {
-    alignItems: "center",
-    marginTop: 40,
-    marginBottom: 40,
-  },
+  authContainer: { padding: 24 },
+  authHeader: { alignItems: "center", marginTop: 40, marginBottom: 40 },
   logoCircle: {
     width: 100,
     height: 100,
@@ -485,16 +478,9 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 8,
   },
-  authSubtitle: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  formContainer: {
-    marginBottom: 32,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
+  authSubtitle: { fontSize: 14, color: Colors.textSecondary },
+  formContainer: { marginBottom: 32 },
+  inputGroup: { marginBottom: 20 },
   inputLabel: {
     fontSize: 14,
     fontWeight: "600",
@@ -512,11 +498,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: Colors.text,
-  },
+  input: { flex: 1, fontSize: 15, color: Colors.text },
   submitButton: {
     backgroundColor: Colors.primary,
     borderRadius: 12,
@@ -524,36 +506,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 8,
   },
-  submitButtonText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  switchButton: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  switchButtonText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  switchButtonTextBold: {
-    fontWeight: "700",
-    color: Colors.primary,
-  },
-  socialContainer: {
-    marginTop: 12,
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.border,
-  },
+  submitButtonText: { fontSize: 16, fontWeight: "700", color: "#ffffff" },
+  switchButton: { marginTop: 20, alignItems: "center" },
+  switchButtonText: { fontSize: 14, color: Colors.textSecondary },
+  switchButtonTextBold: { fontWeight: "700", color: Colors.primary },
+  socialContainer: { marginTop: 12 },
+  divider: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
   dividerText: {
     fontSize: 13,
     color: Colors.textSecondary,
@@ -571,27 +530,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  socialButtonText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: Colors.text,
-  },
+  socialButtonText: { fontSize: 15, fontWeight: "600", color: Colors.text },
 
-  // 프로필 화면
   profileHeader: {
     alignItems: "center",
     paddingVertical: 32,
     backgroundColor: Colors.surface,
   },
-  avatarContainer: {
-    position: "relative",
-    marginBottom: 16,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
+  avatarContainer: { position: "relative", marginBottom: 16 },
+  avatar: { width: 100, height: 100, borderRadius: 50 },
   avatarPlaceholder: {
     width: 100,
     height: 100,
@@ -600,11 +547,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: {
-    fontSize: 36,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
+  avatarText: { fontSize: 36, fontWeight: "700", color: "#ffffff" },
   editAvatarButton: {
     position: "absolute",
     bottom: 0,
@@ -624,10 +567,8 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 4,
   },
-  userEmail: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
+  userEmail: { fontSize: 14, color: Colors.textSecondary },
+
   statsContainer: {
     flexDirection: "row",
     backgroundColor: Colors.surface,
@@ -636,29 +577,21 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
   },
-  statBox: {
-    flex: 1,
-    alignItems: "center",
-  },
+  statBox: { flex: 1, alignItems: "center" },
   statValue: {
     fontSize: 24,
     fontWeight: "800",
     color: Colors.text,
     marginBottom: 4,
   },
-  statLabel: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
+  statLabel: { fontSize: 12, color: Colors.textSecondary },
   statDivider: {
     width: 1,
     backgroundColor: Colors.border,
     marginHorizontal: 8,
   },
-  menuContainer: {
-    marginTop: 24,
-    paddingHorizontal: 16,
-  },
+
+  menuContainer: { marginTop: 24, paddingHorizontal: 16 },
   menuSectionTitle: {
     fontSize: 16,
     fontWeight: "700",
@@ -675,16 +608,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 8,
   },
-  menuItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  menuItemText: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: Colors.text,
-  },
+  menuItemLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+  menuItemText: { fontSize: 15, fontWeight: "500", color: Colors.text },
+
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -698,11 +624,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ff3b30",
   },
-  logoutButtonText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#ff3b30",
-  },
+  logoutButtonText: { fontSize: 15, fontWeight: "600", color: "#ff3b30" },
   version: {
     fontSize: 12,
     color: Colors.textSecondary,

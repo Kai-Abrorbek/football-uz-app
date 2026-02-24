@@ -16,8 +16,8 @@ import { ENDPOINTS } from "../../src/constants/api";
 import { Colors } from "../../src/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLanguage } from "../../src/contexts/LanguageContext";
-import { Redirect, router } from "expo-router";
-import { useAuth } from "../../src/contexts/AuthContext";
+import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 interface News {
   _id: string;
@@ -30,33 +30,32 @@ interface News {
 }
 
 const CATEGORIES = [
-  { id: "all", label: "전체", leagueId: null },
-  { id: "premier", label: "EPL", leagueId: 39 },
-  { id: "laliga", label: "라리가", leagueId: 140 },
-  { id: "ligue1", label: "리그1", leagueId: 61 },
-  { id: "bundesliga", label: "분데스", leagueId: 78 },
-  { id: "seriea", label: "세리에", leagueId: 135 },
-  { id: "saudi", label: "사우디", leagueId: 347 },
-  { id: "ucl", label: "UCL", leagueId: 2 },
-  { id: "uel", label: "UEL", leagueId: 3 },
-  { id: "turkey", label: "터키", leagueId: 203 },
-  { id: "worldcup", label: "월드컵", leagueId: 1 },
-  { id: "euro", label: "유로", leagueId: 4 },
-  { id: "copa", label: "코파", leagueId: 9 },
-  { id: "afcon", label: "아프컵", leagueId: 31 },
-];
+  { id: "all", i18nKey: "news.category.all", leagueId: null },
+  { id: "premier", i18nKey: "news.category.premier", leagueId: 39 },
+  { id: "laliga", i18nKey: "news.category.laliga", leagueId: 140 },
+  { id: "ligue1", i18nKey: "news.category.ligue1", leagueId: 61 },
+  { id: "bundesliga", i18nKey: "news.category.bundesliga", leagueId: 78 },
+  { id: "seriea", i18nKey: "news.category.seriea", leagueId: 135 },
+  { id: "saudi", i18nKey: "news.category.saudi", leagueId: 347 },
+  { id: "ucl", i18nKey: "news.category.ucl", leagueId: 2 },
+  { id: "uel", i18nKey: "news.category.uel", leagueId: 3 },
+  { id: "turkey", i18nKey: "news.category.turkey", leagueId: 203 },
+  { id: "worldcup", i18nKey: "news.category.worldcup", leagueId: 1 },
+  { id: "euro", i18nKey: "news.category.euro", leagueId: 4 },
+  { id: "copa", i18nKey: "news.category.copa", leagueId: 9 },
+  { id: "afcon", i18nKey: "news.category.afcon", leagueId: 31 },
+] as const;
 
 export default function NewsScreen() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
   const { language, setLanguage } = useLanguage();
-  const { userData, setUser, logout } = useAuth();
+  const { t } = useTranslation();
 
   const selectedLeague = CATEGORIES.find(
     (c) => c.id === activeCategory,
   )?.leagueId;
 
-  // 뉴스 조회
   const { data: newsList, refetch } = useQuery<News[]>({
     queryKey: ["news", selectedLeague],
     queryFn: () => {
@@ -85,9 +84,16 @@ export default function NewsScreen() {
       (now.getTime() - publishedDate.getTime()) / (1000 * 60),
     );
 
-    if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`;
-    return `${Math.floor(diffInMinutes / 1440)}일 전`;
+    if (diffInMinutes < 1) return t("news.timeAgo.justNow");
+    if (diffInMinutes < 60)
+      return t("news.timeAgo.minutes", { count: diffInMinutes });
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInMinutes < 1440)
+      return t("news.timeAgo.hours", { count: diffInHours });
+
+    const diffInDays = Math.floor(diffInMinutes / 1440);
+    return t("news.timeAgo.days", { count: diffInDays });
   };
 
   const renderHeroNews = () => {
@@ -113,9 +119,9 @@ export default function NewsScreen() {
         >
           <View style={styles.heroOverlay}>
             <View style={styles.heroBadge}>
-              <Text style={styles.heroBadgeText}>주요 뉴스</Text>
+              <Text style={styles.heroBadgeText}>{t("news.heroBadge")}</Text>
             </View>
-            {/* 언어 선택 */}
+
             <View style={styles.languageSelector}>
               {(["en", "uz", "ru"] as const).map((lang) => (
                 <TouchableOpacity
@@ -137,10 +143,11 @@ export default function NewsScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-            {/* 뉴스 제목/내용에 언어 적용 */}
+
             <Text style={styles.heroTitle} numberOfLines={3}>
               {hero.title[language as "en" | "uz" | "ru"]}
             </Text>
+
             <View style={styles.heroMeta}>
               <Text style={styles.heroSource}>{hero.source}</Text>
               <Text style={styles.heroDot}>•</Text>
@@ -154,7 +161,7 @@ export default function NewsScreen() {
     );
   };
 
-  const renderNewsCard = (news: News, index: number) => {
+  const renderNewsCard = (news: News) => {
     return (
       <TouchableOpacity
         key={news._id}
@@ -189,24 +196,14 @@ export default function NewsScreen() {
   const renderAdBanner = (index: number) => {
     return (
       <View key={`ad-${index}`} style={styles.adBanner}>
-        <Text style={styles.adLabel}>광고</Text>
-        <Text style={styles.adText}>Advertisement</Text>
+        <Text style={styles.adLabel}>{t("news.adLabel")}</Text>
+        <Text style={styles.adText}>{t("news.adText")}</Text>
       </View>
     );
   };
 
-  // if (!userData?.user) {
-  //   return <Redirect href="/profile" />;
-  // }
-
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 헤더 */}
-      {/* <View style={styles.header}>
-        <Text style={styles.headerTitle}>축구 뉴스</Text>
-      </View> */}
-
-      {/* 카테고리 탭 */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -227,28 +224,25 @@ export default function NewsScreen() {
                 activeCategory === cat.id && styles.categoryTabTextActive,
               ]}
             >
-              {cat.label}
+              {t(cat.i18nKey)}
             </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
-      {/* 뉴스 목록 */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* 히어로 뉴스 */}
         {renderHeroNews()}
 
-        {/* 뉴스 카드들 */}
         {newsList?.slice(1).map((news, index) => {
           const shouldShowAd = (index + 1) % 4 === 0;
           return (
             <View key={news._id}>
-              {renderNewsCard(news, index)}
+              {renderNewsCard(news)}
               {shouldShowAd && renderAdBanner(index)}
             </View>
           );

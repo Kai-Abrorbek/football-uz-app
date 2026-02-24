@@ -1,8 +1,8 @@
 export const CONTINENTS = [
-  { key: "all", label: "전체" },
+  { key: "all", i18nKey: "continent.all" },
   {
     key: "europe",
-    label: "유럽",
+    i18nKey: "continent.europe",
     countries: [
       "England",
       "Spain",
@@ -28,7 +28,7 @@ export const CONTINENTS = [
   },
   {
     key: "asia",
-    label: "아시아",
+    i18nKey: "continent.asia",
     countries: [
       "Uzbekistan",
       "South Korea",
@@ -48,7 +48,7 @@ export const CONTINENTS = [
   },
   {
     key: "south-america",
-    label: "남미",
+    i18nKey: "continent.southAmerica",
     countries: [
       "Brazil",
       "Argentina",
@@ -64,12 +64,12 @@ export const CONTINENTS = [
   },
   {
     key: "north-america",
-    label: "북미",
+    i18nKey: "continent.northAmerica",
     countries: ["USA", "Mexico", "Canada", "Costa Rica"],
   },
   {
     key: "africa",
-    label: "아프리카",
+    i18nKey: "continent.africa",
     countries: [
       "Egypt",
       "Morocco",

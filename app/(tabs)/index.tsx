@@ -20,8 +20,8 @@ import UzbekPlayers from "../../src/components/home/UzbekPlayers";
 import NewsSection from "../../src/components/home/NewsSection";
 import PredictionSection from "../../src/components/home/PredictionSection";
 import HeroBanner from "../../src/components/home/HeroBanner";
-import { useAuth } from "../../src/contexts/AuthContext";
-import { Redirect, router } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { router } from "expo-router";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -29,19 +29,18 @@ function getDateString(offset: number): string {
   return date.toISOString().split("T")[0];
 }
 
-// 오늘/내일/모레 3일치
-const DATES = [
-  { label: "오늘", value: getDateString(0) },
-  { label: "내일", value: getDateString(1) },
-  { label: "모레", value: getDateString(2) },
-];
-
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
-  const [showLeagueModal, setShowLeagueModal] = useState(false);
-  const { userData, setUser, logout } = useAuth();
   const { data: leagues } = useFeaturedLeagues();
   const { data: liveMatches } = useLiveMatches();
+
+  // 오늘/내일/모레 3일치
+  const DATES = [
+    { label: t("home.dates.today"), value: getDateString(0) },
+    { label: t("home.dates.tomorrow"), value: getDateString(1) },
+    { label: t("home.dates.dayAfterTomorrow"), value: getDateString(2) },
+  ];
 
   // 오늘/내일/모레 경기 모두 가져오기
   const {
@@ -84,7 +83,6 @@ export default function HomeScreen() {
     }, {});
   };
 
-  // renderDateSection 함수 수정
   const renderDateSection = (
     label: string,
     matches: any[],
@@ -131,7 +129,7 @@ export default function HomeScreen() {
 
             {(index + 1) % 2 === 0 && (
               <View style={styles.adBanner}>
-                <Text style={styles.adText}>Advertisement</Text>
+                <Text style={styles.adText}>{t("home.ad.label")}</Text>
               </View>
             )}
           </View>
@@ -171,7 +169,7 @@ export default function HomeScreen() {
                 !selectedLeague && styles.chipTextActive,
               ]}
             >
-              All
+              {t("home.leagueFilter.all")}
             </Text>
           </TouchableOpacity>
 
@@ -209,9 +207,11 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={styles.allLeaguesBtn}
-            onPress={() => setShowLeagueModal(true)}
+            onPress={() => router.push("/leagues")}
           >
-            <Text style={styles.allLeaguesBtnText}>All Leagues</Text>
+            <Text style={styles.allLeaguesBtnText}>
+              {t("home.leagueFilter.allLeagues")}
+            </Text>
             <Ionicons name="chevron-forward" size={12} color={Colors.primary} />
           </TouchableOpacity>
         </ScrollView>
@@ -243,16 +243,19 @@ export default function HomeScreen() {
         )}
 
         {/* 오늘 경기 (라이브 포함) */}
-        {renderDateSection("오늘", todayMatches || [], true)}
+        {renderDateSection(t("home.dates.today"), todayMatches || [], true)}
 
         {/* 월드컵 배너 */}
         <WorldCupBanner />
-        {renderDateSection("내일", tomorrowMatches || [])}
+        {renderDateSection(t("home.dates.tomorrow"), tomorrowMatches || [])}
 
         {/* 우즈벡 선수 */}
         <UzbekPlayers />
 
-        {renderDateSection("모레", dayAfterMatches || [])}
+        {renderDateSection(
+          t("home.dates.dayAfterTomorrow"),
+          dayAfterMatches || [],
+        )}
 
         {/* 최신 뉴스 */}
         <NewsSection />
@@ -271,7 +274,7 @@ export default function HomeScreen() {
                 size={48}
                 color={Colors.border}
               />
-              <Text style={styles.emptyText}>경기가 없습니다</Text>
+              <Text style={styles.emptyText}>{t("home.empty.noMatches")}</Text>
             </View>
           )}
 

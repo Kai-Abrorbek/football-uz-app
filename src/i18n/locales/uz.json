@@ -1,51 +1,163 @@
 {
-  "common": {
-    "home": "Bosh sahifa",
-    "standings": "Jadval",
-    "leagues": "Ligalar",
-    "news": "Yangiliklar",
-    "chat": "AI chatbot",
-    "profile": "Profil",
-    "loading": "Yuklanmoqda...",
-    "error": "Xatolik yuz berdi",
-    "save": "Saqlash",
-    "cancel": "Bekor qilish",
-    "delete": "O'chirish",
-    "edit": "Tahrirlash",
-    "logout": "Chiqish",
+  "auth": {
+    "brandTitle": "Football UZ",
+    "loginSubtitle": "Davom etish uchun kiring",
+    "registerSubtitle": "Boshlash uchun hisob yarating",
+    "nameLabel": "Ism",
+    "namePlaceholder": "Ali Valiyev",
+    "emailLabel": "Email",
+    "emailPlaceholder": "example@email.com",
+    "passwordLabel": "Parol",
+    "passwordPlaceholder": "••••••••",
     "login": "Kirish",
-    "register": "Ro'yxatdan o'tish"
+    "register": "Ro'yxatdan o'tish",
+    "noAccount": "Hisobingiz yo'qmi? ",
+    "haveAccount": "Allaqachon hisobingiz bormi? ",
+    "or": "YOKI",
+    "continueWithGoogle": "Google orqali davom etish",
+    "validation": {
+      "emailPasswordRequired": "Email va parolni kiriting.",
+      "allFieldsRequired": "Barcha maydonlarni to'ldiring.",
+      "nameMinLength": "Ism kamida 3 ta belgidan iborat bo'lishi kerak.",
+      "passwordMinLength": "Parol kamida 6 ta belgidan iborat bo'lishi kerak."
+    },
+    "errors": {
+      "loginFailed": "Kirish amalga oshmadi.",
+      "registerFailed": "Ro'yxatdan o'tish amalga oshmadi.",
+      "telegramLoginFailed": "Telegram orqali kirish amalga oshmadi.",
+      "googleLoginFailed": "Google orqali kirish amalga oshmadi."
+    },
+    "logout": {
+      "confirm": "Haqiqatan ham chiqmoqchimisiz?",
+      "title": "Chiqish",
+      "cancel": "Bekor qilish",
+      "action": "Chiqish"
+    }
   },
   "profile": {
-    "editProfile": "Profilni tahrirlash",
-    "notifications": "Bildirishnomalar",
-    "language": "Til sozlamalari",
-    "theme": "Mavzu sozlamalari",
-    "help": "Yordam",
-    "privacy": "Maxfiylik siyosati",
-    "terms": "Foydalanish shartlari",
-    "version": "Versiya"
+    "stats": {
+      "followingTeams": "Kuzatilayotgan jamoalar",
+      "savedMatches": "Saqlangan o'yinlar",
+      "readNews": "O'qilgan yangiliklar"
+    },
+    "sections": {
+      "settings": "Sozlamalar",
+      "support": "Yordam"
+    },
+    "menu": {
+      "editProfile": "Profilni tahrirlash",
+      "notifications": "Bildirishnoma sozlamalari",
+      "language": "Til",
+      "theme": "Thema",
+      "help": "Yordam",
+      "privacy": "Maxfiylik siyosati",
+      "terms": "Foydalanish shartlari"
+    },
+    "version": "Versiya {{version}}"
   },
-  "notifications": {
-    "matchStart": "O'yin boshlanishi",
-    "goals": "Gollar",
-    "matchEnd": "O'yin tugashi",
-    "news": "Yangiliklar",
-    "predictions": "AI taxminlar"
+
+  "news": {
+    "category": {
+      "all": "Barchasi",
+      "premier": "EPL",
+      "laliga": "LaLiga",
+      "ligue1": "Ligue 1",
+      "bundesliga": "Bundesliga",
+      "seriea": "Serie A",
+      "saudi": "Saudiya",
+      "ucl": "UCL",
+      "uel": "UEL",
+      "turkey": "Turkiya",
+      "worldcup": "Jahon chempionati",
+      "euro": "EURO",
+      "copa": "Copa",
+      "afcon": "AFCON"
+    },
+    "heroBadge": "Asosiy yangilik",
+    "adLabel": "Reklama",
+    "adText": "Advertisement",
+    "timeAgo": {
+      "minutes": "{{count}} daqiqa oldin",
+      "hours": "{{count}} soat oldin",
+      "days": "{{count}} kun oldin",
+      "justNow": "Hozirgina"
+    }
   },
-  "language": {
-    "title": "Til sozlamalari",
-    "description": "Ilova tilini tanlang"
+
+  "leagues": {
+    "title": "Futbol ligalari",
+    "searchPlaceholder": "Ligalarni qidiring...",
+    "sections": {
+      "featured": "Mashhur ligalar",
+      "all": "Barcha ligalar ({{count}})",
+      "todayMatches": "Bugungi asosiy o‘yinlar"
+    },
+    "more": "Ko‘proq →",
+    "comingSoon": "Tez orada",
+    "worldCup": {
+      "title": "FIFA World Cup",
+      "location": "AQSh · Kanada · Meksika"
+    }
   },
-  "theme": {
-    "title": "Mavzu sozlamalari",
-    "light": "Yorug'",
-    "dark": "Qorong'i",
-    "system": "Tizim sozlamalari"
+
+  "continent": {
+    "all": "Barchasi",
+    "europe": "Yevropa",
+    "asia": "Osiyo",
+    "southAmerica": "Janubiy Amerika",
+    "northAmerica": "Shimoliy Amerika",
+    "africa": "Afrika"
   },
-  "help": {
-    "title": "Yordam va aloqa",
-    "faq": "Tez-tez so'raladigan savollar",
-    "contact": "Biz bilan bog'lanish"
+
+  "home": {
+    "dates": {
+      "today": "Bugun",
+      "tomorrow": "Ertaga",
+      "dayAfterTomorrow": "Indinga"
+    },
+    "leagueFilter": {
+      "all": "Barchasi",
+      "allLeagues": "Barcha ligalar"
+    },
+    "empty": {
+      "noMatches": "O‘yinlar yo‘q"
+    },
+    "ad": {
+      "label": "Reklama"
+    }
+  },
+
+  "worldcup": {
+    "banner": {
+      "title": "FIFA World Cup",
+      "location": "AQSh · Kanada · Meksika",
+      "teamBadge": "🇺🇿 O‘zbekiston"
+    }
+  },
+  "players": {
+    "uzbekAbroad": "Chet eldagi o‘zbek futbolchilari",
+    "seeAll": "Barchasini ko‘rish"
+  },
+  "newsSection": {
+    "title": "So‘nggi yangiliklar",
+    "seeAll": "Barchasini ko‘rish"
+  },
+  "predictionsSection": {
+    "title": "AI taxminlar",
+    "seeAll": "Barchasini ko‘rish",
+    "confidence": "Ishonchlilik: {{value}}%"
+  },
+  "hero": {
+    "banners": {
+      "premierLeague": { "title": "Premier League", "subtitle": "Dunyoning eng kuchli ligasi" },
+      "worldCup2026": { "title": "FIFA World Cup 2026", "subtitle": "O‘zbekiston tayyor!" },
+      "laLiga": { "title": "La Liga", "subtitle": "Real Madrid vs Barcelona" },
+      "championsLeague": { "title": "Champions League", "subtitle": "Yevropaning eng nufuzli musobaqasi" },
+      "serieA": { "title": "Serie A", "subtitle": "Italiya futbolining jo‘shqini" },
+      "bundesliga": { "title": "Bundesliga", "subtitle": "Tez va jasur" },
+      "ligue1": { "title": "Ligue 1", "subtitle": "Yosh yulduzlar porlaydi" },
+      "saudiPro": { "title": "Saudi Pro League", "subtitle": "Futbolning yangi davri" },
+      "europaLeague": { "title": "Europa League", "subtitle": "Shon-sharaf sari yo‘l" }
+    }
   }
 }

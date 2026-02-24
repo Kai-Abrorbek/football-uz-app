@@ -6,8 +6,11 @@ import { Colors } from "../../constants/colors";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
+import { useTranslation } from "react-i18next";
 
 export default function PredictionSection() {
+  const { t } = useTranslation();
+
   const { data: predictions } = useQuery<any[]>({
     queryKey: ["predictions", "latest"],
     queryFn: async () => {
@@ -16,6 +19,7 @@ export default function PredictionSection() {
     },
     staleTime: 1000 * 60 * 10,
   });
+
   if (!predictions || predictions.length === 0) return null;
 
   return (
@@ -24,10 +28,10 @@ export default function PredictionSection() {
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <Text style={styles.aiIcon}>🤖</Text>
-          <Text style={styles.title}>AI Predictions</Text>
+          <Text style={styles.title}>{t("predictionsSection.title")}</Text>
         </View>
         <TouchableOpacity style={styles.moreBtn}>
-          <Text style={styles.moreText}>See all</Text>
+          <Text style={styles.moreText}>{t("predictionsSection.seeAll")}</Text>
           <Ionicons name="chevron-forward" size={14} color={Colors.primary} />
         </TouchableOpacity>
       </View>
@@ -101,7 +105,7 @@ export default function PredictionSection() {
           {/* 신뢰도 */}
           <View style={styles.confidenceRow}>
             <Text style={styles.confidenceText}>
-              Confidence: {pred.confidence}%
+              {t("predictionsSection.confidence", { value: pred.confidence })}
             </Text>
             <View style={styles.confidenceBar}>
               <View

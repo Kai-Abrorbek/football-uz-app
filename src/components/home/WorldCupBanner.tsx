@@ -1,14 +1,11 @@
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-} from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 export default function WorldCupBanner() {
+  const { t } = useTranslation();
+
   return (
     <TouchableOpacity
       style={styles.container}
@@ -19,10 +16,10 @@ export default function WorldCupBanner() {
         {/* 왼쪽 */}
         <View style={styles.left}>
           <Text style={styles.badge}>2026</Text>
-          <Text style={styles.title}>FIFA World Cup</Text>
-          <Text style={styles.subtitle}>USA · Canada · Mexico</Text>
+          <Text style={styles.title}>{t("worldcup.banner.title")}</Text>
+          <Text style={styles.subtitle}>{t("worldcup.banner.location")}</Text>
           <View style={styles.uzBadge}>
-            <Text style={styles.uzText}>🇺🇿 Uzbekistan</Text>
+            <Text style={styles.uzText}>{t("worldcup.banner.teamBadge")}</Text>
           </View>
         </View>
 
@@ -37,7 +34,6 @@ export default function WorldCupBanner() {
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
