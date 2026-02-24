@@ -1,0 +1,51 @@
+{
+  "common": {
+    "home": "Home",
+    "standings": "Standings",
+    "leagues": "Leagues",
+    "news": "News",
+    "chat": "AI Chatbot",
+    "profile": "Profile",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register"
+  },
+  "profile": {
+    "editProfile": "Edit Profile",
+    "notifications": "Notifications",
+    "language": "Language Settings",
+    "theme": "Theme Settings",
+    "help": "Help",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "version": "Version"
+  },
+  "notifications": {
+    "matchStart": "Match Start",
+    "goals": "Goals",
+    "matchEnd": "Match End",
+    "news": "News",
+    "predictions": "AI Predictions"
+  },
+  "language": {
+    "title": "Language Settings",
+    "description": "Choose your app language"
+  },
+  "theme": {
+    "title": "Theme Settings",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "help": {
+    "title": "Help & Support",
+    "faq": "Frequently Asked Questions",
+    "contact": "Contact Us"
+  }
+}

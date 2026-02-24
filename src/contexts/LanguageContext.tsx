@@ -6,6 +6,7 @@ import {
   ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import i18n from "../i18n";
 
 type Language = "en" | "uz" | "ru";
 
@@ -19,7 +20,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>("uz");
 
   useEffect(() => {
     loadLanguage();
@@ -28,7 +29,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const loadLanguage = async () => {
     try {
       const saved = await AsyncStorage.getItem("app_language");
-      if (saved) setLanguageState(saved as Language);
+      if (saved) {
+        setLanguageState(saved as Language);
+        await i18n.changeLanguage(saved);
+      }
     } catch (error) {
       console.error("언어 로드 실패:", error);
     }
@@ -37,6 +41,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLanguage = async (lang: Language) => {
     try {
       await AsyncStorage.setItem("app_language", lang);
+      await i18n.changeLanguage(lang);
       setLanguageState(lang);
     } catch (error) {
       console.error("언어 저장 실패:", error);

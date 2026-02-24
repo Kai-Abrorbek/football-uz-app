@@ -1,0 +1,51 @@
+{
+  "common": {
+    "home": "Bosh sahifa",
+    "standings": "Jadval",
+    "leagues": "Ligalar",
+    "news": "Yangiliklar",
+    "chat": "AI chatbot",
+    "profile": "Profil",
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "logout": "Chiqish",
+    "login": "Kirish",
+    "register": "Ro'yxatdan o'tish"
+  },
+  "profile": {
+    "editProfile": "Profilni tahrirlash",
+    "notifications": "Bildirishnomalar",
+    "language": "Til sozlamalari",
+    "theme": "Mavzu sozlamalari",
+    "help": "Yordam",
+    "privacy": "Maxfiylik siyosati",
+    "terms": "Foydalanish shartlari",
+    "version": "Versiya"
+  },
+  "notifications": {
+    "matchStart": "O'yin boshlanishi",
+    "goals": "Gollar",
+    "matchEnd": "O'yin tugashi",
+    "news": "Yangiliklar",
+    "predictions": "AI taxminlar"
+  },
+  "language": {
+    "title": "Til sozlamalari",
+    "description": "Ilova tilini tanlang"
+  },
+  "theme": {
+    "title": "Mavzu sozlamalari",
+    "light": "Yorug'",
+    "dark": "Qorong'i",
+    "system": "Tizim sozlamalari"
+  },
+  "help": {
+    "title": "Yordam va aloqa",
+    "faq": "Tez-tez so'raladigan savollar",
+    "contact": "Biz bilan bog'lanish"
+  }
+}

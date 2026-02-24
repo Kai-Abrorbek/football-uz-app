@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { Colors } from "../src/constants/colors";
 import { LanguageProvider } from "../src/contexts/LanguageContext";
 import { AuthProvider, useAuth } from "../src/contexts/AuthContext";
+import "../src/i18n";
 
 const queryClient = new QueryClient();
 
