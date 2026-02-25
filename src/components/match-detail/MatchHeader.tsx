@@ -8,9 +8,11 @@ import {
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../constants/colors";
+import { Colors, getColors } from "../../constants/colors";
 import { Match } from "../../types";
 import { useState } from "react";
+import { useColors } from "../../hooks/useColors";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   match: Match;
@@ -18,6 +20,9 @@ interface Props {
 
 export default function MatchHeader({ match }: Props) {
   const [isFollowing, setIsFollowing] = useState(false);
+  const { t, i18n } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   const isLive = ["1H", "HT", "2H", "ET", "BT", "P"].includes(
     match.status.short,
@@ -27,28 +32,33 @@ export default function MatchHeader({ match }: Props) {
   const isHalfTime = match.status.short === "HT";
 
   const getStatusText = () => {
-    if (isHalfTime) return "하프타임";
+    if (isHalfTime) return t("matchHeader.halfTime");
     if (isLive) {
       const elapsed = match.status.elapsed || 0;
       return `${elapsed}'`;
     }
-    if (isFinished) return "종료";
+    if (isFinished) return t("matchHeader.finished");
 
-    // 예정 경기 - 날짜 표시
     const date = new Date(match.date);
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
-    if (date.toDateString() === today.toDateString()) return "오늘";
-    if (date.toDateString() === tomorrow.toDateString()) return "내일";
-    return date.toLocaleDateString("ko-KR", { month: "long", day: "numeric" });
+    if (date.toDateString() === today.toDateString())
+      return t("matchHeader.today");
+    if (date.toDateString() === tomorrow.toDateString())
+      return t("matchHeader.tomorrow");
+
+    return date.toLocaleDateString(i18n.language, {
+      month: "long",
+      day: "numeric",
+    });
   };
 
   const getTimeText = () => {
     if (isLive || isFinished) return null;
     const date = new Date(match.date);
-    return date.toLocaleTimeString("ko-KR", {
+    return date.toLocaleTimeString(i18n.language, {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -71,7 +81,7 @@ export default function MatchHeader({ match }: Props) {
             else router.replace("/");
           }}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          {/* <Ionicons name="arrow-back" size={24} color={Colors.text} /> */}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.leagueBtn}
@@ -110,7 +120,7 @@ export default function MatchHeader({ match }: Props) {
               isFollowing && styles.followButtonTextActive,
             ]}
           >
-            {isFollowing ? "팔로잉" : "팔로우"}
+            {isFollowing ? t("matchHeader.following") : t("matchHeader.follow")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -195,7 +205,6 @@ export default function MatchHeader({ match }: Props) {
         </Pressable>
       </View>
 
-      {/* 이벤트 (골, 카드) */}
       {/* 이벤트 (골, 레드카드만) */}
       {match.events && match.events.length > 0 && (
         <View style={styles.eventsContainer}>
@@ -255,202 +264,206 @@ export default function MatchHeader({ match }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.surface,
-    paddingBottom: 12,
-  },
-  liveIndicator: {
-    position: "absolute",
-    top: 55,
-    left: 180,
-    backgroundColor: Colors.live,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    zIndex: 10,
-  },
-  liveIndicatorText: {
-    fontSize: 11,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  topRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  leagueBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  leagueLogo: {
-    width: 20,
-    height: 20,
-  },
-  leagueName: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-  },
-  followBtn: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  followText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#ffffff",
-  },
-  scoreArea: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  teamContainer: {
-    flex: 1,
-    alignItems: "center",
-    gap: 8,
-  },
-  teamLogo: {
-    width: 64,
-    height: 64,
-  },
-  teamName: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-    textAlign: "center",
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: "center",
-    gap: 6,
-  },
-  scoreRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  score: {
-    fontSize: 36,
-    fontWeight: "800",
-    color: Colors.text,
-  },
-  scoreDash: {
-    fontSize: 36,
-    fontWeight: "300",
-    color: Colors.textSecondary,
-  },
-  statusBadge: {
-    backgroundColor: Colors.background,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  statusBadgeLive: {
-    backgroundColor: "#fff0f0",
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    fontWeight: "600",
-  },
-  statusBadgeTextLive: {
-    color: Colors.live,
-  },
-  statusText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-  },
-  timeText: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  round: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-  eventText: {
-    fontSize: 13,
-    color: Colors.text,
-  },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: Colors.surface,
+      paddingBottom: 12,
+    },
+    liveIndicator: {
+      position: "absolute",
+      top: 55,
+      left: 180,
+      backgroundColor: Colors.live,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 6,
+      zIndex: 10,
+    },
+    liveIndicatorText: {
+      fontSize: 11,
+      fontWeight: "800",
+      color: "#ffffff",
+    },
+    topRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    leagueBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    leagueLogo: {
+      width: 23,
+      height: 23,
+      backgroundColor: "#f8f8f8",
+    },
+    leagueName: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+    },
+    followBtn: {
+      backgroundColor: Colors.primary,
+      paddingHorizontal: 16,
+      paddingVertical: 6,
+      borderRadius: 20,
+    },
+    followText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: "#ffffff",
+    },
+    scoreArea: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    teamContainer: {
+      flex: 1,
+      alignItems: "center",
+      gap: 8,
+    },
+    teamLogo: {
+      width: 64,
+      height: 64,
+    },
+    teamName: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+      textAlign: "center",
+    },
+    centerContainer: {
+      flex: 1,
+      alignItems: "center",
+      gap: 6,
+    },
+    scoreRow: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    score: {
+      fontSize: 36,
+      fontWeight: "800",
+      color: Colors.text,
+    },
+    scoreDash: {
+      fontSize: 36,
+      fontWeight: "300",
+      color: Colors.textSecondary,
+    },
+    statusBadge: {
+      backgroundColor: Colors.background,
+      paddingHorizontal: 10,
+      paddingVertical: 3,
+      borderRadius: 10,
+    },
+    statusBadgeLive: {
+      backgroundColor: "#fff0f0",
+    },
+    statusBadgeText: {
+      fontSize: 12,
+      color: Colors.textSecondary,
+      fontWeight: "600",
+    },
+    statusBadgeTextLive: {
+      color: Colors.live,
+    },
+    statusText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.textSecondary,
+    },
+    timeText: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    round: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+      marginTop: 2,
+    },
+    eventText: {
+      fontSize: 13,
+      color: Colors.text,
+    },
 
-  eventsContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    gap: 8,
-  },
-  eventRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  eventLeft: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-  },
-  eventRight: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-  },
-  eventIcon: {
-    width: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  eventIconText: {
-    fontSize: 16,
-  },
-  eventPlayerName: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: Colors.text,
-  },
-  eventTime: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: Colors.primary,
-  },
-  followButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    backgroundColor: Colors.surface,
-  },
-  followButtonActive: {
-    backgroundColor: Colors.primary,
-  },
-  followButtonText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.primary,
-  },
-  followButtonTextActive: {
-    color: "#ffffff",
-  },
-});
+    eventsContainer: {
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 8,
+      borderTopWidth: 1,
+      borderTopColor: Colors.border,
+      gap: 8,
+    },
+    eventRow: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    eventLeft: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+    },
+    eventRight: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+    },
+    eventIcon: {
+      width: 40,
+      alignItems: "center",
+      justifyContent: "center",
+      color: "white",
+    },
+    eventIconText: {
+      fontSize: 16,
+      color: Colors.text,
+    },
+    eventPlayerName: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: Colors.text,
+    },
+    eventTime: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: Colors.primary,
+    },
+    followButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: Colors.primary,
+      backgroundColor: Colors.surface,
+    },
+    followButtonActive: {
+      backgroundColor: Colors.primary,
+    },
+    followButtonText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: Colors.primary,
+    },
+    followButtonTextActive: {
+      color: "#ffffff",
+    },
+  });

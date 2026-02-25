@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
-import { Colors, getColors } from "../../src/constants/colors";
+import { getColors } from "../../src/constants/colors";
 import LeagueTabs from "../../src/components/league-detail/LeagueTabs";
 import LeagueOverviewTab from "../../src/components/league-detail/tabs/LeagueOverviewTab";
 import LeagueStatsTab from "../../src/components/league-detail/tabs/LeagueStatsTab";

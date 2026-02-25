@@ -6,7 +6,12 @@ import { useQuery } from "@tanstack/react-query";
 import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
 import { Colors } from "../../src/constants/colors";
-import { Match } from "../../src/types";
+import {
+  FINISHED_TABS,
+  LIVE_TABS,
+  Match,
+  UPCOMING_TABS,
+} from "../../src/types";
 import MatchHeader from "../../src/components/match-detail/MatchHeader";
 import MatchTabs from "../../src/components/match-detail/MatchTabs";
 import OverviewTab from "../../src/components/match-detail/tabs/OverviewTab";
@@ -15,34 +20,6 @@ import StatsTab from "../../src/components/match-detail/tabs/StatsTab";
 import H2HTab from "../../src/components/match-detail/tabs/H2HTab";
 import LiveTab from "../../src/components/match-detail/tabs/HighlightsTab";
 import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
-
-// 탭 설정 변경
-const UPCOMING_TABS = [
-  { key: "overview", label: "개요" },
-  { key: "lineup", label: "라인업" },
-  { key: "stats", label: "기록" },
-  { key: "standings", label: "순위" },
-  { key: "h2h", label: "경기 더보기" },
-];
-
-const LIVE_TABS = [
-  { key: "overview", label: "개요" },
-  { key: "highlights", label: "경기 하이라이트" },
-  { key: "lineup", label: "라인업" },
-  { key: "stats", label: "기록" },
-  { key: "standings", label: "순위" },
-  { key: "h2h", label: "경기 더보기" },
-];
-
-const FINISHED_TABS = [
-  { key: "overview", label: "개요" },
-  { key: "highlights", label: "경기 하이라이트" },
-  { key: "lineup", label: "라인업" },
-  { key: "stats", label: "기록" },
-  { key: "standings", label: "순위" },
-  // { key: "rating", label: "선수 평가" },
-  { key: "h2h", label: "경기 더보기" },
-];
 
 export default function MatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

@@ -30,6 +30,7 @@ export default function LeagueStatsTab({ leagueId }: Props) {
   const { t } = useTranslation();
   const Colors = useColors();
   const styles = getStyles(Colors);
+
   // 득점 순위
   const { data: topScorers } = useQuery<any>({
     queryKey: ["top-scorers", leagueId],
@@ -44,16 +45,23 @@ export default function LeagueStatsTab({ leagueId }: Props) {
     enabled: activeStatTab === "assists",
   });
 
-  // 카드 순위 (더미)
-  const cardData = [
-    { rank: 1, name: "선수 A", team: "팀 A", count: 10 },
-    { rank: 2, name: "선수 B", team: "팀 B", count: 8 },
-  ];
+  // 경고장 카드 순위
+  const { data: topYellowCards } = useQuery<any>({
+    queryKey: ["top-yellowcards", leagueId],
+    queryFn: () => api.get(ENDPOINTS.topYellowCards(leagueId)),
+    enabled: activeStatTab === "yellowCards",
+  });
+
+  // 퇴장  카드 순위
+  const { data: topRedCards } = useQuery<any>({
+    queryKey: ["top-redcards", leagueId],
+    queryFn: () => api.get(ENDPOINTS.topRedCards(leagueId)),
+    enabled: activeStatTab === "redCards",
+  });
 
   const renderStatList = () => {
     let data: any[] = [];
     let statLabel = "";
-    let statKey = t(`leagueStats.tabs.${activeStatTab}`);
     switch (activeStatTab) {
       case "goals":
         data = topScorers || [];
@@ -64,11 +72,11 @@ export default function LeagueStatsTab({ leagueId }: Props) {
         statLabel = t("leagueStats.tabs.assists");
         break;
       case "yellowCards":
-        data = cardData;
+        data = topYellowCards;
         statLabel = t("leagueStats.tabs.yellowCards");
         break;
       case "redCards":
-        data = cardData;
+        data = topRedCards;
         statLabel = t("leagueStats.tabs.redCards");
         break;
     }
@@ -92,46 +100,58 @@ export default function LeagueStatsTab({ leagueId }: Props) {
         </View>
 
         {/* 선수 목록 */}
-        {data.map((item, index) => (
-          <View key={index} style={styles.statRow}>
-            <View style={styles.rankContainer}>
-              <Text style={styles.rank}>{index + 1}</Text>
-            </View>
+        {data.map((item, index) => {
+          return (
+            <View key={index} style={styles.statRow}>
+              <View style={styles.rankContainer}>
+                <Text style={styles.rank}>{index + 1}</Text>
+              </View>
 
-            <View style={styles.playerPhoto}>
-              <Text style={styles.playerPhotoText}>
-                {item.player?.name?.charAt(0) || item.name?.charAt(0)}
-              </Text>
-            </View>
-
-            <View style={styles.playerInfo}>
-              <Text style={styles.playerName}>
-                {item.player?.name || item.name}
-              </Text>
-              <View style={styles.teamRow}>
-                {item.team?.logo && (
+              <View style={styles.playerPhoto}>
+                {item?.photo ? (
                   <Image
-                    source={item.team.logo}
-                    style={styles.teamLogo}
-                    contentFit="contain"
+                    source={item?.photo}
+                    style={styles.playerPhoto}
+                    contentFit="cover"
                   />
+                ) : (
+                  <Text style={styles.playerPhotoText}>
+                    {item.player?.name?.charAt(0) || item.name?.charAt(0)}
+                  </Text>
                 )}
-                <Text style={styles.teamName}>
-                  {item.team?.name || item.team}
+              </View>
+              <View style={styles.playerInfo}>
+                <Text style={styles.playerName}>
+                  {item.player?.name || item.name}
+                </Text>
+                <View style={styles.teamRow}>
+                  {item.team?.logo && (
+                    <Image
+                      source={item.team.logo}
+                      style={styles.teamLogo}
+                      contentFit="contain"
+                    />
+                  )}
+                  <Text style={styles.teamName}>
+                    {item.team?.name || item.team}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.statValue}>
+                <Text style={styles.statNumber}>
+                  {activeStatTab === "goals"
+                    ? item?.statistics[0].goals.total
+                    : activeStatTab === "assists"
+                      ? item?.statistics[0].goals.assists
+                      : activeStatTab === "yellowCards"
+                        ? item?.statistics[0].cards.yellow
+                        : item?.statistics[0].cards.red}
                 </Text>
               </View>
             </View>
-
-            <View style={styles.statValue}>
-              <Text style={styles.statNumber}>
-                {item.statistics?.goals ||
-                  item.statistics?.assists ||
-                  item.count ||
-                  0}
-              </Text>
-            </View>
-          </View>
-        ))}
+          );
+        })}
       </View>
     );
   };

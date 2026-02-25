@@ -4,6 +4,7 @@ import { getLocales } from "expo-localization";
 import uz from "./locales/uz.json";
 import ru from "./locales/ru.json";
 import en from "./locales/en.json";
+import kr from "./locales/kr.json";
 
 i18n.use(initReactI18next).init({
   compatibilityJSON: "v4",
@@ -11,6 +12,7 @@ i18n.use(initReactI18next).init({
     uz: { translation: uz },
     ru: { translation: ru },
     en: { translation: en },
+    kr: { translation: kr },
   },
   lng: getLocales()[0]?.languageCode || "uz",
   fallbackLng: "uz",

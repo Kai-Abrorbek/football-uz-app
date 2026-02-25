@@ -221,5 +221,128 @@
     "goHome": "На главную",
     "follow": "Подписаться",
     "following": "Вы подписаны"
+  },
+
+  "matchCard": {
+    "halfTime": "Перерыв",
+    "finished": "Матч завершён"
+  },
+
+  "matchHeader": {
+    "halfTime": "Перерыв",
+    "finished": "Матч завершён",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "follow": "Подписаться",
+    "following": "Вы подписаны"
+  },
+
+  "matchTabs": {
+    "overview": "Обзор",
+    "lineup": "Состав",
+    "stats": "Статистика",
+    "standings": "Таблица",
+    "h2h": "Другие матчи",
+    "highlights": "Хайлайты"
+  },
+  "h2h": {
+    "empty": "Нет очных матчей",
+    "fulltime": "Финальный свисток"
+  },
+
+  "highlights": {
+    "goal": "Гол",
+    "yellowCard": "Жёлтая карточка",
+    "redCard": "Красная карточка",
+    "substitution": "Замена",
+    "subIn": "Вышел на поле",
+    "subOut": "Покинул поле",
+    "empty": "Событий пока нет"
+  },
+
+  "lineup": {
+    "notAvailable": "Tarkib o‘yin boshlanishidan 1 soat oldin e’lon qilinadi",
+    "awayMissing": "Mehmon tarkibi yo‘q",
+    "homeMissing": "Mezbon tarkibi yo‘q",
+    "substitutes": "Zaxira o‘yinchilar",
+    "unknown": "Noma’lum"
+  },
+
+   "matchOverview": {
+    "winProbability": "Вероятность победы",
+    "winProbabilitySubtitle": "Шансы по командам",
+    "draw": "Ничья",
+    "standings": "Таблица",
+    "versus": "{{home}} vs {{away}}",
+    "table": {
+      "team": "Команда",
+      "played": "Игр",
+      "goalDiff": "Разн.",
+      "points": "Очки"
+    },
+    "allStandings": "Вся таблица →",
+    "injuriesSuspensions": "Травмы и дисквалификации",
+    "injuriesSubtitle": "Статус игроков",
+    "recentForm": "Форма",
+    "recentFormSubtitle": "Последние результаты",
+    "last5": "Последние 5",
+    "noData": "Нет данных",
+    "h2h": "Очные встречи",
+    "h2hSubtitle": "Предыдущие результаты",
+    "h2hEmpty": "Нет очных матчей",
+    "wins": "{{count}} побед"
+  },
+  "injuries": {
+    "empty": "Нет травмированных/дисквалифицированных",
+    "injury": "Травма",
+    "suspension": "Дисквалификация",
+    "midfielder": "Полузащитник",
+    "forward": "Нападающий"
+  },
+
+  "standingsTab": {
+    "empty": "Нет данных по таблице",
+    "club": "Клуб",
+    "played": "И",
+    "win": "В",
+    "draw": "Н",
+    "lose": "П",
+    "points": "Очки",
+    "goalsFor": "ЗМ",
+    "goalsAgainst": "ПМ",
+    "goalDiff": "РМ",
+    "last5": "Последние 5"
+  },
+
+  "leagueOverview": {
+    "fulltime": "Матч окончен",
+    "liveWithMinute": "Live {{minute}}'",
+    "vs": "vs",
+    "buyTickets": "Купить билеты",
+    "sectionTitle": "Матчи",
+    "seeMore": "Показать все матчи",
+    "modalTitle": "Матчи {{league}}"
+  },
+  "matchStats": {
+    "empty": "Статистика матча недоступна",
+    "vs": "vs",
+    "categories": {
+      "main": "Основное",
+      "attack": "Атака",
+      "defense": "Оборона",
+      "foul": "Фолы"
+    },
+    "stats": {
+      "possession": "Владение мячом",
+      "shots": "Удары",
+      "shotsOnTarget": "Удары в створ",
+      "corners": "Угловые",
+      "fouls": "Фолы",
+      "yellowCards": "Жёлтые карточки",
+      "redCards": "Красные карточки",
+      "offsides": "Офсайды",
+      "passes": "Пасы",
+      "passAccuracy": "Точность пасов"
+    }
   }
 }

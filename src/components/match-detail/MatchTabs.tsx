@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { Colors } from "../../constants/colors";
+import { getColors } from "../../constants/colors";
+import { useColors } from "../../hooks/useColors";
+import { useTranslation } from "react-i18next";
 
 interface Tab {
   key: string;
-  label: string;
 }
 
 interface Props {
@@ -21,6 +22,9 @@ interface Props {
 
 export default function MatchTabs({ tabs, activeTab, onTabChange }: Props) {
   const scrollRef = useRef<ScrollView>(null);
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+  const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
@@ -43,7 +47,7 @@ export default function MatchTabs({ tabs, activeTab, onTabChange }: Props) {
                 activeTab === tab.key && styles.tabTextActive,
               ]}
             >
-              {tab.label}
+              {t(`matchTabs.${tab.key}`)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -52,36 +56,37 @@ export default function MatchTabs({ tabs, activeTab, onTabChange }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  content: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    gap: 6,
-  },
-  tab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: Colors.background,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  tabActive: {
-    backgroundColor: Colors.text,
-    borderColor: Colors.text,
-  },
-  tabText: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: Colors.textSecondary,
-  },
-  tabTextActive: {
-    color: "#ffffff",
-    fontWeight: "700",
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    content: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      gap: 6,
+    },
+    tab: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      backgroundColor: Colors.background,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    tabActive: {
+      backgroundColor: Colors.text,
+      borderColor: Colors.text,
+    },
+    tabText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: Colors.textSecondary,
+    },
+    tabTextActive: {
+      color: Colors.border,
+      fontWeight: "700",
+    },
+  });

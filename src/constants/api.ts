@@ -26,6 +26,10 @@ export const ENDPOINTS = {
   teamDetail: (id: number) => `/teams/${id}`,
   topScorers: (leagueId: number | string) => `/players/top-scorers/${leagueId}`,
   topAssists: (leagueId: number | string) => `/players/top-assists/${leagueId}`,
+  topYellowCards: (leagueId: number | string) =>
+    `/players/top-yellowcards/${leagueId}`,
+  topRedCards: (leagueId: number | string) =>
+    `/players/top-redcards/${leagueId}`,
   teamPlayers: (teamId: number | string) => `/players/team/${teamId}`,
   teamLeagues: (teamId: number | string) => `/teams/leagues/${teamId}`,
 

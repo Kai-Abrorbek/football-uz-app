@@ -7,15 +7,18 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../constants/colors";
+import { Colors, getColors } from "../../constants/colors";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
 import { Player } from "../../types";
 import { useTranslation } from "react-i18next";
+import { useColors } from "../../hooks/useColors";
 
 export default function UzbekPlayers() {
   const { t } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   const { data: players } = useQuery<Player[]>({
     queryKey: ["players", "uzbek"],
@@ -71,81 +74,82 @@ export default function UzbekPlayers() {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 8,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    marginBottom: 10,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  flag: {
-    fontSize: 16,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  moreBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 2,
-  },
-  moreText: {
-    fontSize: 13,
-    color: Colors.primary,
-  },
-  playerList: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  playerCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    padding: 12,
-    alignItems: "center",
-    width: 110,
-    gap: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  playerPhoto: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-  },
-  playerName: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: Colors.text,
-    textAlign: "center",
-  },
-  playerTeam: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    textAlign: "center",
-  },
-  positionBadge: {
-    backgroundColor: "#e8f0fe",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  positionText: {
-    fontSize: 10,
-    color: Colors.primary,
-    fontWeight: "600",
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      marginVertical: 8,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      marginBottom: 10,
+    },
+    titleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    flag: {
+      fontSize: 16,
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    moreBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 2,
+    },
+    moreText: {
+      fontSize: 13,
+      color: Colors.primary,
+    },
+    playerList: {
+      paddingHorizontal: 16,
+      gap: 12,
+    },
+    playerCard: {
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      padding: 12,
+      alignItems: "center",
+      width: 110,
+      gap: 6,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      elevation: 2,
+    },
+    playerPhoto: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+    },
+    playerName: {
+      fontSize: 12,
+      fontWeight: "700",
+      color: Colors.text,
+      textAlign: "center",
+    },
+    playerTeam: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+      textAlign: "center",
+    },
+    positionBadge: {
+      backgroundColor: "#e8f0fe",
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 8,
+    },
+    positionText: {
+      fontSize: 10,
+      color: Colors.primary,
+      fontWeight: "600",
+    },
+  });

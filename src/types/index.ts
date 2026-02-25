@@ -253,3 +253,29 @@ export interface SocialLoginDto {
   token: string;
   data?: any;
 }
+
+export const UPCOMING_TABS = [
+  { key: "overview" },
+  { key: "lineup" },
+  { key: "stats" },
+  { key: "standings" },
+  { key: "h2h" },
+];
+
+export const LIVE_TABS = [
+  { key: "overview" },
+  { key: "highlights" },
+  { key: "lineup" },
+  { key: "stats" },
+  { key: "standings" },
+  { key: "h2h" },
+];
+
+export const FINISHED_TABS = [
+  { key: "overview" },
+  { key: "highlights" },
+  { key: "lineup" },
+  { key: "stats" },
+  { key: "standings" },
+  { key: "h2h" },
+];

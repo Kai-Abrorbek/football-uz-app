@@ -16,12 +16,13 @@ import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
 import { Colors } from "../../src/constants/colors";
 
-type Language = "en" | "uz" | "ru";
+type Language = "en" | "uz" | "ru" | "kr";
 
 const LANGUAGES = [
   { code: "uz" as Language, name: "O'zbekcha", flag: "🇺🇿" },
   { code: "ru" as Language, name: "Русский", flag: "🇷🇺" },
   { code: "en" as Language, name: "English", flag: "🇬🇧" },
+  { code: "kr" as Language, name: "한국어", flag: "KR" },
 ];
 
 export default function LanguageScreen() {

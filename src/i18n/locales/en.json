@@ -230,6 +230,130 @@
     "goHome": "Go to home",
     "follow": "Follow",
     "following": "Following"
+  },
+
+  "matchCard": {
+    "halfTime": "Half-time",
+    "finished": "FT"
+  },
+
+  "matchHeader": {
+    "halfTime": "Half-time",
+    "finished": "FT",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "follow": "Follow",
+    "following": "Following"
+  },
+
+  "matchTabs": {
+    "overview": "Overview",
+    "lineup": "Lineup",
+    "stats": "Stats",
+    "standings": "Standings",
+    "h2h": "More matches",
+    "highlights": "Highlights"
+  },
+  "h2h": {
+    "empty": "No head-to-head matches",
+    "fulltime": "Full Time"
+  },
+
+  "highlights": {
+    "goal": "Goal",
+    "yellowCard": "Yellow card",
+    "redCard": "Red card",
+    "substitution": "Substitution",
+    "subIn": "Subbed on",
+    "subOut": "Subbed off",
+    "empty": "No events yet"
+  },
+
+  "lineup": {
+    "notAvailable": "Lineups are available 1 hour before kickoff",
+    "awayMissing": "No away lineup",
+    "homeMissing": "No home lineup",
+    "substitutes": "Substitutes",
+    "unknown": "Unknown"
+  },
+
+  "matchOverview": {
+    "winProbability": "Win probability",
+    "winProbabilitySubtitle": "Chance to win by team",
+    "draw": "Draw",
+    "standings": "Standings",
+    "versus": "{{home}} vs {{away}}",
+    "table": {
+      "team": "Team",
+      "played": "P",
+      "goalDiff": "GD",
+      "points": "Pts"
+    },
+    "allStandings": "Full standings →",
+    "injuriesSuspensions": "Injuries & suspensions",
+    "injuriesSubtitle": "Player availability updates",
+    "recentForm": "Recent form",
+    "recentFormSubtitle": "Latest results by team",
+    "last5": "Last 5",
+    "noData": "No data",
+    "h2h": "Head-to-head",
+    "h2hSubtitle": "Previous results",
+    "h2hEmpty": "No head-to-head matches",
+    "wins": "{{count}}W"
+  },
+  "injuries": {
+    "empty": "No injured/suspended players",
+    "injury": "Injury",
+    "suspension": "Suspension",
+    "midfielder": "Midfielder",
+    "forward": "Forward"
+  },
+
+  "standingsTab": {
+    "empty": "No standings available",
+    "club": "Club",
+    "played": "P",
+    "win": "W",
+    "draw": "D",
+    "lose": "L",
+    "points": "Pts",
+    "goalsFor": "GF",
+    "goalsAgainst": "GA",
+    "goalDiff": "GD",
+    "last5": "Last 5"
+  },
+
+  "leagueOverview": {
+    "fulltime": "Full-time",
+    "liveWithMinute": "Live {{minute}}'",
+    "vs": "vs",
+    "buyTickets": "Buy tickets",
+    "sectionTitle": "Matches",
+    "seeMore": "See more matches",
+    "modalTitle": "{{league}} Matches"
+  },
+
+  "matchStats": {
+    "empty": "No match statistics available",
+    "vs": "vs",
+    "categories": {
+      "main": "Main",
+      "attack": "Attack",
+      "defense": "Defense",
+      "foul": "Fouls"
+    },
+    "stats": {
+      "possession": "Possession",
+      "shots": "Shots",
+      "shotsOnTarget": "Shots on target",
+      "corners": "Corners",
+      "fouls": "Fouls",
+      "yellowCards": "Yellow cards",
+      "redCards": "Red cards",
+      "offsides": "Offsides",
+      "passes": "Passes",
+      "passAccuracy": "Pass accuracy"
+    }
   }
   
 }

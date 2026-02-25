@@ -219,7 +219,129 @@
   "leagueDetail": {
     "error404": "Jadval ma’lumoti yo‘q (404)",
     "goHome": "Bosh sahifaga",
-    "follow": "Kuzatish",
-    "following": "Kuzatilmoqda"
+    "follow": "Follow",
+    "following": "Following"
+  },
+
+  "matchCard": {
+    "halfTime": "Tanaffus",
+    "finished": "Tugadi"
+  },
+
+  "matchHeader": {
+    "halfTime": "Tanaffus",
+    "finished": "Tugadi",
+    "today": "Bugun",
+    "tomorrow": "Ertaga",
+    "follow": "Follow",
+    "following": "Following"
+  },
+
+  "matchTabs": {
+    "overview": "Umumiy",
+    "lineup": "Tarkib",
+    "stats": "Statistika",
+    "standings": "Jadval",
+    "h2h": "Boshqa o‘yinlar",
+    "highlights": "Eng yaxshi lahzalar"
+  },
+  "h2h": {
+    "empty": "O‘zaro o‘yinlar yo‘q",
+    "fulltime": "To‘liq vaqt"
+  },
+
+  "highlights": {
+    "goal": "Gol",
+    "yellowCard": "Sariq karta",
+    "redCard": "Qizil karta",
+    "substitution": "Almashtirish",
+    "subIn": "Maydonga kirdi",
+    "subOut": "Maydondan chiqdi",
+    "empty": "Hali voqealar yo‘q"
+  },
+
+  "lineup": {
+    "notAvailable": "Tarkib o‘yin boshlanishidan 1 soat oldin e’lon qilinadi",
+    "awayMissing": "Mehmon tarkibi yo‘q",
+    "homeMissing": "Mezbon tarkibi yo‘q",
+    "substitutes": "Zaxira o‘yinchilar",
+    "unknown": "Noma’lum"
+  },
+  "matchOverview": {
+    "winProbability": "G‘alaba ehtimoli",
+    "winProbabilitySubtitle": "Jamoalar bo‘yicha ehtimol",
+    "draw": "Durang",
+    "standings": "Jadval",
+    "versus": "{{home}} vs {{away}}",
+    "table": {
+      "team": "Jamoa",
+      "played": "O‘yin",
+      "goalDiff": "Farq",
+      "points": "Ochko"
+    },
+    "allStandings": "To‘liq jadval →",
+    "injuriesSuspensions": "Jarohat va diskvalifikatsiya",
+    "injuriesSubtitle": "O‘yinchilar holati",
+    "recentForm": "So‘nggi natijalar",
+    "recentFormSubtitle": "Jamoalar bo‘yicha so‘nggi o‘yinlar",
+    "last5": "So‘nggi 5",
+    "noData": "Ma’lumot yo‘q",
+    "h2h": "O‘zaro o‘yinlar",
+    "h2hSubtitle": "Oldingi natijalar",
+    "h2hEmpty": "O‘zaro o‘yinlar yo‘q",
+    "wins": "{{count}} g‘alaba"
+  },
+  "injuries": {
+    "empty": "Jarohatlangan/diskvalifikatsiya qilingan o‘yinchi yo‘q",
+    "injury": "Jarohat",
+    "suspension": "Diskvalifikatsiya",
+    "midfielder": "Yarim himoyachi",
+    "forward": "Hujumchi"
+  },
+
+  "standingsTab": {
+    "empty": "Jadval maʼlumoti yoʻq",
+    "club": "Klub",
+    "played": "O‘yin",
+    "win": "G",
+    "draw": "D",
+    "lose": "M",
+    "points": "Ochko",
+    "goalsFor": "GF",
+    "goalsAgainst": "GA",
+    "goalDiff": "GD",
+    "last5": "So‘nggi 5"
+  },
+
+  "leagueOverview": {
+    "fulltime": "O‘yin yakunlandi",
+    "liveWithMinute": "Jonli {{minute}}'",
+    "vs": "vs",
+    "buyTickets": "Chipta sotib olish",
+    "sectionTitle": "O‘yinlar",
+    "seeMore": "Barcha o‘yinlarni ko‘rish",
+    "modalTitle": "{{league}} o‘yinlari"
+  },
+  "matchStats": {
+    "empty": "O‘yin statistikasi mavjud emas",
+    "vs": "vs",
+    "categories": {
+      "main": "Asosiy",
+      "attack": "Hujum",
+      "defense": "Himoya",
+      "foul": "Qoidabuzarlik"
+    },
+    "stats": {
+      "possession": "To‘p nazorati",
+      "shots": "Zarbalar",
+      "shotsOnTarget": "Darvoza tomon zarbalar",
+      "corners": "Burchak zarbalari",
+      "fouls": "Qoidabuzarliklar",
+      "yellowCards": "Sariq kartochkalar",
+      "redCards": "Qizil kartochkalar",
+      "offsides": "Ofsaydlar",
+      "passes": "Paslar",
+      "passAccuracy": "Pas aniqligi"
+    }
   }
 }

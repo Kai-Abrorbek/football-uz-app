@@ -2,9 +2,13 @@ import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { getColors } from "../../constants/colors";
+import { useColors } from "../../hooks/useColors";
 
 export default function WorldCupBanner() {
   const { t } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   return (
     <TouchableOpacity
@@ -34,63 +38,64 @@ export default function WorldCupBanner() {
     </TouchableOpacity>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 16,
-    marginVertical: 12,
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-  background: {
-    backgroundColor: "#1a3c6e",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 16,
-  },
-  left: {
-    flex: 1,
-    gap: 4,
-  },
-  badge: {
-    fontSize: 11,
-    color: "#ffd700",
-    fontWeight: "700",
-    letterSpacing: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  subtitle: {
-    fontSize: 12,
-    color: "#a0b4cc",
-  },
-  uzBadge: {
-    marginTop: 6,
-    alignSelf: "flex-start",
-    backgroundColor: "#2d5a8e",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  uzText: {
-    fontSize: 12,
-    color: "#ffffff",
-    fontWeight: "600",
-  },
-  right: {
-    alignItems: "center",
-    gap: 8,
-  },
-  emoji: {
-    fontSize: 40,
-  },
-  arrow: {
-    backgroundColor: "rgba(255,255,255,0.2)",
-    borderRadius: 12,
-    padding: 4,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      marginHorizontal: 16,
+      marginVertical: 12,
+      borderRadius: 16,
+      overflow: "hidden",
+    },
+    background: {
+      backgroundColor: "#1a3c6e",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: 16,
+      borderRadius: 16,
+    },
+    left: {
+      flex: 1,
+      gap: 4,
+    },
+    badge: {
+      fontSize: 11,
+      color: "#ffd700",
+      fontWeight: "700",
+      letterSpacing: 1,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "800",
+      color: "#ffffff",
+    },
+    subtitle: {
+      fontSize: 12,
+      color: "#a0b4cc",
+    },
+    uzBadge: {
+      marginTop: 6,
+      alignSelf: "flex-start",
+      backgroundColor: "#2d5a8e",
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 20,
+    },
+    uzText: {
+      fontSize: 12,
+      color: "#ffffff",
+      fontWeight: "600",
+    },
+    right: {
+      alignItems: "center",
+      gap: 8,
+    },
+    emoji: {
+      fontSize: 40,
+    },
+    arrow: {
+      backgroundColor: "rgba(255,255,255,0.2)",
+      borderRadius: 12,
+      padding: 4,
+    },
+  });

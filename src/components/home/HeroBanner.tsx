@@ -10,6 +10,8 @@ import {
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useColors } from "../../hooks/useColors";
+import { getColors } from "../../constants/colors";
 
 const { width } = Dimensions.get("window");
 
@@ -90,6 +92,8 @@ const BANNERS: Banner[] = [
 ];
 
 export default function HeroBanner() {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
@@ -159,44 +163,45 @@ export default function HeroBanner() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { height: 180, marginBottom: 4 },
-  slide: { width, height: 180 },
-  image: { width: "100%", height: "100%" },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.35)",
-  },
-  textContainer: { position: "absolute", bottom: 30, left: 20, gap: 4 },
-  title: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#ffffff",
-    textShadowColor: "rgba(0,0,0,0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: "rgba(255,255,255,0.85)",
-    textShadowColor: "rgba(0,0,0,0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  indicators: {
-    position: "absolute",
-    bottom: 10,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 6,
-  },
-  indicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.5)",
-  },
-  indicatorActive: { width: 20, backgroundColor: "#ffffff" },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: { height: 180, marginBottom: 4 },
+    slide: { width, height: 180 },
+    image: { width: "100%", height: "100%" },
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0,0,0,0.35)",
+    },
+    textContainer: { position: "absolute", bottom: 30, left: 20, gap: 4 },
+    title: {
+      fontSize: 22,
+      fontWeight: "800",
+      color: "#ffffff",
+      textShadowColor: "rgba(0,0,0,0.5)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 4,
+    },
+    subtitle: {
+      fontSize: 13,
+      color: "rgba(255,255,255,0.85)",
+      textShadowColor: "rgba(0,0,0,0.5)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 4,
+    },
+    indicators: {
+      position: "absolute",
+      bottom: 10,
+      left: 0,
+      right: 0,
+      flexDirection: "row",
+      justifyContent: "center",
+      gap: 6,
+    },
+    indicator: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: "rgba(255,255,255,0.5)",
+    },
+    indicatorActive: { width: 20, backgroundColor: "#ffffff" },
+  });

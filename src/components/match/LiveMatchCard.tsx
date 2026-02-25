@@ -1,13 +1,17 @@
 import { TouchableOpacity, View, Text, StyleSheet, Image } from "react-native";
 import { router } from "expo-router";
-import { Colors } from "../../constants/colors";
+import { Colors, getColors } from "../../constants/colors";
 import { Match } from "../../types";
+import { useColors } from "../../hooks/useColors";
 
 interface Props {
   match: Match;
 }
 
 export default function LiveMatchCard({ match }: Props) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+
   return (
     <TouchableOpacity
       style={styles.container}
@@ -54,68 +58,69 @@ export default function LiveMatchCard({ match }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    padding: 14,
-    marginLeft: 16,
-    width: 180,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    marginBottom: 5,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  leagueName: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    flex: 1,
-  },
-  liveIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.live,
-  },
-  liveTime: {
-    fontSize: 12,
-    color: Colors.live,
-    fontWeight: "700",
-  },
-  teamRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-    gap: 8,
-  },
-  logo: {
-    width: 22,
-    height: 22,
-  },
-  teamName: {
-    flex: 1,
-    fontSize: 13,
-    fontWeight: "500",
-    color: Colors.text,
-  },
-  score: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-    minWidth: 20,
-    textAlign: "right",
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      padding: 14,
+      marginLeft: 16,
+      width: 180,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+      elevation: 3,
+      marginBottom: 5,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    leagueName: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+      flex: 1,
+    },
+    liveIndicator: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    liveDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: Colors.live,
+    },
+    liveTime: {
+      fontSize: 12,
+      color: Colors.live,
+      fontWeight: "700",
+    },
+    teamRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 6,
+      gap: 8,
+    },
+    logo: {
+      width: 22,
+      height: 22,
+    },
+    teamName: {
+      flex: 1,
+      fontSize: 13,
+      fontWeight: "500",
+      color: Colors.text,
+    },
+    score: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+      minWidth: 20,
+      textAlign: "right",
+    },
+  });

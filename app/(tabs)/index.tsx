@@ -422,12 +422,13 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 10,
-      backgroundColor: "#f8f9fa",
+      backgroundColor: Colors.background,
       gap: 8,
     },
     leagueLogo: {
       width: 20,
       height: 20,
+      backgroundColor: "#f8f8f8",
     },
     leagueName: {
       fontSize: 13,

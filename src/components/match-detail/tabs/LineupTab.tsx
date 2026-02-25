@@ -2,8 +2,10 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../../constants/colors";
+import { Colors, getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
+import { useColors } from "../../../hooks/useColors";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   match: Match;
@@ -17,14 +19,16 @@ const POSITION_MAP: Record<string, string> = {
 };
 
 export default function LineupTab({ match }: Props) {
+  const { t } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+
   const lineup = match.lineups;
 
   if (!lineup || (!lineup.home && !lineup.away)) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>
-          라인업은 경기 시작 1시간 전에 공개됩니다
-        </Text>
+        <Text style={styles.emptyText}>{t("lineup.notAvailable")}</Text>
       </View>
     );
   }
@@ -74,7 +78,7 @@ export default function LineupTab({ match }: Props) {
         {awayLineup ? (
           <FieldHalf teamLineup={awayLineup} isHome={false} />
         ) : (
-          <HalfPlaceholder label="원정 라인업 없음" />
+          <HalfPlaceholder label={t("lineup.awayMissing")} />
         )}
 
         {/* 중앙선 */}
@@ -84,7 +88,7 @@ export default function LineupTab({ match }: Props) {
         {homeLineup ? (
           <FieldHalf teamLineup={homeLineup} isHome={true} />
         ) : (
-          <HalfPlaceholder label="홈 라인업 없음" />
+          <HalfPlaceholder label={t("lineup.homeMissing")} />
         )}
       </View>
 
@@ -112,6 +116,9 @@ function FieldHalf({
   teamLineup: any;
   isHome: boolean;
 }) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+
   const formation = (teamLineup.formation || "4-3-3").trim();
   const rows = formation.split("-").map((n: string) => Number(n));
   const players = teamLineup.startXI || [];
@@ -164,6 +171,8 @@ function PlayerCircle({
   player: any;
   isGK?: boolean;
 }) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
   const lastName = player?.playerName?.split(" ").slice(-1)[0] || "Unknown";
   const initial = player?.playerName?.charAt(0) || "?";
 
@@ -201,6 +210,10 @@ function SubstitutesSection({
   homeLineup: any;
   awayLineup: any;
 }) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+  const { t } = useTranslation();
+
   const homeSubs = homeLineup?.substitutes || [];
   const awaySubs = awayLineup?.substitutes || [];
   const maxLen = Math.max(homeSubs.length, awaySubs.length);
@@ -213,7 +226,7 @@ function SubstitutesSection({
           style={styles.subsHeaderLogo}
           contentFit="contain"
         />
-        <Text style={styles.subsTitle}>후보 선수</Text>
+        <Text style={styles.subsTitle}>{t("lineup.substitutes")}</Text>
         <Image
           source={match.awayTeam.logo}
           style={styles.subsHeaderLogo}
@@ -251,7 +264,12 @@ function SubPlayerCard({
   player: any;
   isRight?: boolean;
 }) {
-  const lastName = player?.playerName?.split(" ").slice(-1)[0] || "Unknown";
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+  const { t } = useTranslation();
+
+  const lastName =
+    player?.playerName?.split(" ").slice(-1)[0] || t("lineup.unknown");
 
   return (
     <View style={[styles.subPlayerCard, isRight && styles.subPlayerCardRight]}>
@@ -289,6 +307,8 @@ function SubPlayerCard({
 }
 
 function HalfPlaceholder({ label }: { label: string }) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
   return (
     <View
       style={[
@@ -303,211 +323,212 @@ function HalfPlaceholder({ label }: { label: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 40,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    textAlign: "center",
-    lineHeight: 22,
-  },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    emptyContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 40,
+    },
+    emptyText: {
+      fontSize: 14,
+      color: Colors.textSecondary,
+      textAlign: "center",
+      lineHeight: 22,
+    },
 
-  formationHeader: {
-    flexDirection: "row",
-    backgroundColor: Colors.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    gap: 10,
-  },
-  teamHeader: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  headerLogo: {
-    width: 24,
-    height: 24,
-  },
-  headerTeamName: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.text,
-    flex: 1,
-  },
-  headerFormation: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: Colors.primary,
-  },
+    formationHeader: {
+      flexDirection: "row",
+      backgroundColor: Colors.surface,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+      gap: 10,
+    },
+    teamHeader: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    headerLogo: {
+      width: 24,
+      height: 24,
+    },
+    headerTeamName: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: Colors.text,
+      flex: 1,
+    },
+    headerFormation: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: Colors.primary,
+    },
 
-  pitch: {
-    margin: 12,
-    borderRadius: 12,
-    overflow: "hidden",
-    backgroundColor: "#2d8a4e",
-  },
-  centerLine: {
-    height: 2,
-    backgroundColor: "rgba(255,255,255,0.5)",
-  },
+    pitch: {
+      margin: 12,
+      borderRadius: 12,
+      overflow: "hidden",
+      backgroundColor: "#2d8a4e",
+    },
+    centerLine: {
+      height: 2,
+      backgroundColor: "rgba(255,255,255,0.5)",
+    },
 
-  fieldHalf: {
-    paddingHorizontal: 14,
-    paddingVertical: 16,
-    gap: 18,
-  },
-  fieldRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
+    fieldHalf: {
+      paddingHorizontal: 14,
+      paddingVertical: 16,
+      gap: 18,
+    },
+    fieldRow: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      alignItems: "center",
+    },
 
-  playerSpot: {
-    alignItems: "center",
-    gap: 6,
-    flex: 1,
-    maxWidth: 80,
-  },
-  playerPhoto: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 3,
-    borderColor: "#ffffff",
-    backgroundColor: Colors.border,
-  },
-  gkPhoto: {
-    borderColor: "#ffd700",
-  },
-  playerPhotoPlaceholder: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 3,
-    borderColor: "#ffffff",
-    backgroundColor: "rgba(255,255,255,0.3)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  gkPhotoPlaceholder: {
-    borderColor: "#ffd700",
-    backgroundColor: "rgba(255,215,0,0.3)",
-  },
-  playerPhotoText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  playerName: {
-    fontSize: 11,
-    color: "#ffffff",
-    textAlign: "center",
-    fontWeight: "700",
-    textShadowColor: "rgba(0,0,0,0.75)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
+    playerSpot: {
+      alignItems: "center",
+      gap: 6,
+      flex: 1,
+      maxWidth: 80,
+    },
+    playerPhoto: {
+      width: 52,
+      height: 52,
+      borderRadius: 26,
+      borderWidth: 3,
+      borderColor: "#ffffff",
+      backgroundColor: Colors.border,
+    },
+    gkPhoto: {
+      borderColor: "#ffd700",
+    },
+    playerPhotoPlaceholder: {
+      width: 52,
+      height: 52,
+      borderRadius: 26,
+      borderWidth: 3,
+      borderColor: "#ffffff",
+      backgroundColor: "rgba(255,255,255,0.3)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    gkPhotoPlaceholder: {
+      borderColor: "#ffd700",
+      backgroundColor: "rgba(255,215,0,0.3)",
+    },
+    playerPhotoText: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: "#ffffff",
+    },
+    playerName: {
+      fontSize: 11,
+      color: "#ffffff",
+      textAlign: "center",
+      fontWeight: "700",
+      textShadowColor: "rgba(0,0,0,0.75)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 3,
+    },
 
-  subsContainer: {
-    backgroundColor: Colors.surface,
-    margin: 12,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  subsHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  subsHeaderLogo: {
-    width: 28,
-    height: 28,
-  },
-  subsTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: Colors.text,
-  },
+    subsContainer: {
+      backgroundColor: Colors.surface,
+      margin: 12,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    subsHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    subsHeaderLogo: {
+      width: 28,
+      height: 28,
+    },
+    subsTitle: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: Colors.text,
+    },
 
-  subRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  subPlayerCard: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    gap: 8,
-    minHeight: 64,
-  },
-  subPlayerCardRight: {
-    flexDirection: "row-reverse",
-    borderLeftWidth: 1,
-    borderLeftColor: Colors.border,
-  },
-  subPhotoContainer: {
-    position: "relative",
-  },
-  subPhoto: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-  subPhotoPlaceholder: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  subPhotoPlaceholderText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-  },
-  subArrow: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "#34a853",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  subInfo: {
-    flex: 1,
-    gap: 2,
-  },
-  subName: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.text,
-  },
-  subDetail: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-});
+    subRow: {
+      flexDirection: "row",
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    subPlayerCard: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 10,
+      gap: 8,
+      minHeight: 64,
+    },
+    subPlayerCardRight: {
+      flexDirection: "row-reverse",
+      borderLeftWidth: 1,
+      borderLeftColor: Colors.border,
+    },
+    subPhotoContainer: {
+      position: "relative",
+    },
+    subPhoto: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      borderWidth: 2,
+      borderColor: "#fff",
+    },
+    subPhotoPlaceholder: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: Colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    subPhotoPlaceholderText: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.textSecondary,
+    },
+    subArrow: {
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      width: 16,
+      height: 16,
+      borderRadius: 8,
+      backgroundColor: "#34a853",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    subInfo: {
+      flex: 1,
+      gap: 2,
+    },
+    subName: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: Colors.text,
+    },
+    subDetail: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+  });

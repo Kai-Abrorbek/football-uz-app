@@ -1,15 +1,18 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../constants/colors";
+import { Colors, getColors } from "../../constants/colors";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
 import { News } from "../../types";
 import { useTranslation } from "react-i18next";
+import { useColors } from "../../hooks/useColors";
 
 export default function NewsSection() {
   const { t } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   const { data: news } = useQuery<News[]>({
     queryKey: ["news", "latest"],
@@ -73,76 +76,77 @@ export default function NewsSection() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  moreBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 2,
-  },
-  moreText: {
-    fontSize: 13,
-    color: Colors.primary,
-  },
-  newsItem: {
-    flexDirection: "row",
-    padding: 12,
-    gap: 12,
-  },
-  newsItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  newsContent: {
-    flex: 1,
-    gap: 4,
-  },
-  categoryBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: "#e8f0fe",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  categoryText: {
-    fontSize: 10,
-    color: Colors.primary,
-    fontWeight: "600",
-    textTransform: "uppercase",
-  },
-  newsTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-    lineHeight: 20,
-  },
-  newsDate: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-  newsImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      marginHorizontal: 16,
+      marginVertical: 8,
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    moreBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 2,
+    },
+    moreText: {
+      fontSize: 13,
+      color: Colors.primary,
+    },
+    newsItem: {
+      flexDirection: "row",
+      padding: 12,
+      gap: 12,
+    },
+    newsItemBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    newsContent: {
+      flex: 1,
+      gap: 4,
+    },
+    categoryBadge: {
+      alignSelf: "flex-start",
+      backgroundColor: "#e8f0fe",
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 8,
+    },
+    categoryText: {
+      fontSize: 10,
+      color: Colors.primary,
+      fontWeight: "600",
+      textTransform: "uppercase",
+    },
+    newsTitle: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+      lineHeight: 20,
+    },
+    newsDate: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+    newsImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 8,
+    },
+  });
