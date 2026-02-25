@@ -81,7 +81,7 @@ export default function MatchHeader({ match }: Props) {
             else router.replace("/");
           }}
         >
-          {/* <Ionicons name="arrow-back" size={24} color={Colors.text} /> */}
+          <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.leagueBtn}
@@ -208,56 +208,50 @@ export default function MatchHeader({ match }: Props) {
       {/* 이벤트 (골, 레드카드만) */}
       {match.events && match.events.length > 0 && (
         <View style={styles.eventsContainer}>
-          {match.events
-            .filter(
+          {(() => {
+            const filteredEvents = match.events.filter(
               (e) =>
                 e.type === "Goal" ||
                 (e.type === "Card" && e.detail === "Red Card"),
-            )
-            .map((event, index) => {
-              const isHomeTeam = event.team?.id === match.homeTeam.id;
+            );
 
-              return (
-                <View key={index} style={styles.eventRow}>
-                  {/* 홈팀 이벤트 (왼쪽) */}
-                  {isHomeTeam ? (
-                    <>
-                      <View style={styles.eventLeft}>
-                        <Text style={styles.eventPlayerName}>
-                          {event.player?.name?.split(" ").slice(-1)[0]}
-                        </Text>
-                        <Text style={styles.eventTime}>
-                          {event.time.elapsed}'
-                        </Text>
-                      </View>
-                      <View style={styles.eventIcon}>
-                        <Text style={styles.eventIconText}>
-                          {event.type === "Goal" ? "⚽" : "🟥"}
-                        </Text>
-                      </View>
-                      <View style={styles.eventRight} />
-                    </>
-                  ) : (
-                    <>
-                      <View style={styles.eventLeft} />
-                      <View style={styles.eventIcon}>
-                        <Text style={styles.eventIconText}>
-                          {event.type === "Goal" ? "⚽" : "🟥"}
-                        </Text>
-                      </View>
-                      <View style={styles.eventRight}>
-                        <Text style={styles.eventTime}>
-                          {event.time.elapsed}'
-                        </Text>
-                        <Text style={styles.eventPlayerName}>
-                          {event.player?.name?.split(" ").slice(-1)[0]}
-                        </Text>
-                      </View>
-                    </>
-                  )}
+            const homeEvents = filteredEvents.filter(
+              (e) => e.team?.id === match.homeTeam.id,
+            );
+
+            const awayEvents = filteredEvents.filter(
+              (e) => e.team?.id !== match.homeTeam.id,
+            );
+
+            return (
+              <View style={styles.eventsRow}>
+                {/* 왼쪽 (홈팀) */}
+                <View style={styles.eventsColumn}>
+                  {homeEvents.map((event, index) => (
+                    <Text key={index} style={styles.eventText}>
+                      {event.player?.name?.split(" ").slice(-1)[0]}{" "}
+                      {event.time.elapsed}'
+                    </Text>
+                  ))}
                 </View>
-              );
-            })}
+
+                {/* 가운데 아이콘 */}
+                <View style={styles.centerIcon}>
+                  <Text style={styles.eventIconText}>⚽</Text>
+                </View>
+
+                {/* 오른쪽 (원정팀) */}
+                <View style={[styles.eventsColumn, { alignItems: "flex-end" }]}>
+                  {awayEvents.map((event, index) => (
+                    <Text key={index} style={styles.eventText}>
+                      {event.player?.name?.split(" ").slice(-1)[0]}{" "}
+                      {event.time.elapsed}'
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            );
+          })()}
         </View>
       )}
     </View>
@@ -400,41 +394,32 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontSize: 13,
       color: Colors.text,
     },
-
     eventsContainer: {
       paddingHorizontal: 16,
       paddingTop: 12,
       paddingBottom: 8,
       borderTopWidth: 1,
       borderTopColor: Colors.border,
-      gap: 8,
+      height: 120,
+      overflow: "scroll",
     },
-    eventRow: {
+    eventsRow: {
       flexDirection: "row",
-      alignItems: "center",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
     },
-    eventLeft: {
+    eventsColumn: {
       flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
       gap: 6,
     },
-    eventRight: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 6,
-    },
-    eventIcon: {
+    centerIcon: {
       width: 40,
       alignItems: "center",
-      justifyContent: "center",
-      color: "white",
+      justifyContent: "flex-start",
     },
+
     eventIconText: {
-      fontSize: 16,
+      fontSize: 18,
       color: Colors.text,
     },
     eventPlayerName: {
@@ -442,6 +427,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontWeight: "500",
       color: Colors.text,
     },
+
     eventTime: {
       fontSize: 12,
       fontWeight: "600",
