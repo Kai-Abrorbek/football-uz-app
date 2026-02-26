@@ -145,7 +145,9 @@ export default function MatchHeader({ match }: Props) {
               style={styles.teamLogo}
               contentFit="contain"
             />
-            <Text style={styles.teamName}>{match.homeTeam.name}</Text>
+            <Text style={styles.teamName} numberOfLines={1}>
+              {match.homeTeam.name}
+            </Text>
           </View>
         </Pressable>
 
@@ -200,7 +202,9 @@ export default function MatchHeader({ match }: Props) {
               style={styles.teamLogo}
               contentFit="contain"
             />
-            <Text style={styles.teamName}>{match.awayTeam.name}</Text>
+            <Text style={styles.teamName} numberOfLines={1}>
+              {match.awayTeam.name}
+            </Text>
           </View>
         </Pressable>
       </View>
@@ -323,6 +327,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 12,
+      justifyContent: "space-between",
     },
     teamContainer: {
       flex: 1,
@@ -338,6 +343,8 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontWeight: "600",
       color: Colors.text,
       textAlign: "center",
+      overflow: "hidden",
+      maxWidth: 90,
     },
     centerContainer: {
       flex: 1,

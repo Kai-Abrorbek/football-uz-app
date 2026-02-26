@@ -170,9 +170,18 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
         {/* 날짜/시간 or 상태 */}
         <View style={styles.smallRight}>
           {isFinished ? (
-            <Text style={styles.smallStatus}>
-              {t("leagueOverview.fulltime")}
-            </Text>
+            <View>
+              <Text style={styles.smallStatus}>
+                {t("leagueOverview.fulltime")}
+              </Text>
+              <Text style={styles.smallDate}>
+                {new Date(match.date).toLocaleDateString(i18n.language, {
+                  month: "numeric",
+                  day: "numeric",
+                  weekday: "short",
+                })}
+              </Text>
+            </View>
           ) : (
             <>
               <Text style={styles.smallDate}>

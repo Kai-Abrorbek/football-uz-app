@@ -14,12 +14,14 @@ export interface Match {
     name: string;
     logo: string;
     winner?: boolean;
+    coach?: TeamCoach;
   };
   awayTeam: {
     id: number;
     name: string;
     logo: string;
     winner?: boolean;
+    coach?: TeamCoach;
   };
   goals: {
     home: number | null;
@@ -82,6 +84,12 @@ export interface TeamLineup {
   formation: string;
   startXI: PlayerInfo[];
   substitutes: PlayerInfo[];
+}
+
+export interface TeamCoach {
+  id: number;
+  name?: string;
+  photo?: string;
 }
 
 export interface PlayerInfo {

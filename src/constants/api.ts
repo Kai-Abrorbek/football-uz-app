@@ -5,6 +5,7 @@ export const API_URL = "http://localhost:4000/api/v1";
 export const ENDPOINTS = {
   // Matches
   matches: "/matches",
+  leagueMatches: "/matches/league-matches",
   matchDetail: (id: string) => `/matches/${id}`,
   teamMatchDetail: (id: number) => `/matches/team/${id}?limit=999`,
   liveMatches: "/matches/live",
@@ -61,4 +62,10 @@ export const ENDPOINTS = {
   // notificationSettings
   notificationSettings: "/users/notification-settings",
   fcmToken: "/users/fcm-token",
+
+  // FixtureAbsence
+  fixtureabsence: (matchId: number) => {
+    const url = `/fixtureabsence/match-absence?matchId=${matchId}`;
+    return url;
+  },
 };

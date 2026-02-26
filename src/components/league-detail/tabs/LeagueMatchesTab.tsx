@@ -21,25 +21,28 @@ interface Props {
   leagueId: string;
 }
 
+interface LeagueMatchesResponse {
+  currentRound: number;
+  matches: Match[];
+}
+
 export default function LeagueMatchesTab({ leagueId }: Props) {
   const [showAllMatches, setShowAllMatches] = useState(false);
   const { t, i18n } = useTranslation();
   // 경기 목록
-  const { data: matches } = useQuery<Match[]>({
+  const { data } = useQuery<LeagueMatchesResponse>({
     queryKey: ["league-matches-tab", leagueId],
     queryFn: () =>
-      api.get(`${ENDPOINTS.matches}?leagueId=${leagueId}&limit=20`),
+      api.get(`${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${2025}`),
     staleTime: 1000 * 60 * 5,
   });
 
   // 경기일별 그룹핑
   const groupedMatches =
-    matches?.reduce((acc: any, match) => {
-      const totalMatches = matches.length;
-      const currentIndex = matches.indexOf(match) + 1;
+    data?.matches?.reduce((acc: any, match) => {
       const key = t("leagueMatches.matchday", {
-        current: currentIndex,
-        total: totalMatches,
+        current: data.currentRound,
+        total: 38,
       });
 
       if (!acc[key]) {

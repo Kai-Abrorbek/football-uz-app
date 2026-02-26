@@ -32,7 +32,7 @@ export const getColors = (isDark: boolean) => ({
   tabBar: isDark ? "#1a1a1a" : "#ffffff",
   tabBarActive: "#7c3aed",
   tabBarInactive: isDark ? "#666666" : "#9e9e9e",
-  goalCard: isDark ? "#ea4335" : "2a2a2a",
+  goalCard: isDark ? "#ea4335" : "#2a2a2a",
 });
 // 기본 export (라이트 모드)
 export const Colors = getColors(false);

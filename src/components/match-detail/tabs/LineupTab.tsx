@@ -6,6 +6,7 @@ import { Colors, getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
+import FixtureAbsenceSectionMock from "../FixtureAbsenceSectionMock";
 
 interface Props {
   match: Match;
@@ -35,7 +36,6 @@ export default function LineupTab({ match }: Props) {
 
   const homeLineup = lineup.home;
   const awayLineup = lineup.away;
-
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* 포메이션 헤더 */}
@@ -99,6 +99,7 @@ export default function LineupTab({ match }: Props) {
         awayLineup={awayLineup}
       />
 
+      <FixtureAbsenceSectionMock fixtureId={match.apiFootballId} />
       <View style={{ height: 20 }} />
     </ScrollView>
   );
@@ -233,7 +234,6 @@ function SubstitutesSection({
           contentFit="contain"
         />
       </View>
-
       {Array.from({ length: maxLen }).map((_, i) => {
         const homePlayer = homeSubs[i];
         const awayPlayer = awaySubs[i];
@@ -253,6 +253,17 @@ function SubstitutesSection({
           </View>
         );
       })}
+      <View style={styles.coach}>
+        <Text style={styles.coachTitle}>감독</Text>
+        <View style={styles.coachNameBox}>
+          <Text style={styles.coachName}>
+            {match.homeTeam?.coach?.name ?? ""}
+          </Text>
+          <Text style={styles.coachName}>
+            {match.awayTeam?.coach?.name ?? ""}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -530,5 +541,26 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     subDetail: {
       fontSize: 11,
       color: Colors.textSecondary,
+    },
+
+    coach: {
+      flex: 1,
+      paddingTop: 10,
+    },
+    coachTitle: {
+      textAlign: "center",
+      fontSize: 17,
+      fontWeight: "600",
+      color: Colors.text,
+    },
+    coachNameBox: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      padding: 15,
+    },
+    coachName: {
+      fontSize: 16,
+      fontWeight: "500",
+      color: Colors.text,
     },
   });
