@@ -41,6 +41,7 @@ export const ENDPOINTS = {
   // Predictions
   predictions: "/predictions",
   matchPrediction: (matchId: number) => `/predictions/match/${matchId}`,
+  prediction: (fixtureId: number) => `/predictions/match/${fixtureId}`,
 
   // News
   news: "/news",

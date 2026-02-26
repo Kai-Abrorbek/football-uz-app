@@ -5,22 +5,20 @@ import {
   TouchableOpacity,
   ScrollView,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors, getColors } from "../../../constants/colors";
+import { getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { useColors } from "../../../hooks/useColors";
+import FixtureAbsenceSectionMock from "../FixtureAbsenceSectionMock";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Props {
   match: Match;
@@ -74,6 +72,15 @@ export default function OverviewTab({ match, onTabChange }: Props) {
   const stylesMini = miniStyles(Colors);
   const stylesH2H = h2hStyles(Colors);
 
+  const { data: prediction, isLoading } = useQuery<any>({
+    queryKey: ["prediction", match.apiFootballId],
+    queryFn: () => {
+      const res = api.get(ENDPOINTS.matchPrediction(match.apiFootballId));
+      return res;
+    },
+    enabled: !!match.apiFootballId,
+  });
+
   const { data: standing } = useQuery({
     queryKey: ["standings", match.league.id],
     queryFn: () => api.get(ENDPOINTS.leagueStandings(match.league.id)),
@@ -96,29 +103,13 @@ export default function OverviewTab({ match, onTabChange }: Props) {
   const awayStanding = getTeamStanding(match.awayTeam.id);
 
   // 더미 예측 데이터 (API 없을 때 폴백)
-  const homeWinProb = 45;
-  const drawProb = 25;
-  const awayWinProb = 30;
+  const homeWinProb = prediction?.prediction?.homeWinProb;
+  const drawProb = prediction?.prediction?.drawProb;
+  const awayWinProb = prediction?.prediction?.awayWinProb;
 
   const teams = [
     { team: match.homeTeam, standing: homeStanding },
     { team: match.awayTeam, standing: awayStanding },
-  ];
-
-  // 더미 부상 데이터
-  const dummyInjuries = [
-    {
-      name: "Player A",
-      position: "미드필더",
-      reason: "부상",
-      teamId: match.homeTeam.id,
-    },
-    {
-      name: "Player B",
-      position: "공격수",
-      reason: "출장 정지",
-      teamId: match.awayTeam.id,
-    },
   ];
 
   return (
@@ -134,46 +125,54 @@ export default function OverviewTab({ match, onTabChange }: Props) {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 승리 확률 - 항상 표시 */}
-        <CollapsibleSection
-          title={t("matchOverview.winProbability")}
-          subtitle={t("matchOverview.winProbabilitySubtitle")}
-          defaultOpen={true}
-          key="prob"
-        >
-          <View style={styles.probContainer}>
-            <View style={styles.probRow}>
-              <View style={styles.probTeam}>
-                <Text style={[styles.probPercent, { color: "#4285f4" }]}>
-                  {homeWinProb}%
-                </Text>
-                <Text style={styles.probTeamName} numberOfLines={1}>
-                  {match.homeTeam.name}
-                </Text>
+        {isLoading ? (
+          <SafeAreaView style={styles.container} edges={["top"]}>
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          </SafeAreaView>
+        ) : (
+          <CollapsibleSection
+            title={t("matchOverview.winProbability")}
+            subtitle={t("matchOverview.winProbabilitySubtitle")}
+            defaultOpen={true}
+            key="prob"
+          >
+            <View style={styles.probContainer}>
+              <View style={styles.probRow}>
+                <View style={styles.probTeam}>
+                  <Text style={[styles.probPercent, { color: "#4285f4" }]}>
+                    {homeWinProb}%
+                  </Text>
+                  <Text style={styles.probTeamName} numberOfLines={1}>
+                    {match.homeTeam.name}
+                  </Text>
+                </View>
+                <View style={styles.probDraw}>
+                  <Text style={[styles.probPercent, { color: "#9e9e9e" }]}>
+                    {drawProb}%
+                  </Text>
+                  <Text style={styles.probTeamName}>
+                    {t("matchOverview.draw")}
+                  </Text>
+                </View>
+                <View style={[styles.probTeam, { alignItems: "flex-end" }]}>
+                  <Text style={[styles.probPercent, { color: "#ea4335" }]}>
+                    {awayWinProb}%
+                  </Text>
+                  <Text style={styles.probTeamName} numberOfLines={1}>
+                    {match.awayTeam.name}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.probDraw}>
-                <Text style={[styles.probPercent, { color: "#9e9e9e" }]}>
-                  {drawProb}%
-                </Text>
-                <Text style={styles.probTeamName}>
-                  {t("matchOverview.draw")}
-                </Text>
-              </View>
-              <View style={[styles.probTeam, { alignItems: "flex-end" }]}>
-                <Text style={[styles.probPercent, { color: "#ea4335" }]}>
-                  {awayWinProb}%
-                </Text>
-                <Text style={styles.probTeamName} numberOfLines={1}>
-                  {match.awayTeam.name}
-                </Text>
+              <View style={styles.probBar}>
+                <View style={[styles.probBarHome, { flex: homeWinProb }]} />
+                <View style={[styles.probBarDraw, { flex: drawProb }]} />
+                <View style={[styles.probBarAway, { flex: awayWinProb }]} />
               </View>
             </View>
-            <View style={styles.probBar}>
-              <View style={[styles.probBarHome, { flex: homeWinProb }]} />
-              <View style={[styles.probBarDraw, { flex: drawProb }]} />
-              <View style={[styles.probBarAway, { flex: awayWinProb }]} />
-            </View>
-          </View>
-        </CollapsibleSection>
+          </CollapsibleSection>
+        )}
 
         {/* 순위 */}
         <CollapsibleSection
@@ -226,14 +225,14 @@ export default function OverviewTab({ match, onTabChange }: Props) {
         </CollapsibleSection>
 
         {/* 부상 및 출장 정지 */}
-        <CollapsibleSection
+        <FixtureAbsenceSectionMock fixtureId={match.apiFootballId} />
+        {/* <CollapsibleSection
           title={t("matchOverview.injuriesSuspensions")}
           subtitle={t("matchOverview.injuriesSubtitle")}
           key="injuries"
         >
-          {/* 팀 탭 */}
           <InjurySection match={match} injuries={dummyInjuries} />
-        </CollapsibleSection>
+        </CollapsibleSection> */}
 
         {/* 최근 성적 */}
         <CollapsibleSection
@@ -486,6 +485,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 16,
       paddingVertical: 12,
       marginBottom: 8,
+    },
+    loadingContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
     },
     venueText: { fontSize: 13, color: Colors.textSecondary },
     probContainer: { gap: 12 },

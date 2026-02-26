@@ -13,21 +13,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
-import { Colors } from "../../src/constants/colors";
+import { Colors, getColors } from "../../src/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLanguage } from "../../src/contexts/LanguageContext";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-
-interface News {
-  _id: string;
-  title: { en: string; uz: string; ru: string };
-  content: { en: string; uz: string; ru: string };
-  imageUrl: string;
-  source: string;
-  sourceUrl: string;
-  publishedAt: string;
-}
+import { News } from "../../src/types";
+import { useColors } from "../../src/hooks/useColors";
 
 const CATEGORIES = [
   { id: "all", i18nKey: "news.category.all", leagueId: null },
@@ -47,6 +39,8 @@ const CATEGORIES = [
 ] as const;
 
 export default function NewsScreen() {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
   const [activeCategory, setActiveCategory] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
   const { language, setLanguage } = useLanguage();
@@ -71,10 +65,6 @@ export default function NewsScreen() {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
-  };
-
-  const handleNewsPress = (url: string) => {
-    Linking.openURL(url);
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -123,7 +113,7 @@ export default function NewsScreen() {
             </View>
 
             <View style={styles.languageSelector}>
-              {(["en", "uz", "ru"] as const).map((lang) => (
+              {(["en", "uz", "ru", "kr"] as const).map((lang) => (
                 <TouchableOpacity
                   key={lang}
                   style={[
@@ -145,7 +135,7 @@ export default function NewsScreen() {
             </View>
 
             <Text style={styles.heroTitle} numberOfLines={3}>
-              {hero.title[language as "en" | "uz" | "ru"]}
+              {hero.title[language as "en" | "uz" | "ru" | "kr"]}
             </Text>
 
             <View style={styles.heroMeta}>
@@ -254,209 +244,210 @@ export default function NewsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: Colors.text,
-  },
-  categoryTabs: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  categoryTab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: Colors.background,
-  },
-  categoryTabActive: {
-    backgroundColor: Colors.text,
-  },
-  categoryTabText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: Colors.textSecondary,
-  },
-  categoryTabTextActive: {
-    color: "#ffffff",
-    fontWeight: "700",
-  },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: "800",
+      color: Colors.text,
+    },
+    categoryTabs: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      gap: 8,
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    categoryTab: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      backgroundColor: Colors.background,
+    },
+    categoryTabActive: {
+      backgroundColor: Colors.text,
+    },
+    categoryTabText: {
+      fontSize: 14,
+      fontWeight: "500",
+      color: Colors.textSecondary,
+    },
+    categoryTabTextActive: {
+      color: "#ffffff",
+      fontWeight: "700",
+    },
 
-  // 히어로 뉴스
-  heroCard: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 16,
-    overflow: "hidden",
-    backgroundColor: Colors.surface,
-    height: 280,
-  },
-  heroImage: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-  },
-  heroOverlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    padding: 20,
-  },
-  heroBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginBottom: 8,
-  },
-  heroBadgeText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  heroTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#ffffff",
-    marginBottom: 8,
-    textShadowColor: "rgba(0,0,0,0.8)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  languageSelector: {
-    flexDirection: "row",
-    gap: 4,
-    backgroundColor: Colors.background,
-    borderRadius: 8,
-    padding: 2,
-  },
-  langButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  langButtonActive: {
-    backgroundColor: Colors.primary,
-  },
-  langButtonText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-  },
-  langButtonTextActive: {
-    color: "#ffffff",
-    fontWeight: "700",
-  },
-  heroMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  heroSource: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "rgba(255,255,255,0.9)",
-  },
-  heroDot: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.6)",
-  },
-  heroTime: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.7)",
-  },
+    // 히어로 뉴스
+    heroCard: {
+      marginHorizontal: 16,
+      marginTop: 16,
+      borderRadius: 16,
+      overflow: "hidden",
+      backgroundColor: Colors.surface,
+      height: 280,
+    },
+    heroImage: {
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+    },
+    heroOverlay: {
+      flex: 1,
+      justifyContent: "flex-end",
+      padding: 20,
+    },
+    heroBadge: {
+      alignSelf: "flex-start",
+      backgroundColor: Colors.primary,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 6,
+      marginBottom: 8,
+    },
+    heroBadgeText: {
+      fontSize: 11,
+      fontWeight: "700",
+      color: "#ffffff",
+    },
+    heroTitle: {
+      fontSize: 20,
+      fontWeight: "800",
+      color: "#ffffff",
+      marginBottom: 8,
+      textShadowColor: "rgba(0,0,0,0.8)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 4,
+    },
+    languageSelector: {
+      flexDirection: "row",
+      gap: 4,
+      backgroundColor: Colors.background,
+      borderRadius: 8,
+      padding: 2,
+    },
+    langButton: {
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 6,
+    },
+    langButtonActive: {
+      backgroundColor: Colors.primary,
+    },
+    langButtonText: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: Colors.textSecondary,
+    },
+    langButtonTextActive: {
+      color: "#ffffff",
+      fontWeight: "700",
+    },
+    heroMeta: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    heroSource: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: "rgba(255,255,255,0.9)",
+    },
+    heroDot: {
+      fontSize: 12,
+      color: "rgba(255,255,255,0.6)",
+    },
+    heroTime: {
+      fontSize: 12,
+      color: "rgba(255,255,255,0.7)",
+    },
 
-  // 뉴스 카드
-  newsCard: {
-    flexDirection: "row",
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginTop: 12,
-    borderRadius: 12,
-    overflow: "hidden",
-    gap: 12,
-  },
-  newsImage: {
-    width: 120,
-    height: 120,
-  },
-  newsContent: {
-    flex: 1,
-    padding: 12,
-    paddingLeft: 0,
-    justifyContent: "space-between",
-  },
-  newsTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: Colors.text,
-    marginBottom: 6,
-  },
-  newsDescription: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 18,
-    marginBottom: 8,
-  },
-  newsMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  newsSource: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: Colors.primary,
-  },
-  newsDot: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-  newsTime: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
+    // 뉴스 카드
+    newsCard: {
+      flexDirection: "row",
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginTop: 12,
+      borderRadius: 12,
+      overflow: "hidden",
+      gap: 12,
+    },
+    newsImage: {
+      width: 120,
+      height: 120,
+    },
+    newsContent: {
+      flex: 1,
+      padding: 12,
+      paddingLeft: 0,
+      justifyContent: "space-between",
+    },
+    newsTitle: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: Colors.text,
+      marginBottom: 6,
+    },
+    newsDescription: {
+      fontSize: 13,
+      color: Colors.textSecondary,
+      lineHeight: 18,
+      marginBottom: 8,
+    },
+    newsMeta: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    newsSource: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: Colors.primary,
+    },
+    newsDot: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+    newsTime: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
 
-  // 광고 배너
-  adBanner: {
-    marginHorizontal: 16,
-    marginTop: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 12,
-    padding: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderStyle: "dashed",
-  },
-  adLabel: {
-    fontSize: 10,
-    color: Colors.textSecondary,
-    marginBottom: 4,
-  },
-  adText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-  },
-});
+    // 광고 배너
+    adBanner: {
+      marginHorizontal: 16,
+      marginTop: 12,
+      backgroundColor: "#f0f0f0",
+      borderRadius: 12,
+      padding: 40,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: Colors.border,
+      borderStyle: "dashed",
+    },
+    adLabel: {
+      fontSize: 10,
+      color: Colors.textSecondary,
+      marginBottom: 4,
+    },
+    adText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.textSecondary,
+    },
+  });

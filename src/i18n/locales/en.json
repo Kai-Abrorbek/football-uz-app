@@ -354,6 +354,23 @@
       "passes": "Passes",
       "passAccuracy": "Pass accuracy"
     }
+  },
+
+  "common": {
+    "loading": "Loading...",
+    "share": "Share",
+    "save": "Save",
+    "comments": "Comments"
+  },
+  "time": {
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  },
+  "newsDetail": {
+    "openSource": "Open source",
+    "shareSectionTitle": "Share this article",
+    "shareFail": "Share failed:"
   }
   
 }

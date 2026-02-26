@@ -235,9 +235,9 @@ export interface ChatMessage {
 
 export interface News {
   _id: string;
-  title: { en: string; uz: string; ru: string };
-  content: { en: string; uz: string; ru: string };
-  summary?: { en: string; uz: string; ru: string };
+  title: { en: string; uz: string; ru: string; kr: string };
+  content: { en: string; uz: string; ru: string; kr: string };
+  summary?: { en: string; uz: string; ru: string; kr: string };
   imageUrl: string;
   source: string;
   sourceUrl: string;

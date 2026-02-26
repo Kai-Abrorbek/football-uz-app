@@ -117,14 +117,14 @@ export default function FixtureAbsenceSectionMock({
           <View style={styles.tabsRow}>
             <TeamTab
               active={activeTeam === "home"}
-              name={data?.home.name}
-              logo={data?.home.logo}
+              name={data?.home?.name}
+              logo={data?.home?.logo}
               onPress={() => onSelectTeam("home")}
             />
             <TeamTab
               active={activeTeam === "away"}
-              name={data?.away.name}
-              logo={data?.away.logo}
+              name={data?.away?.name}
+              logo={data?.away?.logo}
               onPress={() => onSelectTeam("away")}
             />
           </View>
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "700",
     color: "#111",
   },
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   teamName: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: "700",
     color: Colors.textSecondary,
   },

@@ -343,5 +343,22 @@
       "passes": "Paslar",
       "passAccuracy": "Pas aniqligi"
     }
+  },
+
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "share": "Ulashish",
+    "save": "Saqlash",
+    "comments": "Izohlar"
+  },
+  "time": {
+    "minutesAgo": "{{count}} daqiqa oldin",
+    "hoursAgo": "{{count}} soat oldin",
+    "daysAgo": "{{count}} kun oldin"
+  },
+  "newsDetail": {
+    "openSource": "Manbani ochish",
+    "shareSectionTitle": "Maqolani ulashish",
+    "shareFail": "Ulashishda xatolik:"
   }
 }
