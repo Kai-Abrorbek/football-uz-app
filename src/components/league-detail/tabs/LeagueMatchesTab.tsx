@@ -12,42 +12,54 @@ import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
-import { Colors } from "../../../constants/colors";
+import { Colors, getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import AllMatchesModal from "../AllMatchesModal";
 import { useTranslation } from "react-i18next";
+import { useColors } from "../../../hooks/useColors";
 
 interface Props {
   leagueId: string;
 }
 
 interface LeagueMatchesResponse {
-  currentRound: number;
+  roundsData: number[];
   matches: Match[];
 }
 
 export default function LeagueMatchesTab({ leagueId }: Props) {
   const [showAllMatches, setShowAllMatches] = useState(false);
   const { t, i18n } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+
   // 경기 목록
   const { data } = useQuery<LeagueMatchesResponse>({
     queryKey: ["league-matches-tab", leagueId],
     queryFn: () =>
-      api.get(`${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${2025}`),
+      api.get(
+        `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${2024}&round=${0}`,
+      ),
     staleTime: 1000 * 60 * 5,
   });
 
   // 경기일별 그룹핑
   const groupedMatches =
     data?.matches?.reduce((acc: any, match) => {
+      // match.round 에서 숫자 추출
+      const matchRound = Number(match.round?.match(/(\d+)\s*$/)?.[1]);
+
+      if (!data?.roundsData?.includes(matchRound)) return acc;
+
       const key = t("leagueMatches.matchday", {
-        current: data.currentRound,
+        current: matchRound,
         total: 38,
       });
 
       if (!acc[key]) {
         acc[key] = [];
       }
+
       acc[key].push(match);
       return acc;
     }, {}) || {};
@@ -138,7 +150,7 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
                     ? t("leagueMatches.fulltime")
                     : isLive
                       ? "LIVE"
-                      : t("leagueMatches.tomorrow")}
+                      : t("leagueMatches.matchday")}
                 </Text>
                 <Text style={styles.timeText}>
                   {new Date(match.date).toLocaleString(i18n.language, {
@@ -192,146 +204,147 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  moreButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginTop: 16,
-    paddingVertical: 14,
-    borderRadius: 12,
-    gap: 6,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  moreButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-  },
-  dateSection: {
-    marginTop: 16,
-  },
-  dateTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  matchCard: {
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  matchBody: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  teamsContainer: {
-    flex: 1,
-    gap: 8,
-  },
-  teamRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  teamLogo: {
-    width: 24,
-    height: 24,
-  },
-  teamName: {
-    flex: 1,
-    fontSize: 13,
-    fontWeight: "500",
-    color: Colors.text,
-  },
-  scoreSection: {
-    width: 50,
-    gap: 8,
-  },
-  scoreRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    gap: 4,
-  },
-  score: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-    minWidth: 28,
-    textAlign: "right",
-  },
-  scoreWinner: {
-    color: Colors.text,
-  },
-  winnerIcon: {
-    fontSize: 10,
-    color: Colors.text,
-  },
-  scheduledText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-    textAlign: "center",
-  },
-  rightSection: {
-    width: 80,
-    alignItems: "flex-end",
-  },
-  highlightThumb: {
-    width: 80,
-    height: 60,
-    borderRadius: 8,
-    backgroundColor: "#1a1a1a",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  playIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  highlightTime: {
-    position: "absolute",
-    bottom: 4,
-    right: 4,
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#fff",
-    backgroundColor: "rgba(0,0,0,0.7)",
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  dateBox: {
-    alignItems: "flex-end",
-    gap: 2,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-  },
-  timeText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    moreButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginTop: 16,
+      paddingVertical: 14,
+      borderRadius: 12,
+      gap: 6,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    moreButtonText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+    },
+    dateSection: {
+      marginTop: 16,
+    },
+    dateTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+      paddingHorizontal: 16,
+      marginBottom: 12,
+    },
+    matchCard: {
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginBottom: 12,
+      borderRadius: 12,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    matchBody: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    teamsContainer: {
+      flex: 1,
+      gap: 8,
+    },
+    teamRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    teamLogo: {
+      width: 24,
+      height: 24,
+    },
+    teamName: {
+      flex: 1,
+      fontSize: 13,
+      fontWeight: "500",
+      color: Colors.text,
+    },
+    scoreSection: {
+      width: 50,
+      gap: 8,
+    },
+    scoreRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      gap: 4,
+    },
+    score: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: Colors.textSecondary,
+      minWidth: 28,
+      textAlign: "right",
+    },
+    scoreWinner: {
+      color: Colors.text,
+    },
+    winnerIcon: {
+      fontSize: 10,
+      color: Colors.text,
+    },
+    scheduledText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: Colors.textSecondary,
+      textAlign: "center",
+    },
+    rightSection: {
+      width: 80,
+      alignItems: "flex-end",
+    },
+    highlightThumb: {
+      width: 80,
+      height: 60,
+      borderRadius: 8,
+      backgroundColor: "#1a1a1a",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "relative",
+    },
+    playIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: "rgba(255,255,255,0.3)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    highlightTime: {
+      position: "absolute",
+      bottom: 4,
+      right: 4,
+      fontSize: 10,
+      fontWeight: "700",
+      color: "#fff",
+      backgroundColor: "rgba(0,0,0,0.7)",
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+      borderRadius: 4,
+    },
+    dateBox: {
+      alignItems: "flex-end",
+      gap: 2,
+    },
+    statusText: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: Colors.textSecondary,
+    },
+    timeText: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+  });

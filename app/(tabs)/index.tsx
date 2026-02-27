@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
+import { all } from "axios";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -38,13 +39,6 @@ export default function HomeScreen() {
   const { data: liveMatches } = useLiveMatches();
   const Colors = useColors();
   const styles = getStyles(Colors);
-
-  // 오늘/내일/모레 3일치
-  const DATES = [
-    { label: t("home.dates.today"), value: getDateString(0) },
-    { label: t("home.dates.tomorrow"), value: getDateString(1) },
-    { label: t("home.dates.dayAfterTomorrow"), value: getDateString(2) },
-  ];
 
   // 오늘/내일/모레 경기 모두 가져오기
   const {
@@ -98,7 +92,9 @@ export default function HomeScreen() {
     // 오늘이면 라이브 경기도 포함
     let allMatches = matches;
     if (isToday && liveMatches && liveMatches.length > 0) {
-      allMatches = [...liveMatches, ...matches];
+      const liveIds = new Set(liveMatches.map((m) => m._id));
+      const newMatches = matches.filter((m) => !liveIds.has(m._id));
+      allMatches = [...liveMatches, ...newMatches];
     }
 
     const grouped = groupByLeague(allMatches);

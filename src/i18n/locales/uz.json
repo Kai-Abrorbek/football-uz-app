@@ -162,6 +162,7 @@
   },
   "leagueMatches": {
     "matchday": "O‘yin kuni ({{current}}/{{total}})",
+    "today": "Bugun",
     "scheduled": "Rejalashtirilgan",
     "fulltime": "To‘liq vaqt",
     "tomorrow": "Ertaga",

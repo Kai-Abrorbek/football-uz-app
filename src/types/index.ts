@@ -287,3 +287,9 @@ export const FINISHED_TABS = [
   { key: "standings" },
   { key: "h2h" },
 ];
+
+export interface LeagueMatchesResponse {
+  currentRound: number;
+  roundsData: number[];
+  matches: Match[];
+}

@@ -171,6 +171,7 @@
   },
   "leagueMatches": {
     "matchday": "Matchday ({{current}}/{{total}})",
+    "today": "Today",
     "scheduled": "Scheduled",
     "fulltime": "Full Time",
     "tomorrow": "Tomorrow",

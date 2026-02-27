@@ -23,7 +23,7 @@ export default function TeamPlayersTab({ teamId }: Props) {
       const res = await api.get(ENDPOINTS.teamPlayers(teamId));
       return res ?? [];
     },
-    // staleTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60 * 30,
   });
 
   if (!players || players.length === 0) {
@@ -34,7 +34,6 @@ export default function TeamPlayersTab({ teamId }: Props) {
     );
   }
 
-  console.log(players);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.grid}>
@@ -70,16 +69,16 @@ export default function TeamPlayersTab({ teamId }: Props) {
 
               {/* 팀 정보 */}
               <View style={styles.teamRow}>
-                {player.statistics?.[0].team.logo && (
+                {player.statistics?.[0]?.team?.logo && (
                   <Image
-                    source={player.statistics?.[0].team.logo}
+                    source={player.statistics?.[0]?.team?.logo}
                     style={styles.teamLogo}
                     contentFit="contain"
                   />
                 )}
 
                 <Text style={styles.teamName} numberOfLines={1}>
-                  {player.statistics?.[0].team.name || "팀명"}
+                  {player.statistics?.[0]?.team.name || "팀명"}
                 </Text>
               </View>
             </View>

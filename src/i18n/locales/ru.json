@@ -162,6 +162,7 @@
   },
   "leagueMatches": {
     "matchday": "Тур ({{current}}/{{total}})",
+    "today": "Сегодня",
     "scheduled": "Запланировано",
     "fulltime": "Финальный свисток",
     "tomorrow": "Завтра",
