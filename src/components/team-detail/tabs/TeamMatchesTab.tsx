@@ -12,9 +12,10 @@ import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
-import { Colors } from "../../../constants/colors";
+import { getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import AllMatchesModal from "../AllMatchesModal";
+import { useColors } from "../../../hooks/useColors";
 
 interface Props {
   teamId: number;
@@ -22,27 +23,26 @@ interface Props {
 
 export default function TeamMatchesTab({ teamId }: Props) {
   const [showAllMatches, setShowAllMatches] = useState(false);
-
+  const Colors = useColors();
+  const styles = getStyles(Colors);
   // 경기 목록
   const { data: matches } = useQuery<Match[]>({
     queryKey: ["team-matches-tab", teamId],
-    queryFn: () => api.get(`${ENDPOINTS.teamMatchDetail(teamId)}`),
+    queryFn: () => api.get(`${ENDPOINTS.teamMatchRecent(teamId)}`), // ✅ 변경
     staleTime: 1000 * 60 * 5,
   });
 
   // 경기일별 그룹핑
   const groupedMatches =
     matches?.reduce((acc: any, match) => {
-      const totalMatches = matches.length;
-      const currentIndex = matches.indexOf(match) + 1;
-      const key = `경기일(${currentIndex}/${totalMatches})`;
+      const round = match.round ?? "";
+      const leagueName = match.league?.name ?? "";
+      const key = `${leagueName} · ${round}`;
 
-      if (!acc[key]) {
-        acc[key] = [];
-      }
+      if (!acc[key]) acc[key] = [];
       acc[key].push(match);
       return acc;
-    }, {}) || {};
+    }, {}) ?? {};
 
   const renderMatchCard = (match: Match) => {
     const homeGoals = match.goals.home ?? 0;
@@ -178,146 +178,147 @@ export default function TeamMatchesTab({ teamId }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  moreButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginTop: 16,
-    paddingVertical: 14,
-    borderRadius: 12,
-    gap: 6,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  moreButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-  },
-  dateSection: {
-    marginTop: 16,
-  },
-  dateTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  matchCard: {
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  matchBody: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  teamsContainer: {
-    flex: 1,
-    gap: 8,
-  },
-  teamRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  teamLogo: {
-    width: 24,
-    height: 24,
-  },
-  teamName: {
-    flex: 1,
-    fontSize: 13,
-    fontWeight: "500",
-    color: Colors.text,
-  },
-  scoreSection: {
-    width: 50,
-    gap: 8,
-  },
-  scoreRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    gap: 4,
-  },
-  score: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-    minWidth: 28,
-    textAlign: "right",
-  },
-  scoreWinner: {
-    color: Colors.text,
-  },
-  winnerIcon: {
-    fontSize: 10,
-    color: Colors.text,
-  },
-  scheduledText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-    textAlign: "center",
-  },
-  rightSection: {
-    width: 80,
-    alignItems: "flex-end",
-  },
-  highlightThumb: {
-    width: 80,
-    height: 60,
-    borderRadius: 8,
-    backgroundColor: "#1a1a1a",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  playIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  highlightTime: {
-    position: "absolute",
-    bottom: 4,
-    right: 4,
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#fff",
-    backgroundColor: "rgba(0,0,0,0.7)",
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  dateBox: {
-    alignItems: "flex-end",
-    gap: 2,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-  },
-  timeText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    moreButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginTop: 16,
+      paddingVertical: 14,
+      borderRadius: 12,
+      gap: 6,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    moreButtonText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+    },
+    dateSection: {
+      marginTop: 16,
+    },
+    dateTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+      paddingHorizontal: 16,
+      marginBottom: 12,
+    },
+    matchCard: {
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginBottom: 12,
+      borderRadius: 12,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    matchBody: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    teamsContainer: {
+      flex: 1,
+      gap: 8,
+    },
+    teamRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    teamLogo: {
+      width: 24,
+      height: 24,
+    },
+    teamName: {
+      flex: 1,
+      fontSize: 13,
+      fontWeight: "500",
+      color: Colors.text,
+    },
+    scoreSection: {
+      width: 50,
+      gap: 8,
+    },
+    scoreRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      gap: 4,
+    },
+    score: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: Colors.textSecondary,
+      minWidth: 28,
+      textAlign: "right",
+    },
+    scoreWinner: {
+      color: Colors.text,
+    },
+    winnerIcon: {
+      fontSize: 10,
+      color: Colors.text,
+    },
+    scheduledText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: Colors.textSecondary,
+      textAlign: "center",
+    },
+    rightSection: {
+      width: 80,
+      alignItems: "flex-end",
+    },
+    highlightThumb: {
+      width: 80,
+      height: 60,
+      borderRadius: 8,
+      backgroundColor: "#1a1a1a",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "relative",
+    },
+    playIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: "rgba(255,255,255,0.3)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    highlightTime: {
+      position: "absolute",
+      bottom: 4,
+      right: 4,
+      fontSize: 10,
+      fontWeight: "700",
+      color: "#fff",
+      backgroundColor: "rgba(0,0,0,0.7)",
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+      borderRadius: 4,
+    },
+    dateBox: {
+      alignItems: "flex-end",
+      gap: 2,
+    },
+    statusText: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: Colors.live,
+    },
+    timeText: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+  });

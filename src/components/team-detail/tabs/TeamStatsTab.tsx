@@ -9,8 +9,9 @@ import {
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
-import { Colors } from "../../../constants/colors";
+import { Colors, getColors } from "../../../constants/colors";
 import { ENDPOINTS } from "../../../constants/api";
+import { useColors } from "../../../hooks/useColors";
 
 interface Props {
   leagueId: string;
@@ -25,6 +26,8 @@ const STAT_TABS = [
 
 export default function TeamStatsTab({ leagueId }: Props) {
   const [activeStatTab, setActiveStatTab] = useState("goals");
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   // 득점 순위
   const { data: topScorers } = useQuery<any>({
@@ -161,121 +164,122 @@ export default function TeamStatsTab({ leagueId }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  statTabs: {
-    flexDirection: "row",
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  statTab: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
-  },
-  statTabActive: {
-    borderBottomColor: Colors.primary,
-  },
-  statTabText: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: Colors.textSecondary,
-  },
-  statTabTextActive: {
-    color: Colors.primary,
-    fontWeight: "700",
-  },
-  emptyContainer: {
-    padding: 40,
-    alignItems: "center",
-  },
-  emptyText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  statList: {
-    backgroundColor: Colors.surface,
-    marginTop: 16,
-  },
-  listHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  headerText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.textSecondary,
-  },
-  statRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    gap: 12,
-  },
-  rankContainer: {
-    width: 28,
-    alignItems: "center",
-  },
-  rank: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  playerPhoto: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  playerPhotoText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-  },
-  playerInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  playerName: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-  },
-  teamRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  teamLogo: {
-    width: 16,
-    height: 16,
-  },
-  teamName: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  statValue: {
-    width: 40,
-    alignItems: "flex-end",
-  },
-  statNumber: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    statTabs: {
+      flexDirection: "row",
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    statTab: {
+      flex: 1,
+      alignItems: "center",
+      paddingVertical: 12,
+      borderBottomWidth: 2,
+      borderBottomColor: "transparent",
+    },
+    statTabActive: {
+      borderBottomColor: Colors.primary,
+    },
+    statTabText: {
+      fontSize: 13,
+      fontWeight: "500",
+      color: Colors.textSecondary,
+    },
+    statTabTextActive: {
+      color: Colors.primary,
+      fontWeight: "700",
+    },
+    emptyContainer: {
+      padding: 40,
+      alignItems: "center",
+    },
+    emptyText: {
+      fontSize: 14,
+      color: Colors.textSecondary,
+    },
+    statList: {
+      backgroundColor: Colors.surface,
+      marginTop: 16,
+    },
+    listHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    headerText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: Colors.textSecondary,
+    },
+    statRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+      gap: 12,
+    },
+    rankContainer: {
+      width: 28,
+      alignItems: "center",
+    },
+    rank: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    playerPhoto: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: Colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    playerPhotoText: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.textSecondary,
+    },
+    playerInfo: {
+      flex: 1,
+      gap: 4,
+    },
+    playerName: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+    },
+    teamRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    teamLogo: {
+      width: 16,
+      height: 16,
+    },
+    teamName: {
+      fontSize: 12,
+      color: Colors.textSecondary,
+    },
+    statValue: {
+      width: 40,
+      alignItems: "flex-end",
+    },
+    statNumber: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+  });

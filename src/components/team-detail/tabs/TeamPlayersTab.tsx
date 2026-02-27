@@ -8,14 +8,17 @@ import {
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
-import { Colors } from "../../../constants/colors";
+import { getColors } from "../../../constants/colors";
 import { ENDPOINTS } from "../../../constants/api";
+import { useColors } from "../../../hooks/useColors";
 
 interface Props {
   teamId: string;
 }
 
 export default function TeamPlayersTab({ teamId }: Props) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
   // 리그 선수 목록
   const { data: players } = useQuery<any>({
     queryKey: ["team-players", teamId],
@@ -91,78 +94,79 @@ export default function TeamPlayersTab({ teamId }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 40,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    padding: 12,
-    gap: 6,
-  },
-  playerCard: {
-    width: "31.999%",
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  playerPhoto: {
-    width: "100%",
-    aspectRatio: 1,
-    backgroundColor: Colors.border,
-  },
-  playerPhotoPlaceholder: {
-    width: "100%",
-    aspectRatio: 1,
-    backgroundColor: Colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  playerPhotoText: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-  },
-  playerInfo: {
-    padding: 10,
-    gap: 4,
-  },
-  playerName: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  playerPosition: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-  teamRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginTop: 4,
-  },
-  teamLogo: {
-    width: 14,
-    height: 14,
-  },
-  teamName: {
-    flex: 1,
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    emptyContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 40,
+    },
+    emptyText: {
+      fontSize: 14,
+      color: Colors.textSecondary,
+    },
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      padding: 12,
+      gap: 6,
+    },
+    playerCard: {
+      width: "31.999%",
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    playerPhoto: {
+      width: "100%",
+      aspectRatio: 1,
+      backgroundColor: Colors.border,
+    },
+    playerPhotoPlaceholder: {
+      width: "100%",
+      aspectRatio: 1,
+      backgroundColor: Colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    playerPhotoText: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: Colors.textSecondary,
+    },
+    playerInfo: {
+      padding: 10,
+      gap: 4,
+    },
+    playerName: {
+      fontSize: 13,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    playerPosition: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+    teamRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      marginTop: 4,
+    },
+    teamLogo: {
+      width: 14,
+      height: 14,
+    },
+    teamName: {
+      flex: 1,
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+  });

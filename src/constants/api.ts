@@ -7,7 +7,9 @@ export const ENDPOINTS = {
   matches: "/matches",
   leagueMatches: "/matches/league-matches",
   matchDetail: (id: string) => `/matches/${id}`,
-  teamMatchDetail: (id: number) => `/matches/team/${id}?limit=999`,
+  teamMatchDetail: (id: number) => `/matches/team-allmatches/${id}`,
+  getTeamDetail: (id: number) => `/matches/team/${id}?limit=999`,
+  teamMatchRecent: (id: number) => `/matches/team-recent/${id}`,
   liveMatches: "/matches/live",
   upcomingMatches: "/matches/upcoming",
 
