@@ -17,6 +17,7 @@ import { Match } from "../../../types";
 import AllMatchesModal from "../AllMatchesModal";
 import { useTranslation } from "react-i18next";
 import { useColors } from "../../../hooks/useColors";
+import { SEASON } from "../../../constants/leauges";
 
 interface Props {
   leagueId: string;
@@ -38,7 +39,7 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
     queryKey: ["league-matches-tab", leagueId],
     queryFn: () =>
       api.get(
-        `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${2024}&round=${0}`,
+        `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${SEASON}&round=${0}`,
       ),
     staleTime: 1000 * 60 * 5,
   });

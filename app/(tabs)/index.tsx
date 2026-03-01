@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-// import { Colors } from "../../src/constants/colors";
 import { useMatches, useLiveMatches } from "../../src/hooks/useMatches";
 import { useFeaturedLeagues } from "../../src/hooks/useLeagues";
 import MatchCard from "../../src/components/match/MatchCard";
@@ -24,7 +23,6 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
-import { all } from "axios";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -45,25 +43,43 @@ export default function HomeScreen() {
     data: todayMatches,
     isLoading: l1,
     refetch: r1,
+    isError: e1,
   } = useMatches(getDateString(0), selectedLeague);
 
   const {
     data: tomorrowMatches,
     isLoading: l2,
     refetch: r2,
+    isError: e2,
   } = useMatches(getDateString(1), selectedLeague);
   const {
     data: dayAfterMatches,
     isLoading: l3,
     refetch: r3,
+    isError: e3,
   } = useMatches(getDateString(2), selectedLeague);
+  const {
+    data: yesterdayMatches,
+    isLoading: l4,
+    refetch: r4,
+    isError: e4,
+  } = useMatches(getDateString(-1), selectedLeague);
+  const {
+    data: beforeYesterdayMatches,
+    isLoading: l5,
+    refetch: r5,
+    isError: e5,
+  } = useMatches(getDateString(-2), selectedLeague);
 
-  const isLoading = l1 || l2 || l3;
+  const isLoading = l1 || l2 || l3 || l4 || l5;
+  const isError = e1 || e2 || e3 || e4 || e5;
 
   const refetch = () => {
     r1();
     r2();
     r3();
+    r4();
+    r5();
   };
 
   const groupByLeague = (matches: any[]) => {
@@ -106,7 +122,7 @@ export default function HomeScreen() {
           <Text style={styles.dateHeaderText}>{label}</Text>
         </View>
 
-        {groupList.map((group: any, index: number) => (
+        {groupList.reverse().map((group: any, index: number) => (
           <View key={group.league.id}>
             <View style={styles.leagueGroup}>
               <TouchableOpacity style={styles.leagueHeader}>
@@ -244,11 +260,18 @@ export default function HomeScreen() {
         )}
 
         {/* 오늘 경기 (라이브 포함) */}
-        {renderDateSection(t("home.dates.today"), todayMatches || [], true)}
+        {renderDateSection(
+          t("home.dates.today"),
+          todayMatches?.reverse() || [],
+          true,
+        )}
 
         {/* 월드컵 배너 */}
         <WorldCupBanner />
-        {renderDateSection(t("home.dates.tomorrow"), tomorrowMatches || [])}
+        {renderDateSection(
+          t("home.dates.tomorrow"),
+          tomorrowMatches?.reverse() || [],
+        )}
 
         {/* 우즈벡 선수 */}
         <UzbekPlayers />
@@ -258,6 +281,15 @@ export default function HomeScreen() {
           dayAfterMatches || [],
         )}
 
+        {/* 지난 경기  */}
+        {renderDateSection(
+          t("home.dates.yesterday"),
+          yesterdayMatches?.reverse() || [],
+        )}
+        {renderDateSection(
+          t("home.dates.beforeYesterday"),
+          beforeYesterdayMatches?.reverse() || [],
+        )}
         {/* 최신 뉴스 */}
         <NewsSection />
 

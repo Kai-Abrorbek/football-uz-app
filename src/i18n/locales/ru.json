@@ -113,7 +113,9 @@
     "dates": {
       "today": "Сегодня",
       "tomorrow": "Завтра",
-      "dayAfterTomorrow": "Послезавтра"
+      "dayAfterTomorrow": "Послезавтра",
+      "yesterday": "Вчера",
+      "beforeYesterday": "Позавчера"
     },
     "leagueFilter": {
       "all": "Все",

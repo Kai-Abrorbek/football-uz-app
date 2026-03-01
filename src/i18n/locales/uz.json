@@ -113,7 +113,9 @@
     "dates": {
       "today": "Bugun",
       "tomorrow": "Ertaga",
-      "dayAfterTomorrow": "Indinga"
+      "dayAfterTomorrow": "Indinga",
+      "yesterday": "O'tgan kun",
+      "beforeYesterday": "Ikki kun oldin"
     },
     "leagueFilter": {
       "all": "Barchasi",

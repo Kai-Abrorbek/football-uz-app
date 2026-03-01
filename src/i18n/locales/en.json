@@ -122,7 +122,9 @@
     "dates": {
       "today": "Today",
       "tomorrow": "Tomorrow",
-      "dayAfterTomorrow": "Day after tomorrow"
+      "dayAfterTomorrow": "Day after tomorrow",
+      "yesterday": "Yesterday",
+      "beforeYesterday": "Day Before Yesterday"
     },
     "leagueFilter": {
       "all": "All",

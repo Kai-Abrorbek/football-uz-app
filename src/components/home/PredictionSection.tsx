@@ -13,20 +13,31 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { Match } from "../../types";
+
+function getDateString(offset: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return date.toISOString().split("T")[0];
+}
 
 export default function PredictionSection() {
   const Colors = useColors();
   const styles = getStyles(Colors);
 
   // 오늘 경기 중 인기 경기 3개 가져오기
-  const { data: matches } = useQuery<any>({
-    queryKey: ["featured-matches"],
-    queryFn: () => api.get(`${ENDPOINTS.matches}?limit=3`),
-    staleTime: 1000 * 60 * 10,
+  const { data: matches } = useQuery<Match[]>({
+    queryKey: ["matches", getDateString(0)],
+    queryFn: async () => {
+      const params: any = {};
+      params.date = getDateString(-1); // 테스트용 날짜
+      return api.get(ENDPOINTS.matches, { params });
+    },
+    staleTime: 1000 * 60 * 5,
   });
 
   // 각 경기의 예측 가져오기
-  const { data: predictions } = useQuery({
+  const { data: predictions } = useQuery<any>({
     queryKey: ["predictions", matches?.map((m: any) => m.apiFootballId)],
     queryFn: async () => {
       if (!matches || matches.length === 0) return [];

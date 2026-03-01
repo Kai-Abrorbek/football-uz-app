@@ -8,7 +8,7 @@ import {
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, getColors } from "../../../constants/colors";
-import { Match, MatchEvent } from "../../../types";
+import { Match, MatchEvent, Player } from "../../../types";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
@@ -46,6 +46,21 @@ export default function HighlightsTab({ match }: Props) {
   const highlights = events.filter(
     (e) => e.type === "Goal" || e.type === "Card" || e.type === "subst",
   );
+
+  const getPlayerImg = (playerId: number): string => {
+    try {
+      const { data: player, isError } = useQuery<Player>({
+        queryKey: ["player-detail", match._id],
+        queryFn: () => api.get(ENDPOINTS.playerDetail(playerId)),
+        staleTime: 1000 * 60 * 10,
+      });
+
+      return player?.photo!;
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(error.message);
+    }
+  };
 
   const renderEvent = (event: MatchEvent, index: number) => {
     const isHomeTeam = event.team?.id === currentMatch.homeTeam.id;
@@ -87,9 +102,17 @@ export default function HighlightsTab({ match }: Props) {
               </View>
             </View>
             <View style={styles.goalPlayerPhoto}>
-              <Text style={styles.goalPlayerPhotoText}>
-                {event.player?.name?.charAt(0)}
-              </Text>
+              {getPlayerImg(event.player?.id!) ? (
+                <Image
+                  source={getPlayerImg(event.player?.id!)}
+                  // style={styles.goalPlayerPhotoText}
+                  contentFit="contain"
+                />
+              ) : (
+                <Text style={styles.goalPlayerPhotoText}>
+                  {event.player?.name?.charAt(0)}
+                </Text>
+              )}
             </View>
           </View>
         </View>
@@ -339,6 +362,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderWidth: 2,
       borderColor: "rgba(255,255,255,0.2)",
     },
+
     goalPlayerPhotoText: {
       fontSize: 20,
       fontWeight: "700",

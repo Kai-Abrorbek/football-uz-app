@@ -26,6 +26,7 @@ import { useColors } from "../../hooks/useColors";
 import { ENDPOINTS } from "../../constants/api";
 import api from "../../services/api";
 import { getColors } from "../../constants/colors";
+import { SEASON } from "../../constants/leauges";
 
 interface Props {
   visible: boolean;
@@ -67,7 +68,7 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
       try {
         const directionParam = direction ? `&direction=${direction}` : "";
         const res: any = await api.get(
-          `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${2024}&round=${round}${directionParam}`,
+          `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${SEASON}&round=${round}${directionParam}`,
         );
         return res as LeagueMatchesResponse;
       } catch (e) {
