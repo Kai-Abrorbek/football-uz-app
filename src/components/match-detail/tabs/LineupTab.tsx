@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, getColors } from "../../../constants/colors";
@@ -7,6 +7,7 @@ import { Match } from "../../../types";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 import FixtureAbsenceSectionMock from "../FixtureAbsenceSectionMock";
+import { router } from "expo-router";
 
 interface Props {
   match: Match;
@@ -178,27 +179,29 @@ function PlayerCircle({
   const initial = player?.playerName?.charAt(0) || "?";
 
   return (
-    <View style={styles.playerSpot}>
-      {player?.photo ? (
-        <Image
-          source={player.photo}
-          style={[styles.playerPhoto, isGK && styles.gkPhoto]}
-          contentFit="cover"
-        />
-      ) : (
-        <View
-          style={[
-            styles.playerPhotoPlaceholder,
-            isGK && styles.gkPhotoPlaceholder,
-          ]}
-        >
-          <Text style={styles.playerPhotoText}>{initial}</Text>
-        </View>
-      )}
-      <Text style={styles.playerName} numberOfLines={1}>
-        {lastName}
-      </Text>
-    </View>
+    <Pressable onPress={() => router.push(`player/${player.playerId}`)}>
+      <View style={styles.playerSpot}>
+        {player?.photo ? (
+          <Image
+            source={player.photo}
+            style={[styles.playerPhoto, isGK && styles.gkPhoto]}
+            contentFit="cover"
+          />
+        ) : (
+          <View
+            style={[
+              styles.playerPhotoPlaceholder,
+              isGK && styles.gkPhotoPlaceholder,
+            ]}
+          >
+            <Text style={styles.playerPhotoText}>{initial}</Text>
+          </View>
+        )}
+        <Text style={styles.playerName} numberOfLines={1}>
+          {lastName}
+        </Text>
+      </View>
+    </Pressable>
   );
 }
 

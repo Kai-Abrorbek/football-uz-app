@@ -363,5 +363,23 @@
     "openSource": "Manbani ochish",
     "shareSectionTitle": "Maqolani ulashish",
     "shareFail": "Ulashishda xatolik:"
+  },
+  
+  "player": {
+    "age": "Yosh",
+    "years": " yosh",
+    "currentTeam": "Hozirgi jamoa",
+    "stats": "Statistika",
+    "games": "O'yinlar",
+    "goals": "Gollar",
+    "assists": "Uzatmalar",
+    "yellowCards": "Sariq kartalar",
+    "year": "Yil",
+    "recentMatch": "So'nggi o'yin",
+    "fulltime": "Tugadi",
+    "noMatches": "O'yinlar topilmadi",
+    "noEvents": "Hodisalar yo'q",
+    "notFound": "O'yinchi topilmadi",
+    "notFoundSub": "Bu o'yinchi haqida ma'lumot hali mavjud emas"
   }
 }

@@ -11,6 +11,7 @@ import api from "../../../services/api";
 import { getColors } from "../../../constants/colors";
 import { ENDPOINTS } from "../../../constants/api";
 import { useColors } from "../../../hooks/useColors";
+import { router } from "expo-router";
 
 interface Props {
   teamId: string;
@@ -45,6 +46,7 @@ export default function TeamPlayersTab({ teamId }: Props) {
             key={index}
             style={styles.playerCard}
             activeOpacity={0.7}
+            onPress={() => router.push(`player/${player.apiFootballId}`)}
           >
             {/* 선수 사진 */}
             {player.photo ? (

@@ -30,7 +30,7 @@ export default function PredictionSection() {
     queryKey: ["matches", getDateString(0)],
     queryFn: async () => {
       const params: any = {};
-      params.date = getDateString(-1); // 테스트용 날짜
+      params.date = getDateString(1); // 테스트용 날짜
       return api.get(ENDPOINTS.matches, { params });
     },
     staleTime: 1000 * 60 * 5,

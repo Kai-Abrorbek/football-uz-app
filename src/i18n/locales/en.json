@@ -374,6 +374,23 @@
     "openSource": "Open source",
     "shareSectionTitle": "Share this article",
     "shareFail": "Share failed:"
-  }
+  },
   
+  "player": {
+    "age": "Age",
+    "years": " years old",
+    "currentTeam": "Current Team",
+    "stats": "Stats",
+    "games": "Games",
+    "goals": "Goals",
+    "assists": "Assists",
+    "yellowCards": "Yellow Cards",
+    "year": "Year",
+    "recentMatch": "Recent Match",
+    "fulltime": "Full Time",
+    "noMatches": "No matches found",
+    "noEvents": "No events",
+    "notFound": "Player not found",
+    "notFoundSub": "This player is not available yet"
+  }
 }

@@ -364,5 +364,22 @@
     "openSource": "Manbani ochish",
     "shareSectionTitle": "Maqolani ulashish",
     "shareFail": "Ulashishda xatolik:"
+  },
+  "player": {
+    "age": "Возраст",
+    "years": " лет",
+    "currentTeam": "Текущая команда",
+    "stats": "Статистика",
+    "games": "Игры",
+    "goals": "Голы",
+    "assists": "Передачи",
+    "yellowCards": "Жёлтые карточки",
+    "year": "Год",
+    "recentMatch": "Последний матч",
+    "fulltime": "Конец",
+    "noMatches": "Матчи не найдены",
+    "noEvents": "Нет событий",
+    "notFound": "Игрок не найден",
+    "notFoundSub": "Информация об этом игроке пока недоступна"
   }
 }

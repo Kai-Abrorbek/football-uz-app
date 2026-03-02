@@ -10,6 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { Colors } from "../../../constants/colors";
 import { useTranslation } from "react-i18next";
+import { router } from "expo-router";
+import { Player } from "../../../types";
 
 interface Props {
   leagueId: string;
@@ -40,6 +42,7 @@ export default function LeaguePlayersTab({ leagueId }: Props) {
             key={index}
             style={styles.playerCard}
             activeOpacity={0.7}
+            onPress={() => router.push(`player/${player.apiFootballId}`)}
           >
             {player.photo ? (
               <Image
