@@ -22,7 +22,6 @@ export const useLiveMatches = () => {
     queryKey: ["matches", "live"],
     queryFn: () => api.get(ENDPOINTS.liveMatches),
     refetchInterval: 1000 * 30, // 30초마다 자동 갱신
-    staleTime: 0,
   });
 };
 

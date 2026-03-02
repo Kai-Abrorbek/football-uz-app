@@ -198,18 +198,27 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const offsetY = event.nativeEvent.contentOffset.y;
+      const contentHeight = event.nativeEvent.contentSize.height;
+      const layoutHeight = event.nativeEvent.layoutMeasurement.height;
+      const distanceFromBottom = contentHeight - offsetY - layoutHeight;
 
-      if (offsetY > 80) {
-        // 아래로 내려가면 잠금 해제 → 다시 맨 위 올라올 때 fetch 가능
-        hasFetchedTopRef.current = false;
+      // 아래 끝 감지 → 바닥에 닿았다가 살짝 올라올 때만 (50px 이상 올라왔을 때)
+      if (
+        distanceFromBottom > 50 && // ✅ 바닥에서 살짝 올라온 상태
+        distanceFromBottom < 150 && // ✅ 너무 멀리는 아닐 때
+        !isFetchingRef.current
+      ) {
+        loadNextRound();
       }
 
+      // 위 끝 감지
+      if (offsetY > 80) hasFetchedTopRef.current = false;
       if (offsetY < 10 && !isFetchingRef.current && !hasFetchedTopRef.current) {
-        hasFetchedTopRef.current = true; // 즉시 잠금
+        hasFetchedTopRef.current = true;
         loadPrevRound();
       }
     },
-    [loadPrevRound],
+    [loadNextRound, loadPrevRound],
   );
 
   // 그룹핑
@@ -405,8 +414,8 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
               </View>
             )}
             showsVerticalScrollIndicator={false}
-            onEndReached={loadNextRound}
-            onEndReachedThreshold={0.3}
+            // onEndReached={loadNextRound}
+            // onEndReachedThreshold={0.3}
             onScroll={handleScroll}
             scrollEventThrottle={300}
             maintainVisibleContentPosition={{ minIndexForVisible: 0 }}

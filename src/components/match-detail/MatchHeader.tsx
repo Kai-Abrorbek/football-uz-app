@@ -56,7 +56,13 @@ export default function MatchHeader({ match }: Props) {
   };
 
   const getTimeText = () => {
-    if (isLive || isFinished) return null;
+    if (isHalfTime) return t("matchCard.halfTime");
+    if (isLive) {
+      const elapsed = match.status.elapsed || 0;
+      const extra = (match.status as any).extra || 0;
+      return extra > 0 ? `${elapsed}+${extra}'` : `${elapsed}'`;
+    }
+    if (isFinished) return t("matchCard.finished");
     const date = new Date(match.date);
     return date.toLocaleTimeString(i18n.language, {
       hour: "2-digit",
@@ -213,46 +219,95 @@ export default function MatchHeader({ match }: Props) {
       {match.events && match.events.length > 0 && (
         <View style={styles.eventsContainer}>
           {(() => {
-            const filteredEvents = match.events.filter(
+            const allEvents = match.events.filter(
               (e) =>
                 e.type === "Goal" ||
                 (e.type === "Card" && e.detail === "Red Card"),
             );
 
-            const homeEvents = filteredEvents.filter(
+            const goalEvents = allEvents.filter((e) => e.type === "Goal");
+            const redCardEvents = allEvents.filter((e) => e.type === "Card");
+
+            const homeGoals = goalEvents.filter(
               (e) => e.team?.id === match.homeTeam.id,
             );
-
-            const awayEvents = filteredEvents.filter(
+            const awayGoals = goalEvents.filter(
+              (e) => e.team?.id !== match.homeTeam.id,
+            );
+            const homeRedCards = redCardEvents.filter(
+              (e) => e.team?.id === match.homeTeam.id,
+            );
+            const awayRedCards = redCardEvents.filter(
               (e) => e.team?.id !== match.homeTeam.id,
             );
 
             return (
-              <View style={styles.eventsRow}>
-                {/* 왼쪽 (홈팀) */}
-                <View style={styles.eventsColumn}>
-                  {homeEvents.map((event, index) => (
-                    <Text key={index} style={styles.eventText}>
-                      {event.player?.name?.split(" ").slice(-1)[0]}{" "}
-                      {event.time.elapsed}'
-                    </Text>
-                  ))}
-                </View>
+              <View style={{ gap: 8 }}>
+                {/* 골 섹션 */}
+                {goalEvents.length > 0 && (
+                  <View style={styles.eventsRow}>
+                    <View style={styles.eventsColumn}>
+                      {homeGoals.map((event, index) => (
+                        <Text key={index} style={styles.eventText}>
+                          {event.player?.name?.split(" ").slice(-1)[0]}{" "}
+                          {event.time.elapsed}'
+                        </Text>
+                      ))}
+                    </View>
 
-                {/* 가운데 아이콘 */}
-                <View style={styles.centerIcon}>
-                  <Text style={styles.eventIconText}>⚽</Text>
-                </View>
+                    <View style={styles.centerIcon}>
+                      <Text style={styles.eventIconText}>⚽</Text>
+                    </View>
 
-                {/* 오른쪽 (원정팀) */}
-                <View style={[styles.eventsColumn, { alignItems: "flex-end" }]}>
-                  {awayEvents.map((event, index) => (
-                    <Text key={index} style={styles.eventText}>
-                      {event.player?.name?.split(" ").slice(-1)[0]}{" "}
-                      {event.time.elapsed}'
-                    </Text>
-                  ))}
-                </View>
+                    <View
+                      style={[styles.eventsColumn, { alignItems: "flex-end" }]}
+                    >
+                      {awayGoals.map((event, index) => (
+                        <Text key={index} style={styles.eventText}>
+                          {event.player?.name?.split(" ").slice(-1)[0]}{" "}
+                          {event.time.elapsed}'
+                        </Text>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                {/* 레드카드 섹션 */}
+                {redCardEvents.length > 0 && (
+                  <View style={styles.eventsRow}>
+                    <View style={styles.eventsColumn}>
+                      {homeRedCards.map((event, index) => (
+                        <Text key={index} style={styles.eventText}>
+                          {event.player?.name?.split(" ").slice(-1)[0]}{" "}
+                          {event.time.elapsed}'
+                        </Text>
+                      ))}
+                    </View>
+
+                    <View style={styles.centerIcon}>
+                      <View
+                        style={{
+                          width: 12,
+                          height: 16,
+                          backgroundColor: "red",
+                          borderRadius: 2,
+                          transform: [{ rotate: "15deg" }],
+                        }}
+                      />
+                    </View>
+
+                    <View
+                      style={[styles.eventsColumn, { alignItems: "flex-end" }]}
+                    >
+                      {awayRedCards.map((event, index) => (
+                        <Text key={index} style={styles.eventText}>
+                          {event.player?.name?.split(" ").slice(-1)[0]}{" "}
+                          {event.time.elapsed}'
+                        </Text>
+                      ))}
+                    </View>
+                  </View>
+                )}
               </View>
             );
           })()}
@@ -407,7 +462,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingBottom: 8,
       borderTopWidth: 1,
       borderTopColor: Colors.border,
-      height: 120,
+      maxHeight: 120,
       overflow: "scroll",
     },
     eventsRow: {

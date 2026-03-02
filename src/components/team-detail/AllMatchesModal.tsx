@@ -68,7 +68,6 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
         if (cursor) params.append("cursor", cursor);
         if (direction) params.append("direction", direction);
         const url = `${ENDPOINTS.teamMatchDetail(teamId)}?${params.toString()}`;
-        console.log("fetchMatches URL:", url); // ✅ 추가
         const res = await api.get(url);
         return res as unknown as TeamMatchesResponse;
       } catch (e) {
