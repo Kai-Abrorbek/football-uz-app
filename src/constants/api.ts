@@ -2,6 +2,9 @@ export const API_URL = "http://localhost:4000/api/v1";
 // export const API_URL = "http://10.111.148.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
+export const WORLDCUP_LEAGUE_ID = 1;
+export const WORLDCUP_SEASON = 2022; // 나중에 2026으로 교체
+
 export const ENDPOINTS = {
   // Matches
   matches: "/matches",

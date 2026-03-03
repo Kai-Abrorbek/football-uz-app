@@ -128,14 +128,6 @@
       "label": "Реклама"
     }
   },
-
-  "worldcup": {
-    "banner": {
-      "title": "FIFA World Cup",
-      "location": "США · Канада · Мексика",
-      "teamBadge": "🇺🇿 Узбекистан"
-    }
-  },
   "players": {
     "uzbekAbroad": "Узбекские игроки за рубежом",
     "seeAll": "Смотреть все"
@@ -218,7 +210,8 @@
     "stats": "Статистика",
     "players": "Игроки",
     "matches": "Матчи",
-    "standings": "Таблица"
+    "standings": "Таблица",
+    "bracket": "Сетка"
   },
 
   "leagueDetail": {
@@ -445,6 +438,47 @@
     "news": "Новости",
     "chat": "AI Чат",
     "profile": "Профиль"
+  },
+  "worldcup": {
+  "qualifier": "Квалификация",
+  "playoff": "Плей-офф",
+  "title": "Чемпионат мира FIFA 2026",
+  "subtitle": "11 июня – 19 июля 2026",
+  "matches": "Матчи",
+  "moreMatches": "Все матчи",
+  "groupStage": "Групповой этап",
+  "tournament": "Плей-офф",
+  "group": "Группа",
+  "fulltime": "Завершён",
+  "matchesModal": {
+    "title": "Матчи Чемпионата мира"
+  },
+  "bracket": {
+    "roundOf32": "1/16 финала",
+    "roundOf16": "1/8 финала",
+    "quarterFinals": "Четвертьфинал",
+    "semiFinals": "Полуфинал",
+    "final": "Финал",
+    "thirdPlace": "3-е место",
+    "undecided": "TBD"
+  },
+  "standings": {
+    "team": "Команда",
+    "played": "И",
+    "win": "В",
+    "draw": "Н",
+    "lose": "П",
+    "points": "О",
+    "gf": "ЗГ",
+    "ga": "ПГ",
+    "gd": "РМ"
+    } ,
+    "banner": {
+      "title": "FIFA World Cup",
+      "location": "США · Канада · Мексика",
+      "teamBadge": "🇺🇿 Узбекистан"
+    },
+    "tabs": { "bracket": "Сетка" }
   }
   
 }

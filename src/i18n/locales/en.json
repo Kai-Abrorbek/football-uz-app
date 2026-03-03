@@ -137,14 +137,6 @@
       "label": "Advertisement"
     }
   },
-
-  "worldcup": {
-    "banner": {
-      "title": "FIFA World Cup",
-      "location": "USA · Canada · Mexico",
-      "teamBadge": "🇺🇿 Uzbekistan"
-    }
-  },
   "players": {
     "uzbekAbroad": "Uzbek Players Abroad",
     "seeAll": "See all"
@@ -227,7 +219,8 @@
     "stats": "Stats",
     "players": "Players",
     "matches": "Matches",
-    "standings": "Standings"
+    "standings": "Standings",
+    "bracket": "Bracket"
   },
 
   "leagueDetail": {
@@ -456,5 +449,46 @@
     "news": "News",
     "chat": "AI Chat",
     "profile": "Profile"
+  },
+  "worldcup": {
+    "qualifier": "Qualifier",
+    "playoff": "Playoff",
+    "title": "FIFA World Cup 2026",
+    "subtitle": "Jun 11, 2026 – Jul 19, 2026",
+    "matches": "Matches",
+    "moreMatches": "More Matches",
+    "groupStage": "Group Stage",
+    "tournament": "Tournament",
+    "group": "Group",
+    "fulltime": "FT",
+    "matchesModal": {
+      "title": "World Cup Matches"
+    },
+    "bracket": {
+      "roundOf32": "Round of 32",
+      "roundOf16": "Round of 16",
+      "quarterFinals": "Quarter-finals",
+      "semiFinals": "Semi-finals",
+      "final": "Final",
+      "thirdPlace": "3rd Place",
+      "undecided": "TBD"
+    },
+    "standings": {
+      "team": "Team",
+      "played": "P",
+      "win": "W",
+      "draw": "D",
+      "lose": "L",
+      "points": "Pts",
+      "gf": "GF",
+      "ga": "GA",
+      "gd": "GD"
+    },
+    "banner": {
+      "title": "FIFA World Cup",
+      "location": "USA · Canada · Mexico",
+      "teamBadge": "🇺🇿 Uzbekistan"
+    },
+    "tabs": { "bracket": "Bracket" }
   }
 }

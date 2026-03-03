@@ -128,14 +128,6 @@
       "label": "Reklama"
     }
   },
-
-  "worldcup": {
-    "banner": {
-      "title": "FIFA World Cup",
-      "location": "AQSh · Kanada · Meksika",
-      "teamBadge": "🇺🇿 O‘zbekiston"
-    }
-  },
   "players": {
     "uzbekAbroad": "Chet eldagi o‘zbek futbolchilari",
     "seeAll": "Barchasini ko‘rish"
@@ -218,7 +210,8 @@
     "stats": "Statistika",
     "players": "O‘yinchilar",
     "matches": "O‘yinlar",
-    "standings": "Jadval"
+    "standings": "Reyting",
+    "bracket": "Jadval"
   },
 
   "leagueDetail": {
@@ -445,5 +438,47 @@
     "news": "Yangiliklar",
     "chat": "AI Chat",
     "profile": "Profil"
+  },
+
+  "worldcup": {
+    "qualifier": "Kvalifikatsiya",
+    "playoff": "Pley-off",
+    "title": "FIFA Jahon kubogi 2026",
+    "subtitle": "2026-yil 11-iyun – 19-iyul",
+    "matches": "O'yinlar",
+    "moreMatches": "Barcha o'yinlar",
+    "groupStage": "Guruh bosqichi",
+    "tournament": "Pley-off",
+    "group": "Guruh",
+    "fulltime": "Tugadi",
+    "matchesModal": {
+      "title": "Jahon kubogi o'yinlari"
+    },
+    "bracket": {
+      "roundOf32": "1/16 final",
+      "roundOf16": "1/8 final",
+      "quarterFinals": "Chorak final",
+      "semiFinals": "Yarim final",
+      "final": "Final",
+      "thirdPlace": "3-o'rin",
+      "undecided": "TBD"
+    },
+    "standings": {
+      "team": "Jamoa",
+      "played": "O",
+      "win": "G",
+      "draw": "D",
+      "lose": "Y",
+      "points": "B",
+      "gf": "UG",
+      "ga": "KG",
+      "gd": "GF"
+    },
+    "banner": {
+        "title": "FIFA World Cup",
+        "location": "AQSh · Kanada · Meksika",
+        "teamBadge": "🇺🇿 O‘zbekiston"
+    },
+    "tabs": { "bracket": "Jadval" }
   }
 }
