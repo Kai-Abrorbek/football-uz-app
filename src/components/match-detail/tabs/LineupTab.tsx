@@ -286,7 +286,10 @@ function SubPlayerCard({
     player?.playerName?.split(" ").slice(-1)[0] || t("lineup.unknown");
 
   return (
-    <View style={[styles.subPlayerCard, isRight && styles.subPlayerCardRight]}>
+    <Pressable
+      onPress={() => router.push(`player/${player.playerId}`)}
+      style={[styles.subPlayerCard, isRight && styles.subPlayerCardRight]}
+    >
       <View style={styles.subPhotoContainer}>
         {player?.photo ? (
           <Image
@@ -316,7 +319,7 @@ function SubPlayerCard({
           {player?.number ?? "-"}
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -348,6 +351,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       justifyContent: "center",
       padding: 40,
+      backgroundColor: Colors.background,
     },
     emptyText: {
       fontSize: 14,

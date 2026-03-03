@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
+import { useError } from "../../../contexts/ErrorContext";
 
 interface Props {
   match: Match;
@@ -49,12 +50,14 @@ export default function StandingsTab({ match }: Props) {
   const { t } = useTranslation();
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const { errorComponent } = useError();
 
   // ✅ (서버 데이터 가져오는 부분 건드리지 않음)
-  const { data: standing } = useQuery<any>({
+  const { data: standing, isError } = useQuery<any>({
     queryKey: ["standings", match.league.id],
     queryFn: () => api.get(ENDPOINTS.leagueStandings(match.league.id)),
     staleTime: 1000 * 60 * 30,
+    retry: false,
   });
 
   const standings: StandingEntry[] = useMemo(() => {
@@ -138,6 +141,14 @@ export default function StandingsTab({ match }: Props) {
       </View>
     );
   };
+
+  if (isError) {
+    return errorComponent(isError, {
+      icon: "podium-outline",
+      title: t("standings.notFound"),
+      subtitle: t("standings.notFoundSub"),
+    });
+  }
 
   if (!standings || standings.length === 0) {
     return (
@@ -334,7 +345,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 14,
-      backgroundColor: "#f5f5f5",
+      backgroundColor: Colors.background,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
@@ -345,12 +356,12 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingVertical: 0,
       paddingRight: 14,
-      backgroundColor: "#f5f5f5",
+      backgroundColor: Colors.background,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
 
-    rowHighlight: { backgroundColor: "#e8f0fe" },
+    rowHighlight: { backgroundColor: Colors.background2 },
 
     // ✅ 높이 고정
     leftCell: {
@@ -390,7 +401,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       elevation: 3,
     },
 
-    hText: { fontSize: 12, fontWeight: "700", color: Colors.textSecondary },
+    hText: { fontSize: 12, fontWeight: "700", color: Colors.text },
     bText: { fontSize: 14, color: Colors.text, textAlign: "center" },
 
     rank: {

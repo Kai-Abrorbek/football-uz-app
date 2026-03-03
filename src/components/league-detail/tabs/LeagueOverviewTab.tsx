@@ -229,7 +229,7 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
           <Text style={styles.moreButtonText}>
             {t("leagueOverview.seeMore")}
           </Text>
-          <Ionicons name="chevron-forward" size={16} color={Colors.text} />
+          <Ionicons name="chevron-forward" size={16} color={Colors.text2} />
         </TouchableOpacity>
 
         <View style={{ height: 20 }} />
@@ -388,7 +388,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#f0e6ff",
+      backgroundColor: Colors.background2,
       marginHorizontal: 16,
       paddingVertical: 16,
       borderRadius: 12,
@@ -398,7 +398,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     moreButtonText: {
       fontSize: 15,
       fontWeight: "700",
-      color: Colors.text,
+      color: Colors.text2,
     },
     // 모달
     modalOverlay: {

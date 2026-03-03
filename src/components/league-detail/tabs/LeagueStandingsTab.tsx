@@ -13,11 +13,13 @@ import {
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../../constants/colors";
+import { Colors, getColors } from "../../../constants/colors";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useColors } from "../../../hooks/useColors";
+import { useError } from "../../../contexts/ErrorContext";
 
 interface Props {
   leagueId: string;
@@ -53,6 +55,10 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
   const [selectedSeason, setSelectedSeason] = useState("2024");
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
   const { t } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+  const { errorComponent } = useError();
+
   // ✅ 오른쪽 “단 하나”의 가로 스크롤
   const rightScrollRef = useRef<ScrollView>(null);
 
@@ -99,7 +105,7 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
   ).current;
 
   // 순위표 조회
-  const { data: standingsData } = useQuery<any>({
+  const { data: standingsData, isError } = useQuery<any>({
     queryKey: ["league-standings", leagueId, selectedSeason],
     queryFn: () =>
       api.get(
@@ -109,6 +115,7 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
         ),
       ),
     staleTime: 1000 * 60 * 30,
+    retry: false,
   });
 
   const standings: StandingEntry[] = useMemo(() => {
@@ -147,6 +154,14 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
       </View>
     );
   };
+
+  if (isError) {
+    return errorComponent(isError, {
+      icon: "podium-outline",
+      title: t("standings.notFound"),
+      subtitle: t("standings.notFoundSub"),
+    });
+  }
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -383,177 +398,178 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white" },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: "white" },
 
-  seasonSelector: {
-    backgroundColor: Colors.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  seasonLabel: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    marginBottom: 4,
-  },
-  seasonValue: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  seasonText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.text,
-  },
+    seasonSelector: {
+      backgroundColor: Colors.surface,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    seasonLabel: {
+      fontSize: 12,
+      color: Colors.textSecondary,
+      marginBottom: 4,
+    },
+    seasonValue: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    seasonText: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: Colors.text,
+    },
 
-  tableWrap: { backgroundColor: Colors.surface },
+    tableWrap: { backgroundColor: Colors.surface },
 
-  tableBody: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    position: "relative",
-    backgroundColor: Colors.surface,
-  },
+    tableBody: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      position: "relative",
+      backgroundColor: Colors.surface,
+    },
 
-  leftPane: {
-    width: LEFT_W,
-    backgroundColor: Colors.surface,
-  },
+    leftPane: {
+      width: LEFT_W,
+      backgroundColor: Colors.surface,
+    },
 
-  leftHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    backgroundColor: "#f5f5f5",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    height: HEADER_H,
-  },
+    leftHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      backgroundColor: "#f5f5f5",
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+      height: HEADER_H,
+    },
 
-  rightHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingRight: 14,
-    backgroundColor: "#f5f5f5",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    height: HEADER_H,
-  },
+    rightHeaderRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 10,
+      paddingRight: 14,
+      backgroundColor: "#f5f5f5",
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+      height: HEADER_H,
+    },
 
-  leftCell: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    height: ROW_H,
-  },
+    leftCell: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+      height: ROW_H,
+    },
 
-  rightRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingRight: 14,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    height: ROW_H,
-  },
+    rightRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 12,
+      paddingRight: 14,
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+      height: ROW_H,
+    },
 
-  // ✅ 가운데 세로 구분선 (x>0일 때만 렌더)
-  midDivider: {
-    position: "absolute",
-    left: LEFT_W,
-    top: 0,
-    bottom: 0,
-    width: 1,
-    backgroundColor: Colors.border,
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 2, height: 0 },
-    elevation: 3,
-  },
+    // ✅ 가운데 세로 구분선 (x>0일 때만 렌더)
+    midDivider: {
+      position: "absolute",
+      left: LEFT_W,
+      top: 0,
+      bottom: 0,
+      width: 1,
+      backgroundColor: Colors.border,
+      shadowColor: "#000",
+      shadowOpacity: 0.12,
+      shadowRadius: 6,
+      shadowOffset: { width: 2, height: 0 },
+      elevation: 3,
+    },
 
-  emptyContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 40,
-    marginTop: 150,
-  },
-  emptyText: { fontSize: 14, color: Colors.textSecondary },
+    emptyContainer: {
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 40,
+      marginTop: 150,
+    },
+    emptyText: { fontSize: 14, color: Colors.textSecondary },
 
-  hText: { fontSize: 12, fontWeight: "700", color: Colors.textSecondary },
-  bText: { fontSize: 14, color: Colors.text, textAlign: "center" },
+    hText: { fontSize: 12, fontWeight: "700", color: Colors.textSecondary },
+    bText: { fontSize: 14, color: Colors.text, textAlign: "center" },
 
-  rank: {
-    width: 22,
-    textAlign: "right",
-    fontSize: 14,
-    fontWeight: "800",
-    color: Colors.text,
-  },
-  teamLogo: { width: 22, height: 22 },
-  teamName: { flex: 1, fontSize: 14, fontWeight: "600", color: Colors.text },
+    rank: {
+      width: 22,
+      textAlign: "right",
+      fontSize: 14,
+      fontWeight: "800",
+      color: Colors.text,
+    },
+    teamLogo: { width: 22, height: 22 },
+    teamName: { flex: 1, fontSize: 14, fontWeight: "600", color: Colors.text },
 
-  col: { width: COL_W, textAlign: "center" },
-  colPts: { width: 62, textAlign: "center" },
-  pts: { fontWeight: "900" },
+    col: { width: COL_W, textAlign: "center" },
+    colPts: { width: 62, textAlign: "center" },
+    pts: { fontWeight: "900" },
 
-  colForm: { width: FORM_W },
-  formCell: { justifyContent: "center", alignItems: "center" },
-  formRow: { flexDirection: "row", gap: 6, alignItems: "center" },
+    colForm: { width: FORM_W },
+    formCell: { justifyContent: "center", alignItems: "center" },
+    formRow: { flexDirection: "row", gap: 6, alignItems: "center" },
 
-  formDot: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  formW: { backgroundColor: "#2e7d32" },
-  formL: { backgroundColor: "#d32f2f" },
-  formD: { backgroundColor: "#9e9e9e" },
+    formDot: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    formW: { backgroundColor: "#2e7d32" },
+    formL: { backgroundColor: "#d32f2f" },
+    formD: { backgroundColor: "#9e9e9e" },
 
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    width: "80%",
-    maxWidth: 300,
-    overflow: "hidden",
-  },
-  seasonOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  seasonOptionActive: {
-    backgroundColor: "#f0f0f0",
-  },
-  seasonOptionText: {
-    fontSize: 15,
-    color: Colors.text,
-  },
-  seasonOptionTextActive: {
-    fontWeight: "700",
-    color: Colors.primary,
-  },
-});
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalContent: {
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      width: "80%",
+      maxWidth: 300,
+      overflow: "hidden",
+    },
+    seasonOption: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    seasonOptionActive: {
+      backgroundColor: "#f0f0f0",
+    },
+    seasonOptionText: {
+      fontSize: 15,
+      color: Colors.text,
+    },
+    seasonOptionTextActive: {
+      fontWeight: "700",
+      color: Colors.primary,
+    },
+  });

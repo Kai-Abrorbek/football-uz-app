@@ -83,7 +83,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       color: Colors.textSecondary,
     },
     tabTextActive: {
-      color: "#ffffff",
+      color: Colors.border,
       fontWeight: "700",
     },
   });

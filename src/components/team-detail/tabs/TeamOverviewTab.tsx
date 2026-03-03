@@ -9,26 +9,43 @@ import {
 import { useState } from "react";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { Colors, getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import AllMatchesModal from "../AllMatchesModal";
 import { useColors } from "../../../hooks/useColors";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   teamId: number;
   teamMatches: Match[] | [];
 }
 
-export default function TeamOverviewTab({ teamId, teamMatches }: Props) {
+export default function TeamOverviewTab({ teamId, teamMatches }: any) {
+  const { t, i18n } = useTranslation();
+  const router = useRouter();
   const [showAllMatches, setShowAllMatches] = useState(false);
   const Colors = useColors();
   const styles = getStyles(Colors);
 
   // 다음 경기 4개 (하이라이트 제외)
-  const upcomingMatches = teamMatches.slice(0, 4) || [];
+  const upcomingMatches = teamMatches?.slice(0, 4) || [];
 
-  const renderSmallMatchCard = (match: Match) => {
+  // 언어 설정에 따른 로케일 헬퍼
+  const getLocale = () => {
+    switch (i18n.language) {
+      case "ko":
+        return "ko-KR";
+      case "ru":
+        return "ru-RU";
+      case "uz":
+        return "uz-UZ";
+      default:
+        return "en-US";
+    }
+  };
+
+  const renderSmallMatchCard = (match: any) => {
     const isFinished = match.status.short === "FT";
     const homeGoals = match.goals.home ?? 0;
     const awayGoals = match.goals.away ?? 0;
@@ -45,9 +62,8 @@ export default function TeamOverviewTab({ teamId, teamMatches }: Props) {
           {/* 홈팀 */}
           <View style={styles.smallTeamRow}>
             <Image
-              source={match.homeTeam.logo}
+              source={{ uri: match.homeTeam.logo }}
               style={styles.smallLogo}
-              contentFit="contain"
             />
             <Text style={styles.smallTeamName}>{match.homeTeam.name}</Text>
             {isFinished && <Text style={styles.smallScore}>{homeGoals}</Text>}
@@ -56,9 +72,8 @@ export default function TeamOverviewTab({ teamId, teamMatches }: Props) {
           {/* 원정팀 */}
           <View style={styles.smallTeamRow}>
             <Image
-              source={match.awayTeam.logo}
+              source={{ uri: match.awayTeam.logo }}
               style={styles.smallLogo}
-              contentFit="contain"
             />
             <Text style={styles.smallTeamName}>{match.awayTeam.name}</Text>
             {isFinished && <Text style={styles.smallScore}>{awayGoals}</Text>}
@@ -71,18 +86,18 @@ export default function TeamOverviewTab({ teamId, teamMatches }: Props) {
         {/* 날짜/시간 or 상태 */}
         <View style={styles.smallRight}>
           {isFinished ? (
-            <Text style={styles.smallStatus}>풀타임</Text>
+            <Text style={styles.smallStatus}>{t("overview.fullTime")}</Text>
           ) : (
             <>
               <Text style={styles.smallDate}>
-                {new Date(match.date).toLocaleDateString("ko-KR", {
+                {new Date(match.date).toLocaleDateString(getLocale(), {
                   month: "numeric",
                   day: "numeric",
                   weekday: "short",
                 })}
               </Text>
               <Text style={styles.smallTime}>
-                {new Date(match.date).toLocaleTimeString("ko-KR", {
+                {new Date(match.date).toLocaleTimeString(getLocale(), {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
@@ -93,11 +108,12 @@ export default function TeamOverviewTab({ teamId, teamMatches }: Props) {
       </TouchableOpacity>
     );
   };
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 경기 섹션 타이틀 */}
-        <Text style={styles.sectionTitle}>경기</Text>
+        <Text style={styles.sectionTitle}>{t("overview.matches")}</Text>
 
         {/* 다음 경기들 */}
         {upcomingMatches.map(renderSmallMatchCard)}
@@ -107,12 +123,13 @@ export default function TeamOverviewTab({ teamId, teamMatches }: Props) {
           style={styles.moreButton}
           onPress={() => setShowAllMatches(true)}
         >
-          <Text style={styles.moreButtonText}>경기 더보기</Text>
+          <Text style={styles.moreButtonText}>{t("overview.showMore")}</Text>
           <Ionicons name="chevron-forward" size={16} color={Colors.text} />
         </TouchableOpacity>
 
         <View style={{ height: 20 }} />
       </ScrollView>
+
       {/* 전체 경기 모달 */}
       <AllMatchesModal
         visible={showAllMatches}

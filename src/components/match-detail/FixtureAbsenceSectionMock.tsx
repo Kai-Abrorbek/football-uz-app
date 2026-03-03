@@ -9,14 +9,15 @@ import {
   UIManager,
   Modal,
   Pressable,
-  ScrollView,
 } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
-import { Colors } from "../../constants/colors";
+import { getColors } from "../../constants/colors";
+import { useColors } from "../../hooks/useColors";
+import { router } from "expo-router";
 
 if (
   Platform.OS === "android" &&
@@ -28,23 +29,34 @@ if (
 type TeamSide = "home" | "away";
 
 type Props = {
-  // 나중에 API로 바꿀 때 이 값으로 요청하면 됨
   fixtureId: number;
-  // 섹션을 외부에서 제어하고 싶으면 쓸 수 있게 열어둠(옵션)
   defaultOpen?: boolean;
-  // 기본으로 보여줄 개수
   previewCount?: number;
 };
+
+import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
+
+// 프로젝트 설정에 따라 수정 필요
+// import { api, ENDPOINTS } from "@/api";
+// import { useColors } from "@/hooks/useColors";
+// import { getStyles } from "./styles";
 
 export default function FixtureAbsenceSectionMock({
   fixtureId,
   defaultOpen = true,
   previewCount = 3,
-}: Props) {
+}: any) {
+  const { t } = useTranslation();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [activeTeam, setActiveTeam] = useState<TeamSide>("home");
+  const [activeTeam, setActiveTeam] = useState<"home" | "away">("home");
   const [expanded, setExpanded] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
+
+  // 아래 훅들과 스타일은 아브로르의 프로젝트 환경에 맞게 정의되어 있다고 가정할게
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
   const { data, isLoading } = useQuery<any>({
     queryKey: ["fixtureAbsences", fixtureId],
@@ -67,7 +79,7 @@ export default function FixtureAbsenceSectionMock({
 
   const toggleOpen = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsOpen((v) => !v);
+    setIsOpen((v: any) => !v);
   };
 
   const toggleExpanded = () => {
@@ -75,17 +87,17 @@ export default function FixtureAbsenceSectionMock({
     setExpanded((v) => !v);
   };
 
-  const onSelectTeam = (side: TeamSide) => {
+  const onSelectTeam = (side: "home" | "away") => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setActiveTeam(side);
-    setExpanded(false); // 탭 바꾸면 더보기는 접기
+    setExpanded(false);
   };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerRow}>
-        <Text style={styles.title}>부상 및 출장 정지</Text>
+        <Text style={styles.title}>{t("absence.title")}</Text>
 
         <View style={styles.headerActions}>
           <TouchableOpacity
@@ -141,10 +153,10 @@ export default function FixtureAbsenceSectionMock({
           {/* List */}
           <View style={styles.listWrap}>
             {visiblePlayers.length === 0 ? (
-              <Text style={styles.emptyText}>결장자가 없습니다.</Text>
+              <Text style={styles.emptyText}>{t("absence.noAbsentees")}</Text>
             ) : (
               visiblePlayers.map((p: any) => (
-                <AbsenceRow key={p.playerId} p={p} />
+                <AbsenceRow key={p.playerId} p={p} t={t} router={router} />
               ))
             )}
           </View>
@@ -156,7 +168,7 @@ export default function FixtureAbsenceSectionMock({
               onPress={toggleExpanded}
               activeOpacity={0.85}
             >
-              <Text style={styles.moreText}>더보기</Text>
+              <Text style={styles.moreText}>{t("absence.more")}</Text>
               <Ionicons
                 name={expanded ? "chevron-up" : "chevron-down"}
                 size={18}
@@ -181,20 +193,17 @@ export default function FixtureAbsenceSectionMock({
             style={styles.menuItem}
             onPress={() => {
               setMenuVisible(false);
-              // 나중에 실제 데이터일 때 refetch 넣으면 됨
-              // refetch();
+              // refetch(); // 필요한 경우 활성화
             }}
             activeOpacity={0.7}
           >
             <Ionicons name="refresh" size={18} color="#222" />
-            <Text style={styles.menuText}>새로고침</Text>
+            <Text style={styles.menuText}>{t("absence.refresh")}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => {
-              setMenuVisible(false);
-            }}
+            onPress={() => setMenuVisible(false)}
             activeOpacity={0.7}
           >
             <Ionicons
@@ -202,7 +211,7 @@ export default function FixtureAbsenceSectionMock({
               size={18}
               color="#222"
             />
-            <Text style={styles.menuText}>정보</Text>
+            <Text style={styles.menuText}>{t("absence.info")}</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -212,17 +221,10 @@ export default function FixtureAbsenceSectionMock({
 
 /* -------------------- Sub Components -------------------- */
 
-function TeamTab({
-  active,
-  name,
-  logo,
-  onPress,
-}: {
-  active: boolean;
-  name: string;
-  logo?: string | null;
-  onPress: () => void;
-}) {
+function TeamTab({ active, name, logo, onPress }: any) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+
   return (
     <TouchableOpacity
       style={styles.tabBtn}
@@ -231,7 +233,7 @@ function TeamTab({
     >
       <View style={styles.tabInner}>
         {logo ? (
-          <Image source={logo} style={styles.teamLogo} contentFit="contain" />
+          <Image source={{ uri: logo }} style={styles.teamLogo} />
         ) : (
           <View style={styles.teamLogoPlaceholder} />
         )}
@@ -246,254 +248,258 @@ function TeamTab({
   );
 }
 
-function AbsenceRow({ p }: { p: any }) {
-  return (
-    <View style={styles.row}>
-      <View style={styles.avatarWrap}>
-        {p.photo ? (
-          <Image source={p.photo} style={styles.avatar} contentFit="cover" />
-        ) : (
-          <View style={styles.avatarFallback}>
-            <Ionicons name="person" size={28} color="#b8b8b8" />
-          </View>
-        )}
+function AbsenceRow({ p, t, router }: any) {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
-        {/* red + badge */}
-        <View style={styles.badge}>
-          <Ionicons name="add" size={14} color="#fff" />
+  return (
+    <Pressable onPress={() => router.push(`player/${p.playerId}`)}>
+      <View style={styles.row}>
+        <View style={styles.avatarWrap}>
+          {p.photo ? (
+            <Image source={{ uri: p.photo }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarFallback}>
+              <Ionicons name="person" size={28} color="#b8b8b8" />
+            </View>
+          )}
+          <View style={styles.badge}>
+            <Ionicons name="add" size={14} color="#fff" />
+          </View>
+        </View>
+
+        <View style={styles.rowText}>
+          <Text style={styles.playerLine} numberOfLines={1}>
+            <Text style={styles.playerName}>{p.name}</Text>
+            <Text style={styles.dot}> · </Text>
+            <Text style={styles.playerMeta}>
+              {p.position ?? t("absence.position")}{" "}
+              {typeof p.number === "number" ? `#${p.number}` : ""}
+            </Text>
+          </Text>
+
+          <Text style={styles.statusText} numberOfLines={1}>
+            {p.reason ?? ""}
+          </Text>
         </View>
       </View>
-
-      <View style={styles.rowText}>
-        <Text style={styles.playerLine} numberOfLines={1}>
-          <Text style={styles.playerName}>{p.name}</Text>
-          <Text style={styles.dot}> · </Text>
-          <Text style={styles.playerMeta}>
-            {p.position ?? "포지션"}{" "}
-            {typeof p.number === "number" ? `#${p.number}` : ""}
-          </Text>
-        </Text>
-
-        <Text style={styles.statusText} numberOfLines={1}>
-          {p.reason ?? ""}
-        </Text>
-      </View>
-    </View>
+    </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
-  },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: Colors.surface,
+    },
 
-  headerRow: {
-    paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#111",
-  },
-  headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  iconBtn: {
-    width: 36,
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  chevBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: Colors.background,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    headerRow: {
+      paddingHorizontal: 18,
+      paddingTop: 16,
+      paddingBottom: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    headerActions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    iconBtn: {
+      width: 36,
+      height: 36,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    chevBtn: {
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      backgroundColor: Colors.background,
+      alignItems: "center",
+      justifyContent: "center",
+    },
 
-  tabsRow: {
-    flexDirection: "row",
-    paddingHorizontal: 14,
-    paddingTop: 10,
-  },
-  tabBtn: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  tabInner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    maxWidth: "92%",
-  },
-  teamLogo: {
-    width: 26,
-    height: 26,
-  },
-  teamLogoPlaceholder: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: Colors.background,
-  },
-  teamName: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-  },
-  teamNameActive: {
-    color: Colors.text,
-  },
+    tabsRow: {
+      flexDirection: "row",
+      paddingHorizontal: 14,
+      paddingTop: 10,
+    },
+    tabBtn: {
+      flex: 1,
+      paddingVertical: 12,
+      alignItems: "center",
+    },
+    tabInner: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      maxWidth: "92%",
+    },
+    teamLogo: {
+      width: 26,
+      height: 26,
+    },
+    teamLogoPlaceholder: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: Colors.background,
+    },
+    teamName: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: Colors.textSecondary,
+    },
+    teamNameActive: {
+      color: Colors.text,
+    },
 
-  tabIndicatorWrap: {
-    height: 2,
-    backgroundColor: "#e9e9e9",
-  },
-  tabIndicator: {
-    position: "absolute",
-    top: 0,
-    width: "50%",
-    height: 2,
-    backgroundColor: "#1f6feb",
-  },
+    tabIndicatorWrap: {
+      height: 2,
+      backgroundColor: Colors.background,
+    },
+    tabIndicator: {
+      position: "absolute",
+      top: 0,
+      width: "50%",
+      height: 2,
+      backgroundColor: Colors.tabBarActive,
+    },
 
-  listWrap: {
-    paddingTop: 4,
-  },
-  emptyText: {
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    color: "#666",
-    fontSize: 14,
-  },
+    listWrap: {
+      paddingTop: 4,
+    },
+    emptyText: {
+      paddingHorizontal: 18,
+      paddingVertical: 14,
+      color: Colors.text,
+      fontSize: 14,
+    },
 
-  row: {
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ededed",
-  },
+    row: {
+      paddingHorizontal: 18,
+      paddingVertical: 16,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
 
-  avatarWrap: {
-    width: 56,
-    height: 56,
-    position: "relative",
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#f0f0f0",
-  },
-  avatarFallback: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#f0f0f0",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badge: {
-    position: "absolute",
-    right: -2,
-    bottom: -2,
-    width: 20,
-    height: 20,
-    borderRadius: 6,
-    backgroundColor: "#d32f2f",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
+    avatarWrap: {
+      width: 56,
+      height: 56,
+      position: "relative",
+    },
+    avatar: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: Colors.background,
+    },
+    avatarFallback: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: Colors.background,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    badge: {
+      position: "absolute",
+      right: -2,
+      bottom: -2,
+      width: 20,
+      height: 20,
+      borderRadius: 6,
+      backgroundColor: "#d32f2f",
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 2,
+      borderColor: Colors.border,
+    },
 
-  rowText: {
-    flex: 1,
-    gap: 6,
-  },
-  playerLine: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#111",
-  },
-  playerName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111",
-  },
-  dot: {
-    color: "#999",
-    fontWeight: "600",
-  },
-  playerMeta: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#8a8a8a",
-  },
-  statusText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#666",
-  },
+    rowText: {
+      flex: 1,
+      gap: 6,
+    },
+    playerLine: {
+      fontSize: 22,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    playerName: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: Colors.text,
+    },
+    dot: {
+      color: Colors.text,
+      fontWeight: "600",
+    },
+    playerMeta: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    statusText: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: Colors.text,
+    },
 
-  moreBtn: {
-    marginTop: 14,
-    marginHorizontal: 16,
-    height: 54,
-    borderRadius: 28,
-    backgroundColor: "#f2f2f2",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 8,
-  },
-  moreText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#222",
-  },
+    moreBtn: {
+      marginTop: 14,
+      marginHorizontal: 16,
+      height: 54,
+      borderRadius: 28,
+      backgroundColor: Colors.background,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      gap: 8,
+    },
+    moreText: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: Colors.text,
+    },
 
-  menuBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)",
-  },
-  menuSheet: {
-    position: "absolute",
-    top: 72,
-    right: 16,
-    width: 180,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    paddingVertical: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
-  },
-  menuItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  menuText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#222",
-  },
-});
+    menuBackdrop: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    menuSheet: {
+      position: "absolute",
+      top: 72,
+      right: 16,
+      width: 180,
+      backgroundColor: Colors.text,
+      borderRadius: 12,
+      paddingVertical: 8,
+      shadowColor: Colors.text,
+      shadowOpacity: 0.15,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 6 },
+      elevation: 8,
+    },
+    menuItem: {
+      paddingHorizontal: 12,
+      paddingVertical: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    menuText: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+  });

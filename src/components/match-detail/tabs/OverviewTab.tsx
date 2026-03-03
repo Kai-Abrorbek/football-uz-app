@@ -176,7 +176,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
 
         {/* 순위 */}
         <CollapsibleSection
-          title="순위"
+          title={t("matchOverview.ranking")}
           subtitle={t("matchOverview.versus", {
             home: match.homeTeam.name,
             away: match.awayTeam.name,
@@ -185,11 +185,23 @@ export default function OverviewTab({ match, onTabChange }: Props) {
         >
           <View style={stylesMini.container}>
             <View style={stylesMini.header}>
-              <Text style={stylesMini.headerRank}>#</Text>
-              <Text>{t("matchOverview.table.team")}</Text>
-              <Text>{t("matchOverview.table.played")}</Text>
-              <Text>{t("matchOverview.table.goalDiff")}</Text>
-              <Text>{t("matchOverview.table.points")}</Text>
+              <View style={{ flexDirection: "row", gap: 25 }}>
+                <Text style={stylesMini.headerRank}>#</Text>
+                <Text style={stylesMini.headertitle}>
+                  {t("matchOverview.table.team")}
+                </Text>
+              </View>
+              <View style={{ flexDirection: "row", gap: 15 }}>
+                <Text style={stylesMini.headertitle}>
+                  {t("matchOverview.table.played")}
+                </Text>
+                <Text style={stylesMini.headertitle}>
+                  {t("matchOverview.table.goalDiff")}
+                </Text>
+                <Text style={stylesMini.headertitle}>
+                  {t("matchOverview.table.points")}
+                </Text>
+              </View>
             </View>
             {[homeStanding, awayStanding]
               .filter(Boolean)
@@ -553,24 +565,28 @@ const miniStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingVertical: 6,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
+      justifyContent: "space-between",
     },
     headerRank: {
       width: 24,
       fontSize: 11,
-      color: Colors.textSecondary,
+      color: Colors.text,
       fontWeight: "600",
       textAlign: "center",
+    },
+    headertitle: {
+      color: Colors.text,
     },
     headerTeam: {
       flex: 1,
       fontSize: 11,
-      color: Colors.textSecondary,
+      color: Colors.text,
       fontWeight: "600",
     },
     headerStat: {
       width: 40,
       fontSize: 11,
-      color: Colors.textSecondary,
+      color: Colors.text,
       fontWeight: "600",
       textAlign: "center",
     },
@@ -634,7 +650,7 @@ const formStyles = (Colors: ReturnType<typeof getColors>) =>
     formW: { backgroundColor: "#34a853" },
     formL: { backgroundColor: "#ea4335" },
     formD: { backgroundColor: "#9e9e9e" },
-    formText: { fontSize: 10, fontWeight: "700", color: "#ffffff" },
+    formText: { fontSize: 10, fontWeight: "700", color: Colors.text },
   });
 
 const h2hStyles = (Colors: ReturnType<typeof getColors>) =>
@@ -703,7 +719,7 @@ const injuryStyles = (Colors: ReturnType<typeof getColors>) =>
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: "#fff0f0",
+      backgroundColor: Colors.background,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -711,7 +727,7 @@ const injuryStyles = (Colors: ReturnType<typeof getColors>) =>
     injuryName: { fontSize: 14, fontWeight: "600", color: Colors.text },
     injuryPos: { fontSize: 12, color: Colors.textSecondary },
     injuryBadge: {
-      backgroundColor: "#fff0f0",
+      backgroundColor: Colors.background,
       paddingHorizontal: 10,
       paddingVertical: 4,
       borderRadius: 10,

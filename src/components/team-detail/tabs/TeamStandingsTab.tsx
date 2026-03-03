@@ -7,18 +7,20 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   TouchableOpacity,
-  Modal,
   PanResponder,
+  Modal,
 } from "react-native";
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors, getColors } from "../../../constants/colors";
+import { getColors } from "../../../constants/colors";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
 import { StandingEntry, Team } from "../../../types";
 import { router } from "expo-router";
 import { useColors } from "../../../hooks/useColors";
+import { useTranslation } from "react-i18next";
+import { useError } from "../../../contexts/ErrorContext";
 
 interface Props {
   teamId: string;
@@ -46,17 +48,16 @@ const HEADER_H = 44; // headerRow 높이
 const ROW_H = 58; // bodyRow 높이 (styles.bodyRow height랑 맞춰야 함)
 
 export default function TeamStandingsTab({ teamId, leagueId }: Props) {
+  const { t } = useTranslation();
   const [selectedSeason, setSelectedSeason] = useState("2024");
   const [selectedLeague, setSelectedLeague] = useState<League>();
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
   const [showLeaguePicker, setShowLeaguePicker] = useState(false);
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const { errorComponent } = useError();
 
-  // ✅ 세로 스크롤 ref
   const verticalRef = useRef<ScrollView | null>(null);
-
-  // ✅ (추가) 오른쪽 가로 스크롤 1개 + x 추적 + 가운데 divider
   const rightScrollRef = useRef<ScrollView>(null);
   const currentXRef = useRef(0);
   const [showMidDivider, setShowMidDivider] = useState(false);
@@ -65,7 +66,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
   const onTableRightScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
     currentXRef.current = x;
-
     const next = x > 0;
     if (lastDividerRef.current !== next) {
       lastDividerRef.current = next;
@@ -73,7 +73,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     }
   };
 
-  // ✅ (추가) 왼쪽 영역에서도 가로 드래그하면 오른쪽이 같이 움직이게
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, g) => {
@@ -84,7 +83,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
       onPanResponderMove: (_, g) => {
         const nextX = Math.max(0, currentXRef.current - g.dx);
         rightScrollRef.current?.scrollTo({ x: nextX, animated: false });
-
         const nextDivider = nextX > 0;
         if (lastDividerRef.current !== nextDivider) {
           lastDividerRef.current = nextDivider;
@@ -94,7 +92,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     }),
   ).current;
 
-  // 해당 되는 모든 리그 정보 조회 (✅ 건드리지 않음)
   const { data: leaguesData } = useQuery<any>({
     queryKey: ["team-allleagues", teamId],
     queryFn: () => api.get(ENDPOINTS.teamLeagues(Number(teamId))),
@@ -116,10 +113,9 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
         id: leaguesList?.[0].id ?? leaguesList[0].id,
       });
     }
-  }, [leaguesList, { ...selectedLeague }]);
+  }, [leaguesList, selectedLeague?.id]);
 
-  // 순위표 조회 (✅ 건드리지 않음)
-  const { data: standingsData } = useQuery<any>({
+  const { data: standingsData, isError } = useQuery<any>({
     queryKey: [
       "team-allleague-standings",
       leagueId,
@@ -135,6 +131,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
       ),
     staleTime: 1000 * 60 * 30,
     enabled: !!selectedLeague?.id,
+    retry: false,
   });
 
   const standings: StandingEntry[] = useMemo(() => {
@@ -154,25 +151,20 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     }));
   }, [standingsData]);
 
-  // ✅ 내 팀 엔트리 찾기
   const myEntry = useMemo(
     () => standings.find((s) => String(s.team.id) === String(teamId)),
     [standings, teamId],
   );
   const myRowKey = myEntry ? `${myEntry.rank}-${myEntry.team.id}` : null;
 
-  // ✅ 내 팀 rank로 자동 스크롤 이동
   useEffect(() => {
     if (!myEntry) return;
     const index = Math.max(0, myEntry.rank - 1);
     const y = TOP_UI_H + HEADER_H + index * ROW_H;
-
     requestAnimationFrame(() => {
       verticalRef.current?.scrollTo({ y, animated: true });
     });
   }, [myEntry]);
-
-  // ✅ (기존 동기화 로직 제거 대상) -> row별 ScrollView를 없애서 필요 없어짐
 
   const renderFormDot = (r: string) => {
     if (r === "W")
@@ -194,6 +186,14 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     );
   };
 
+  if (isError) {
+    return errorComponent(isError, {
+      icon: "podium-outline",
+      title: t("standings.notFound"),
+      subtitle: t("standings.notFoundSub"),
+    });
+  }
+
   return (
     <ScrollView
       ref={verticalRef}
@@ -202,26 +202,24 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     >
       <View style={styles.tableWrap}>
         <View style={{ flexDirection: "row", gap: 40, flex: 1 }}>
-          {/* 리그 선택 */}
           <TouchableOpacity
             style={styles.seasonSelector}
             onPress={() => setShowLeaguePicker(true)}
           >
-            <Text style={styles.seasonLabel}>리그</Text>
+            <Text style={styles.seasonLabel}>{t("teamStandings.league")}</Text>
             <View style={styles.seasonValue}>
               <Text style={styles.seasonText} numberOfLines={1}>
-                {selectedLeague?.name || "선택"}
+                {selectedLeague?.name || t("teamStandings.select")}
               </Text>
               <Ionicons name="chevron-down" size={16} color={Colors.text} />
             </View>
           </TouchableOpacity>
 
-          {/* 시즌 선택 */}
           <TouchableOpacity
             style={styles.seasonSelector}
             onPress={() => setShowSeasonPicker(true)}
           >
-            <Text style={styles.seasonLabel}>시즌</Text>
+            <Text style={styles.seasonLabel}>{t("teamStandings.season")}</Text>
             <View style={styles.seasonValue}>
               <Text style={styles.seasonText} numberOfLines={1}>
                 {SEASONS.find((s) => s.value === selectedSeason)?.label}
@@ -231,26 +229,28 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
           </TouchableOpacity>
         </View>
 
-        {/* ✅ 표 본체: 왼쪽 고정 + 오른쪽 가로스크롤 1개 */}
         <View style={styles.tableBody}>
-          {/* 왼쪽(고정) : 여기서 드래그해도 오른쪽이 같이 움직임 */}
           <View style={styles.leftPane} {...panResponder.panHandlers}>
             <View style={styles.leftHeader}>
               <Text style={styles.hText}>#</Text>
-              <Text style={[styles.hText, { marginLeft: 10 }]}>클럽</Text>
+              <Text style={[styles.hText, { marginLeft: 10 }]}>
+                {t("teamStandings.club")}
+              </Text>
             </View>
 
             {!standings || standings.length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>순위 정보가 없습니다</Text>
+                <Text style={styles.emptyText}>
+                  {t("teamStandings.noInfo")}
+                </Text>
               </View>
             ) : (
               standings.map((entry) => {
                 const rowKey = `${entry.rank}-${entry.team.id}`;
                 const isMine = myRowKey === rowKey;
-
                 return (
                   <TouchableOpacity
+                    key={rowKey}
                     onPress={() => {
                       router.push({
                         pathname: `/team/${entry.team.id}`,
@@ -262,7 +262,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                     }}
                   >
                     <View
-                      key={rowKey}
                       style={[styles.leftCell, isMine && styles.rowHighlight]}
                     >
                       <Text
@@ -271,15 +270,10 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                         {entry.rank}
                       </Text>
                       <Image
-                        source={entry.team.logo}
+                        source={{ uri: entry.team.logo }}
                         style={styles.teamLogo}
-                        contentFit="contain"
                       />
-                      <Text
-                        style={styles.teamName}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
+                      <Text style={styles.teamName} numberOfLines={1}>
                         {entry.team.name}
                       </Text>
                     </View>
@@ -289,7 +283,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
             )}
           </View>
 
-          {/* 오른쪽(가로스크롤 1개) : 헤더 + 모든 행 */}
           <ScrollView
             ref={rightScrollRef}
             horizontal
@@ -299,91 +292,97 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
           >
             <View>
               <View style={styles.rightHeaderRow}>
-                <Text style={[styles.hText, styles.col]}>경기</Text>
-                <Text style={[styles.hText, styles.col]}>승</Text>
-                <Text style={[styles.hText, styles.col]}>무</Text>
-                <Text style={[styles.hText, styles.col]}>패</Text>
-                <Text style={[styles.hText, styles.colPts]}>승점</Text>
-                <Text style={[styles.hText, styles.col]}>득점</Text>
-                <Text style={[styles.hText, styles.col]}>실점</Text>
-                <Text style={[styles.hText, styles.col]}>득실</Text>
-                <Text style={[styles.hText, styles.colForm]}>최근 5경기</Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("teamStandings.played")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("teamStandings.win")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("teamStandings.draw")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("teamStandings.lose")}
+                </Text>
+                <Text style={[styles.hText, styles.colPts]}>
+                  {t("teamStandings.points")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("teamStandings.goalsFor")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("teamStandings.goalsAgainst")}
+                </Text>
+                <Text style={[styles.hText, styles.col]}>
+                  {t("teamStandings.goalsDiff")}
+                </Text>
+                <Text style={[styles.hText, styles.colForm]}>
+                  {t("teamStandings.recentForm")}
+                </Text>
               </View>
 
-              {!standings || standings.length === 0
-                ? null
-                : standings.map((entry) => {
-                    const formArr = (entry.form || "")
-                      .split("")
-                      .filter(Boolean)
-                      .slice(-5);
-
-                    const rowKey = `${entry.rank}-${entry.team.id}`;
-                    const isMine = myRowKey === rowKey;
-
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          router.push({
-                            pathname: `/team/${entry.team.id}`,
-                            params: {
-                              team: JSON.stringify(entry.team),
-                              leagueId: JSON.stringify(standingsData.league.id),
-                            },
-                          });
-                        }}
+              {standings &&
+                standings.length > 0 &&
+                standings.map((entry) => {
+                  const formArr = (entry.form || "")
+                    .split("")
+                    .filter(Boolean)
+                    .slice(-5);
+                  const rowKey = `${entry.rank}-${entry.team.id}`;
+                  const isMine = myRowKey === rowKey;
+                  return (
+                    <TouchableOpacity
+                      key={rowKey}
+                      onPress={() => {
+                        router.push({
+                          pathname: `/team/${entry.team.id}`,
+                          params: {
+                            team: JSON.stringify(entry.team),
+                            leagueId: JSON.stringify(standingsData.league.id),
+                          },
+                        });
+                      }}
+                    >
+                      <View
+                        style={[styles.rightRow, isMine && styles.rowHighlight]}
                       >
-                        <View
-                          key={rowKey}
-                          style={[
-                            styles.rightRow,
-                            isMine && styles.rowHighlight,
-                          ]}
-                        >
-                          <Text style={[styles.bText, styles.col]}>
-                            {entry.played}
-                          </Text>
-                          <Text style={[styles.bText, styles.col]}>
-                            {entry.win}
-                          </Text>
-                          <Text style={[styles.bText, styles.col]}>
-                            {entry.draw}
-                          </Text>
-                          <Text style={[styles.bText, styles.col]}>
-                            {entry.lose}
-                          </Text>
-
-                          <Text
-                            style={[styles.bText, styles.colPts, styles.pts]}
-                          >
-                            {entry.points}
-                          </Text>
-
-                          <Text style={[styles.bText, styles.col]}>
-                            {entry.goalsFor ?? "-"}
-                          </Text>
-                          <Text style={[styles.bText, styles.col]}>
-                            {entry.goalsAgainst ?? "-"}
-                          </Text>
-                          <Text style={[styles.bText, styles.col]}>
-                            {entry.goalsDiff ?? "-"}
-                          </Text>
-
-                          <View style={[styles.colForm, styles.formCell]}>
-                            <View style={styles.formRow}>
-                              {formArr.map((r, i) => (
-                                <View key={i}>{renderFormDot(r)}</View>
-                              ))}
-                            </View>
+                        <Text style={[styles.bText, styles.col]}>
+                          {entry.played}
+                        </Text>
+                        <Text style={[styles.bText, styles.col]}>
+                          {entry.win}
+                        </Text>
+                        <Text style={[styles.bText, styles.col]}>
+                          {entry.draw}
+                        </Text>
+                        <Text style={[styles.bText, styles.col]}>
+                          {entry.lose}
+                        </Text>
+                        <Text style={[styles.bText, styles.colPts, styles.pts]}>
+                          {entry.points}
+                        </Text>
+                        <Text style={[styles.bText, styles.col]}>
+                          {entry.goalsFor ?? "-"}
+                        </Text>
+                        <Text style={[styles.bText, styles.col]}>
+                          {entry.goalsAgainst ?? "-"}
+                        </Text>
+                        <Text style={[styles.bText, styles.col]}>
+                          {entry.goalsDiff ?? "-"}
+                        </Text>
+                        <View style={[styles.colForm, styles.formCell]}>
+                          <View style={styles.formRow}>
+                            {formArr.map((r, i) => (
+                              <View key={i}>{renderFormDot(r)}</View>
+                            ))}
                           </View>
                         </View>
-                      </TouchableOpacity>
-                    );
-                  })}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
             </View>
           </ScrollView>
-
-          {/* ✅ 가운데 세로줄: 스크롤 시작하면 등장 */}
           {showMidDivider && (
             <View pointerEvents="none" style={styles.midDivider} />
           )}
@@ -408,22 +407,26 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                 key={season.value}
                 style={[
                   styles.seasonOption,
+
                   selectedSeason === season.value && styles.seasonOptionActive,
                 ]}
                 onPress={() => {
                   setSelectedSeason(season.value);
+
                   setShowSeasonPicker(false);
                 }}
               >
                 <Text
                   style={[
                     styles.seasonOptionText,
+
                     selectedSeason === season.value &&
                       styles.seasonOptionTextActive,
                   ]}
                 >
                   {season.label}
                 </Text>
+
                 {selectedSeason === season.value && (
                   <Ionicons name="checkmark" size={20} color={Colors.primary} />
                 )}
@@ -451,17 +454,20 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                 key={league.id}
                 style={[
                   styles.seasonOption,
+
                   selectedLeague?.name === league.name &&
                     styles.seasonOptionActive,
                 ]}
                 onPress={() => {
                   setSelectedLeague(league);
+
                   setShowLeaguePicker(false);
                 }}
               >
                 <Text
                   style={[
                     styles.seasonOptionText,
+
                     selectedLeague?.name === league.name &&
                       styles.seasonOptionTextActive,
                   ]}
@@ -469,6 +475,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                 >
                   {league.name}
                 </Text>
+
                 {selectedLeague?.name === league.name && (
                   <Ionicons name="checkmark" size={20} color={Colors.primary} />
                 )}
@@ -477,7 +484,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
           </View>
         </TouchableOpacity>
       </Modal>
-
       <View style={{ height: 20 }} />
     </ScrollView>
   );

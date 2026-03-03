@@ -185,6 +185,8 @@
     "defaultTeamName": "Team"
   },
   "standings": {
+    "notFound": "Standings not found",
+    "notFoundSub": "Standings data is not available yet",
     "season": "Season",
     "club": "Club",
     "empty": "No standings available",
@@ -302,7 +304,8 @@
     "h2h": "Head-to-head",
     "h2hSubtitle": "Previous results",
     "h2hEmpty": "No head-to-head matches",
-    "wins": "{{count}}W"
+    "wins": "{{count}}W",
+    "ranking": "Ranking"
   },
   "injuries": {
     "empty": "No injured/suspended players",
@@ -392,5 +395,66 @@
     "noEvents": "No events",
     "notFound": "Player not found",
     "notFoundSub": "This player is not available yet"
+  },
+  "absence": {
+    "title": "Injuries & Suspensions",
+    "noAbsentees": "No absentees",
+    "more": "More",
+    "refresh": "Refresh",
+    "info": "Information",
+    "position": "Position"
+  },
+  "matches": {
+    "showMore": "Show more matches",
+    "fullTime": "Full Time",
+    "live": "LIVE",
+    "scheduled": "Scheduled",
+    "tomorrow": "Tomorrow"
+  },
+  "overview": {
+    "matches": "Matches",
+    "showMore": "Show more matches",
+    "fullTime": "Full Time"
+  },
+  "teamPlayers": {
+    "noInfo": "No player information available",
+    "defaultPosition": "Forward",
+    "defaultTeam": "Team Name"
+  },
+  "teamStandings": {
+    "league": "League",
+    "season": "Season",
+    "select": "Select",
+    "noInfo": "No standings information available",
+    "club": "Club",
+    "played": "P",
+    "win": "W",
+    "draw": "D",
+    "lose": "L",
+    "points": "Pts",
+    "goalsFor": "GF",
+    "goalsAgainst": "GA",
+    "goalsDiff": "GD",
+    "recentForm": "Form"
+  },
+  "stats": {
+    "goals": "Goals",
+    "assists": "Assists",
+    "yellowCards": "Yellow Cards",
+    "redCards": "Red Cards",
+    "player": "Player",
+    "noData": "No data available"
+  },
+  "allMatches": {
+    "title": "All Matches",
+    "fullTime": "Full Time",
+    "live": "LIVE"
+  },
+  "tabs": {
+    "home": "Home",
+    "leagues": "Leagues",
+    "news": "News",
+    "chat": "AI Chat",
+    "profile": "Profile"
   }
 }

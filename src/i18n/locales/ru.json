@@ -189,7 +189,9 @@
       "goalsAgainst": "ПМ",
       "goalDiff": "РМ",
       "form5": "Последние 5"
-    }
+    },
+    "notFound": "Таблица не найдена",
+    "notFoundSub": "Данные таблицы пока недоступны"
   },
   "leagueStats": {
     "tabs": {
@@ -293,7 +295,8 @@
     "h2h": "Очные встречи",
     "h2hSubtitle": "Предыдущие результаты",
     "h2hEmpty": "Нет очных матчей",
-    "wins": "{{count}} побед"
+    "wins": "{{count}} побед",
+    "ranking": "Ranking"
   },
   "injuries": {
     "empty": "Нет травмированных/дисквалифицированных",
@@ -381,5 +384,67 @@
     "noEvents": "Нет событий",
     "notFound": "Игрок не найден",
     "notFoundSub": "Информация об этом игроке пока недоступна"
+  },
+  "absence": {
+    "title": "Травмы и дисквалификации",
+    "noAbsentees": "Нет отсутствующих",
+    "more": "Ещё",
+    "refresh": "Обновить",
+    "info": "Информация",
+    "position": "Позиция"
+  },
+  "matches": {
+    "showMore": "Показать все матчи",
+    "fullTime": "Завершено",
+    "live": "LIVE",
+    "scheduled": "Запланировано",
+    "tomorrow": "Завтра"
+  },
+  "overview": {
+    "matches": "Матчи",
+    "showMore": "Показать все матчи",
+    "fullTime": "Завершено"
+  },
+  "teamPlayers": {
+    "noInfo": "Нет информации о игроках",
+    "defaultPosition": "Нападающий",
+    "defaultTeam": "Название команды"
+  },
+  "teamStandings": {
+    "league": "Лига",
+    "season": "Сезон",
+    "select": "Выбрать",
+    "noInfo": "Информация о рейтинге отсутствует",
+    "club": "Клуб",
+    "played": "И",
+    "win": "В",
+    "draw": "Н",
+    "lose": "П",
+    "points": "Очки",
+    "goalsFor": "ГЗ",
+    "goalsAgainst": "ГП",
+    "goalsDiff": "РГ",
+    "recentForm": "Форма"
+  },
+  "stats": {
+    "goals": "Голы",
+    "assists": "Передачи",
+    "yellowCards": "Желтые карточки",
+    "redCards": "Красные карточки",
+    "player": "Игрок",
+    "noData": "Данные отсутствуют"
+  },
+  "allMatches": {
+    "title": "Все матчи",
+    "fullTime": "Завершено",
+    "live": "LIVE"
+  },
+  "tabs": {
+    "home": "Главная",
+    "leagues": "Лиги",
+    "news": "Новости",
+    "chat": "AI Чат",
+    "profile": "Профиль"
   }
+  
 }

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
@@ -16,23 +16,25 @@ import { getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import AllMatchesModal from "../AllMatchesModal";
 import { useColors } from "../../../hooks/useColors";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   teamId: number;
 }
 
-export default function TeamMatchesTab({ teamId }: Props) {
+export default function TeamMatchesTab({ teamId }: { teamId: number }) {
+  const { t, i18n } = useTranslation();
+  const router = useRouter();
   const [showAllMatches, setShowAllMatches] = useState(false);
   const Colors = useColors();
   const styles = getStyles(Colors);
-  // 경기 목록
-  const { data: matches } = useQuery<Match[]>({
+
+  const { data: matches } = useQuery<any[]>({
     queryKey: ["team-matches-tab", teamId],
-    queryFn: () => api.get(`${ENDPOINTS.teamMatchRecent(teamId)}`), // ✅ 변경
+    queryFn: () => api.get(`${ENDPOINTS.teamMatchRecent(teamId)}`),
     staleTime: 1000 * 60 * 5,
   });
 
-  // 경기일별 그룹핑
   const groupedMatches =
     matches?.reduce((acc: any, match) => {
       const round = match.round ?? "";
@@ -44,16 +46,28 @@ export default function TeamMatchesTab({ teamId }: Props) {
       return acc;
     }, {}) ?? {};
 
-  const renderMatchCard = (match: Match) => {
+  const renderMatchCard = (match: any) => {
     const homeGoals = match.goals.home ?? 0;
     const awayGoals = match.goals.away ?? 0;
     const isFinished = match.status.short === "FT";
     const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
     const homeWon = homeGoals > awayGoals;
     const awayWon = awayGoals > homeGoals;
-
-    // 하이라이트 썸네일 (더미)
     const hasHighlight = isFinished && Math.random() > 0.5;
+
+    // 현재 앱 언어 설정에 맞춰 날짜 로케일 변경
+    const getLocale = () => {
+      switch (i18n.language) {
+        case "ko":
+          return "ko-KR";
+        case "ru":
+          return "ru-RU";
+        case "uz":
+          return "uz-UZ";
+        default:
+          return "en-US";
+      }
+    };
 
     return (
       <TouchableOpacity
@@ -63,26 +77,20 @@ export default function TeamMatchesTab({ teamId }: Props) {
         activeOpacity={0.7}
       >
         <View style={styles.matchBody}>
-          {/* 팀들 */}
           <View style={styles.teamsContainer}>
-            {/* 홈팀 */}
             <View style={styles.teamRow}>
               <Image
-                source={match.homeTeam.logo}
+                source={{ uri: match.homeTeam.logo }}
                 style={styles.teamLogo}
-                contentFit="contain"
               />
               <Text style={styles.teamName} numberOfLines={1}>
                 {match.homeTeam.name}
               </Text>
             </View>
-
-            {/* 원정팀 */}
             <View style={styles.teamRow}>
               <Image
-                source={match.awayTeam.logo}
+                source={{ uri: match.awayTeam.logo }}
                 style={styles.teamLogo}
-                contentFit="contain"
               />
               <Text style={styles.teamName} numberOfLines={1}>
                 {match.awayTeam.name}
@@ -90,7 +98,6 @@ export default function TeamMatchesTab({ teamId }: Props) {
             </View>
           </View>
 
-          {/* 스코어 or 상태 */}
           <View style={styles.scoreSection}>
             {isFinished || isLive ? (
               <>
@@ -108,11 +115,10 @@ export default function TeamMatchesTab({ teamId }: Props) {
                 </View>
               </>
             ) : (
-              <Text style={styles.scheduledText}>예정</Text>
+              <Text style={styles.scheduledText}>{t("matches.scheduled")}</Text>
             )}
           </View>
 
-          {/* 날짜/시간 or 하이라이트 */}
           <View style={styles.rightSection}>
             {hasHighlight ? (
               <View style={styles.highlightThumb}>
@@ -124,10 +130,14 @@ export default function TeamMatchesTab({ teamId }: Props) {
             ) : (
               <View style={styles.dateBox}>
                 <Text style={styles.statusText}>
-                  {isFinished ? "풀타임" : isLive ? "LIVE" : "내일"}
+                  {isFinished
+                    ? t("matches.fullTime")
+                    : isLive
+                      ? t("matches.live")
+                      : t("matches.tomorrow")}
                 </Text>
                 <Text style={styles.timeText}>
-                  {new Date(match.date).toLocaleString("ko-KR", {
+                  {new Date(match.date).toLocaleString(getLocale(), {
                     month: "numeric",
                     day: "numeric",
                     weekday: "short",
@@ -145,12 +155,11 @@ export default function TeamMatchesTab({ teamId }: Props) {
 
   return (
     <View style={styles.container}>
-      {/* 경기 더보기 버튼 */}
       <TouchableOpacity
         style={styles.moreButton}
         onPress={() => setShowAllMatches(true)}
       >
-        <Text style={styles.moreButtonText}>경기 더보기</Text>
+        <Text style={styles.moreButtonText}>{t("matches.showMore")}</Text>
         <Ionicons name="chevron-forward" size={16} color={Colors.text} />
       </TouchableOpacity>
 
@@ -159,16 +168,13 @@ export default function TeamMatchesTab({ teamId }: Props) {
           ([date, dateMatches]: [string, any]) => (
             <View key={date} style={styles.dateSection}>
               <Text style={styles.dateTitle}>{date}</Text>
-
-              {dateMatches.map((match: Match) => renderMatchCard(match))}
+              {dateMatches.map((match: any) => renderMatchCard(match))}
             </View>
           ),
         )}
-
         <View style={{ height: 20 }} />
       </ScrollView>
 
-      {/* 전체 경기 모달 */}
       <AllMatchesModal
         visible={showAllMatches}
         teamId={teamId}

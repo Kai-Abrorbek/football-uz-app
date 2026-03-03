@@ -87,7 +87,7 @@ export default function MatchHeader({ match }: Props) {
             else router.replace("/");
           }}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          {/* <Ionicons name="arrow-back" size={24} color={Colors.text} /> */}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.leagueBtn}
@@ -357,9 +357,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       gap: 6,
     },
     leagueLogo: {
-      width: 23,
-      height: 23,
-      backgroundColor: "#f8f8f8",
+      width: 30,
+      height: 30,
+      backgroundColor: Colors.background2,
+      borderRadius: 50,
     },
     leagueName: {
       fontSize: 14,

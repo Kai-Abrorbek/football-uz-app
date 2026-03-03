@@ -14,9 +14,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
-import { Colors } from "../../src/constants/colors";
+import { Colors, getColors } from "../../src/constants/colors";
 import { CONTINENTS } from "../../src/constants/leauges";
 import { useTranslation } from "react-i18next";
+import { useColors } from "../../src/hooks/useColors";
 
 interface League {
   _id: string;
@@ -32,6 +33,9 @@ export default function LeaguesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeContinent, setActiveContinent] = useState("all");
   const { t } = useTranslation();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+
   // 인기 리그
   const { data: featuredLeagues } = useQuery<League[]>({
     queryKey: ["featured-leagues"],
@@ -250,201 +254,202 @@ export default function LeaguesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  header: {
-    flexDirection: "row",
-    gap: 60,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: Colors.text,
-    textAlign: "center",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.surface,
-    marginHorizontal: 16,
-    marginTop: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 12,
-    gap: 8,
-    borderWidth: 0,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 15,
-    color: Colors.text,
-    borderWidth: 0,
-  },
-  section: {
-    marginTop: 24,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.text,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  sectionMore: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.primary,
-  },
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    header: {
+      flexDirection: "row",
+      gap: 60,
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: "800",
+      color: Colors.text,
+      textAlign: "center",
+    },
+    searchContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: Colors.surface,
+      marginHorizontal: 16,
+      marginTop: 16,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      borderRadius: 12,
+      gap: 8,
+      borderWidth: 0,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 15,
+      color: Colors.text,
+      borderWidth: 0,
+    },
+    section: {
+      marginTop: 24,
+    },
+    sectionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      marginBottom: 12,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: Colors.text,
+      paddingHorizontal: 16,
+      marginBottom: 12,
+    },
+    sectionMore: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.primary,
+    },
 
-  // 인기 리그
-  featuredContainer: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  featuredCard: {
-    width: 140,
-    backgroundColor: Colors.surface,
-    borderRadius: 16,
-    padding: 16,
-    alignItems: "center",
-    gap: 8,
-  },
-  featuredLogo: {
-    width: 60,
-    height: 60,
-  },
-  featuredName: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: Colors.text,
-    textAlign: "center",
-  },
-  featuredCountry: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
+    // 인기 리그
+    featuredContainer: {
+      paddingHorizontal: 16,
+      gap: 12,
+    },
+    featuredCard: {
+      width: 140,
+      backgroundColor: Colors.background2,
+      borderRadius: 16,
+      padding: 16,
+      alignItems: "center",
+      gap: 8,
+    },
+    featuredLogo: {
+      width: 60,
+      height: 60,
+    },
+    featuredName: {
+      fontSize: 13,
+      fontWeight: "700",
+      color: Colors.text2,
+      textAlign: "center",
+    },
+    featuredCountry: {
+      fontSize: 11,
+      color: Colors.text2,
+    },
 
-  // 월드컵 배너
-  worldCupBanner: {
-    marginHorizontal: 16,
-    marginTop: 24,
-    backgroundColor: "#1a4d8f",
-    borderRadius: 16,
-    padding: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  worldCupContent: {
-    flex: 1,
-  },
-  worldCupYear: {
-    fontSize: 32,
-    fontWeight: "900",
-    color: "#ffffff",
-  },
-  worldCupTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#ffffff",
-    marginTop: 4,
-  },
-  worldCupLocation: {
-    fontSize: 13,
-    color: "rgba(255,255,255,0.8)",
-    marginTop: 4,
-  },
-  worldCupEmoji: {
-    fontSize: 48,
-  },
+    // 월드컵 배너
+    worldCupBanner: {
+      marginHorizontal: 16,
+      marginTop: 24,
+      backgroundColor: "#1a4d8f",
+      borderRadius: 16,
+      padding: 20,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    worldCupContent: {
+      flex: 1,
+    },
+    worldCupYear: {
+      fontSize: 32,
+      fontWeight: "900",
+      color: "#ffffff",
+    },
+    worldCupTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: "#ffffff",
+      marginTop: 4,
+    },
+    worldCupLocation: {
+      fontSize: 13,
+      color: "rgba(255,255,255,0.8)",
+      marginTop: 4,
+    },
+    worldCupEmoji: {
+      fontSize: 48,
+    },
 
-  // 대륙 탭
-  continentTabs: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    gap: 8,
-  },
-  continentTab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  continentTabActive: {
-    backgroundColor: Colors.text,
-    borderColor: Colors.text,
-  },
-  continentTabText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: Colors.textSecondary,
-  },
-  continentTabTextActive: {
-    color: "#ffffff",
-    fontWeight: "700",
-  },
+    // 대륙 탭
+    continentTabs: {
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      gap: 8,
+    },
+    continentTab: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      backgroundColor: Colors.surface,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    continentTabActive: {
+      backgroundColor: Colors.background2,
+      borderColor: Colors.text,
+    },
+    continentTabText: {
+      fontSize: 14,
+      fontWeight: "500",
+      color: Colors.textSecondary,
+    },
+    continentTabTextActive: {
+      color: Colors.text2,
+      fontWeight: "700",
+    },
 
-  // 리그 그리드
-  leagueRow: {
-    flexDirection: "row",
-    paddingHorizontal: 12,
-    gap: 8,
-    marginBottom: 8,
-  },
-  leagueCard: {
-    flex: 1,
-    aspectRatio: 0.85,
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    padding: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  leagueLogo: {
-    width: 48,
-    height: 48,
-  },
-  leagueName: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: Colors.text,
-    textAlign: "center",
-  },
-  leagueCountry: {
-    fontSize: 10,
-    color: Colors.textSecondary,
-    textAlign: "center",
-  },
+    // 리그 그리드
+    leagueRow: {
+      flexDirection: "row",
+      paddingHorizontal: 12,
+      gap: 8,
+      marginBottom: 8,
+    },
+    leagueCard: {
+      flex: 1,
+      aspectRatio: 0.85,
+      backgroundColor: Colors.background2,
+      borderRadius: 12,
+      padding: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+    },
+    leagueLogo: {
+      width: 48,
+      height: 48,
+    },
+    leagueName: {
+      fontSize: 11,
+      fontWeight: "600",
+      color: Colors.text2,
+      textAlign: "center",
+    },
+    leagueCountry: {
+      fontSize: 10,
+      color: Colors.text2,
+      textAlign: "center",
+    },
 
-  // 곧 업데이트
-  comingSoon: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    textAlign: "center",
-    paddingVertical: 40,
-  },
-});
+    // 곧 업데이트
+    comingSoon: {
+      fontSize: 14,
+      color: Colors.textSecondary,
+      textAlign: "center",
+      paddingVertical: 40,
+    },
+  });

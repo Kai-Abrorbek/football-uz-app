@@ -6,6 +6,7 @@ import { LanguageProvider } from "../src/contexts/LanguageContext";
 import { AuthProvider, useAuth } from "../src/contexts/AuthContext";
 import "../src/i18n";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
+import { ErrorProvider } from "../src/contexts/ErrorContext";
 
 const queryClient = new QueryClient();
 
@@ -20,35 +21,37 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <LanguageProvider>
-            <StatusBar style="dark" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: Colors.background },
-              }}
-            >
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen
-                name="match/[id]"
-                options={{
-                  headerShown: true,
-                  headerTransparent: true,
-                  headerTitle: "",
-                  headerTintColor: "#fff",
+          <ErrorProvider>
+            <LanguageProvider>
+              <StatusBar style="dark" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: Colors.background },
                 }}
-              />
-              <Stack.Screen
-                name="league/[id]"
-                options={{
-                  headerShown: true,
-                  headerTransparent: true,
-                  headerTitle: "",
-                  headerTintColor: "#fff",
-                }}
-              />
-            </Stack>
-          </LanguageProvider>
+              >
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen
+                  name="match/[id]"
+                  options={{
+                    headerShown: true,
+                    headerTransparent: true,
+                    headerTitle: "",
+                    headerTintColor: "#fff",
+                  }}
+                />
+                <Stack.Screen
+                  name="league/[id]"
+                  options={{
+                    headerShown: true,
+                    headerTransparent: true,
+                    headerTitle: "",
+                    headerTintColor: "#fff",
+                  }}
+                />
+              </Stack>
+            </LanguageProvider>
+          </ErrorProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

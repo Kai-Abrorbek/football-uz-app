@@ -189,7 +189,9 @@
       "goalsAgainst": "GA",
       "goalDiff": "GD",
       "form5": "So‘nggi 5"
-    }
+    },
+    "notFound": "Jadval topilmadi",
+    "notFoundSub": "Jadval ma'lumotlari hali mavjud emas"
   },
   "leagueStats": {
     "tabs": {
@@ -292,7 +294,8 @@
     "h2h": "O‘zaro o‘yinlar",
     "h2hSubtitle": "Oldingi natijalar",
     "h2hEmpty": "O‘zaro o‘yinlar yo‘q",
-    "wins": "{{count}} g‘alaba"
+    "wins": "{{count}} g‘alaba",
+    "ranking": "Ranking"
   },
   "injuries": {
     "empty": "Jarohatlangan/diskvalifikatsiya qilingan o‘yinchi yo‘q",
@@ -381,5 +384,66 @@
     "noEvents": "Hodisalar yo'q",
     "notFound": "O'yinchi topilmadi",
     "notFoundSub": "Bu o'yinchi haqida ma'lumot hali mavjud emas"
+  },
+  "absence": {
+    "title": "Jarohatlar va chetlatishlar",
+    "noAbsentees": "Yo'qolgan futbolchilar yo'q",
+    "more": "Yana",
+    "refresh": "Yangilash",
+    "info": "Ma'lumot",
+    "position": "Pozitsiya"
+  },
+  "matches": {
+    "showMore": "Barcha o'yinlarni ko'rish",
+    "fullTime": "Tugadi",
+    "live": "LIVЕ",
+    "scheduled": "Kutilmoqda",
+    "tomorrow": "Ertaga"
+  },
+  "overview": {
+    "matches": "O'yinlar",
+    "showMore": "Barcha o'yinlarni ko'rish",
+    "fullTime": "Tugadi"
+  },
+  "teamPlayers": {
+    "noInfo": "O'yinchilar haqida ma'lumot yo'q",
+    "defaultPosition": "Hujumchi",
+    "defaultTeam": "Jamoa nomi"
+  },
+  "teamStandings": {
+    "league": "Liga",
+    "season": "Mavsum",
+    "select": "Tanlash",
+    "noInfo": "Turnir jadvali haqida ma'lumot yo'q",
+    "club": "Klub",
+    "played": "O'",
+    "win": "G'",
+    "draw": "Dur",
+    "lose": "M",
+    "points": "Ochko",
+    "goalsFor": "TF",
+    "goalsAgainst": "TP",
+    "goalsDiff": "TN",
+    "recentForm": "Forma"
+  },
+  "stats": {
+    "goals": "Gollar",
+    "assists": "Assistentlar",
+    "yellowCards": "Sariq kartochkalar",
+    "redCards": "Qizil kartochkalar",
+    "player": "O'yinchi",
+    "noData": "Ma'lumotlar mavjud emas"
+  },
+  "allMatches": {
+    "title": "Barcha o'yinlar",
+    "fullTime": "Tugadi",
+    "live": "LIVЕ"
+  },
+  "tabs": {
+    "home": "Asosiy",
+    "leagues": "Ligalar",
+    "news": "Yangiliklar",
+    "chat": "AI Chat",
+    "profile": "Profil"
   }
 }

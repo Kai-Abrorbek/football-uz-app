@@ -9,25 +9,27 @@ import {
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
-import { Colors, getColors } from "../../../constants/colors";
+import { getColors } from "../../../constants/colors";
 import { ENDPOINTS } from "../../../constants/api";
 import { useColors } from "../../../hooks/useColors";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   leagueId: string;
 }
 
-const STAT_TABS = [
-  { key: "goals", label: "골" },
-  { key: "assists", label: "어시스트" },
-  { key: "yellowCards", label: "옐로우 카드" },
-  { key: "redCards", label: "레드 카드" },
-];
-
 export default function TeamStatsTab({ leagueId }: Props) {
+  const { t } = useTranslation();
   const [activeStatTab, setActiveStatTab] = useState("goals");
   const Colors = useColors();
   const styles = getStyles(Colors);
+
+  const STAT_TABS = [
+    { key: "goals", label: t("stats.goals") },
+    { key: "assists", label: t("stats.assists") },
+    { key: "yellowCards", label: t("stats.yellowCards") },
+    { key: "redCards", label: t("stats.redCards") },
+  ];
 
   // 득점 순위
   const { data: topScorers } = useQuery<any>({
@@ -43,7 +45,7 @@ export default function TeamStatsTab({ leagueId }: Props) {
     enabled: activeStatTab === "assists",
   });
 
-  // 카드 순위 (더미)
+  // 카드 순위 (더미 데이터 유지)
   const cardData = [
     { rank: 1, name: "선수 A", team: "팀 A", count: 10 },
     { rank: 2, name: "선수 B", team: "팀 B", count: 8 },
@@ -56,23 +58,26 @@ export default function TeamStatsTab({ leagueId }: Props) {
     switch (activeStatTab) {
       case "goals":
         data = topScorers || [];
-        statKey = "골";
+        statKey = t("stats.goals");
         break;
       case "assists":
         data = topAssists || [];
-        statKey = "어시스트";
+        statKey = t("stats.assists");
         break;
       case "yellowCards":
+        data = cardData;
+        statKey = t("stats.yellowCards");
+        break;
       case "redCards":
         data = cardData;
-        statKey = activeStatTab === "yellowCards" ? "옐로우 카드" : "레드 카드";
+        statKey = t("stats.redCards");
         break;
     }
 
     if (!data || data.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>데이터가 없습니다</Text>
+          <Text style={styles.emptyText}>{t("stats.noData")}</Text>
         </View>
       );
     }
@@ -81,7 +86,7 @@ export default function TeamStatsTab({ leagueId }: Props) {
       <View style={styles.statList}>
         {/* 헤더 */}
         <View style={styles.listHeader}>
-          <Text style={styles.headerText}>선수</Text>
+          <Text style={styles.headerText}>{t("stats.player")}</Text>
           <Text style={styles.headerText}>{statKey}</Text>
         </View>
 

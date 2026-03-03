@@ -12,6 +12,7 @@ import { getColors } from "../../../constants/colors";
 import { ENDPOINTS } from "../../../constants/api";
 import { useColors } from "../../../hooks/useColors";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   teamId: string;
@@ -20,6 +21,8 @@ interface Props {
 export default function TeamPlayersTab({ teamId }: Props) {
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const { t } = useTranslation();
+
   // 리그 선수 목록
   const { data: players } = useQuery<any>({
     queryKey: ["team-players", teamId],
@@ -33,7 +36,7 @@ export default function TeamPlayersTab({ teamId }: Props) {
   if (!players || players.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>선수 정보가 없습니다</Text>
+        <Text style={styles.emptyText}>{t("teamPlayers.noInfo")}</Text>
       </View>
     );
   }
@@ -51,9 +54,8 @@ export default function TeamPlayersTab({ teamId }: Props) {
             {/* 선수 사진 */}
             {player.photo ? (
               <Image
-                source={player.photo}
+                source={{ uri: player.photo }}
                 style={styles.playerPhoto}
-                contentFit="cover"
               />
             ) : (
               <View style={styles.playerPhotoPlaceholder}>
@@ -69,21 +71,21 @@ export default function TeamPlayersTab({ teamId }: Props) {
                 {player.name}
               </Text>
               <Text style={styles.playerPosition}>
-                {player.position || "공격수"}
+                {player.position || t("teamPlayers.defaultPosition")}
               </Text>
 
               {/* 팀 정보 */}
               <View style={styles.teamRow}>
                 {player.statistics?.[0]?.team?.logo && (
                   <Image
-                    source={player.statistics?.[0]?.team?.logo}
+                    source={{ uri: player.statistics[0].team.logo }}
                     style={styles.teamLogo}
-                    contentFit="contain"
                   />
                 )}
 
                 <Text style={styles.teamName} numberOfLines={1}>
-                  {player.statistics?.[0]?.team.name || "팀명"}
+                  {player.statistics?.[0]?.team?.name ||
+                    t("teamPlayers.defaultTeam")}
                 </Text>
               </View>
             </View>

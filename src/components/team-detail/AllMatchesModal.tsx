@@ -18,6 +18,7 @@ import { Match } from "../../types";
 import { useColors } from "../../hooks/useColors";
 import { ENDPOINTS } from "../../constants/api";
 import api from "../../services/api";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   visible: boolean;
@@ -32,14 +33,8 @@ interface TeamMatchesResponse {
   hasMore: boolean;
 }
 
-// 라운드 문자열에서 섹션 타이틀 추출
-const getSectionTitle = (match: Match) => {
-  const leagueName = match.league?.name ?? "";
-  const round = match.round ?? "";
-  return `${leagueName} · ${round}`;
-};
-
 export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
+  const { t, i18n } = useTranslation();
   const [matches, setMatches] = useState<Match[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [loadingDirection, setLoadingDirection] = useState<
@@ -55,6 +50,20 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
 
   const Colors = useColors();
   const styles = getStyles(Colors);
+
+  // 언어 설정에 따른 로케일 헬퍼
+  const getLocale = () => {
+    switch (i18n.language) {
+      case "ko":
+        return "ko-KR";
+      case "ru":
+        return "ru-RU";
+      case "uz":
+        return "uz-UZ";
+      default:
+        return "en-US";
+    }
+  };
 
   const fetchMatches = useCallback(
     async (
@@ -78,33 +87,25 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
     [teamId],
   );
 
-  // 초기화
   useEffect(() => {
     if (!visible || isInitialized.current) return;
-
     const init = async () => {
       setIsInitialLoading(true);
-      const today = new Date().toISOString();
-      // const res = await fetchMatches(today, "next"); // ✅ 오늘 이후 경기부터
-      const res = await fetchMatches(); // cursor 없이 → 최신 15개
+      const res = await fetchMatches();
       if (!res) {
         setIsInitialLoading(false);
         return;
       }
-
       setMatches(res.matches);
       nextCursorRef.current = res.nextCursor;
       prevCursorRef.current = res.prevCursor;
       hasMoreRef.current = res.hasMore;
-
       isInitialized.current = true;
       setIsInitialLoading(false);
     };
-
     init();
   }, [visible, fetchMatches]);
 
-  // 모달 닫힐 때 초기화
   useEffect(() => {
     if (!visible) {
       setMatches([]);
@@ -119,25 +120,20 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
     }
   }, [visible]);
 
-  // 다음 (아래 스크롤 - 오래된 경기)
   const loadNext = useCallback(async () => {
     if (isFetchingRef.current || !hasMoreRef.current) return;
     const cursor = nextCursorRef.current;
     if (!cursor) return;
-
     isFetchingRef.current = true;
     setLoadingDirection("down");
-
     try {
       const res = await fetchMatches(cursor, "next");
       if (!res?.matches?.length) return;
-
       nextCursorRef.current = res.nextCursor;
       hasMoreRef.current = res.hasMore;
-
       setMatches((prev) => {
         const prevIds = new Set(prev.map((m) => m._id));
-        const incoming = res.matches.filter((m) => !prevIds.has(m._id));
+        const incoming = res.matches.filter((m: any) => !prevIds.has(m._id));
         return [...prev, ...incoming];
       });
     } finally {
@@ -146,24 +142,19 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
     }
   }, [fetchMatches]);
 
-  // 이전 (위 스크롤 - 더 최신 경기)
   const loadPrev = useCallback(async () => {
     if (isFetchingRef.current) return;
     const cursor = prevCursorRef.current;
     if (!cursor) return;
-
     isFetchingRef.current = true;
     setLoadingDirection("up");
-
     try {
       const res = await fetchMatches(cursor, "prev");
       if (!res?.matches?.length) return;
-
       prevCursorRef.current = res.prevCursor;
-
       setMatches((prev) => {
         const prevIds = new Set(prev.map((m) => m._id));
-        const incoming = res.matches.filter((m) => !prevIds.has(m._id));
+        const incoming = res.matches.filter((m: any) => !prevIds.has(m._id));
         return [...incoming, ...prev];
       });
     } finally {
@@ -172,22 +163,18 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
     }
   }, [fetchMatches]);
 
-  // 맨 위 스크롤 감지
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const offsetY = event.nativeEvent.contentOffset.y;
       const contentHeight = event.nativeEvent.contentSize.height;
       const layoutHeight = event.nativeEvent.layoutMeasurement.height;
 
-      // 아래 끝 감지 → loadNext
       if (
         contentHeight - offsetY - layoutHeight < 100 &&
         !isFetchingRef.current
       ) {
         loadNext();
       }
-
-      // 위 끝 감지 → loadPrev
       if (offsetY > 80) hasFetchedTopRef.current = false;
       if (offsetY < 10 && !isFetchingRef.current && !hasFetchedTopRef.current) {
         hasFetchedTopRef.current = true;
@@ -197,13 +184,18 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
     [loadNext, loadPrev],
   );
 
-  const renderMatchCard = (match: Match) => {
+  const renderMatchCard = (match: any) => {
     const isFinished = match.status.short === "FT";
     const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
     const homeGoals = match.goals.home ?? "-";
     const awayGoals = match.goals.away ?? "-";
     const homeWon = (match.goals.home ?? 0) > (match.goals.away ?? 0);
     const awayWon = (match.goals.away ?? 0) > (match.goals.home ?? 0);
+
+    // 섹션 타이틀 (리그 정보)은 데이터가 서버에서 오는 것이므로 그대로 유지
+    const sectionTitle = match.league
+      ? `${match.league.name} · ${match.round || ""}`
+      : "";
 
     return (
       <TouchableOpacity
@@ -215,17 +207,14 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
           router.push(`/match/${match._id}`);
         }}
       >
-        {/* 리그 · 라운드 타이틀 */}
-        <Text style={styles.matchLeagueTitle}>{getSectionTitle(match)}</Text>
+        <Text style={styles.matchLeagueTitle}>{sectionTitle}</Text>
 
         <View style={styles.modalMatchRow}>
-          {/* 왼쪽: 두 팀 */}
           <View style={styles.modalLeft}>
             <View style={styles.modalTeamRow}>
               <Image
-                source={match.homeTeam.logo}
+                source={{ uri: match.homeTeam.logo }}
                 style={styles.modalLogo}
-                contentFit="contain"
               />
               <Text
                 style={[
@@ -247,9 +236,8 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
 
             <View style={styles.modalTeamRow}>
               <Image
-                source={match.awayTeam.logo}
+                source={{ uri: match.awayTeam.logo }}
                 style={styles.modalLogo}
-                contentFit="contain"
               />
               <Text
                 style={[
@@ -272,15 +260,16 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
 
           <View style={styles.modalDivider} />
 
-          {/* 오른쪽: 상태/날짜 */}
           <View style={styles.modalRight}>
             {isLive ? (
-              <Text style={styles.liveText}>LIVE</Text>
+              <Text style={styles.liveText}>{t("allMatches.live")}</Text>
             ) : isFinished ? (
               <>
-                <Text style={styles.modalRightStatus}>풀타임</Text>
+                <Text style={styles.modalRightStatus}>
+                  {t("allMatches.fullTime")}
+                </Text>
                 <Text style={styles.modalRightDate}>
-                  {new Date(match.date).toLocaleDateString("ko-KR", {
+                  {new Date(match.date).toLocaleDateString(getLocale(), {
                     month: "numeric",
                     day: "numeric",
                     weekday: "short",
@@ -290,14 +279,14 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
             ) : (
               <>
                 <Text style={styles.modalRightDate}>
-                  {new Date(match.date).toLocaleDateString("ko-KR", {
+                  {new Date(match.date).toLocaleDateString(getLocale(), {
                     month: "numeric",
                     day: "numeric",
                     weekday: "short",
                   })}
                 </Text>
                 <Text style={styles.modalRightTime}>
-                  {new Date(match.date).toLocaleTimeString("ko-KR", {
+                  {new Date(match.date).toLocaleTimeString(getLocale(), {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -309,14 +298,6 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
       </TouchableOpacity>
     );
   };
-
-  if (isInitialLoading) {
-    return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
 
   return (
     <Modal
@@ -331,10 +312,9 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
           activeOpacity={1}
           onPress={onClose}
         />
-
         <View style={styles.modalSheet}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>전체 경기</Text>
+            <Text style={styles.modalTitle}>{t("allMatches.title")}</Text>
             <TouchableOpacity
               style={styles.modalClose}
               onPress={onClose}
@@ -352,23 +332,33 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
             />
           )}
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            onScroll={handleScroll}
-            scrollEventThrottle={100}
-          >
-            {matches.map((match) => renderMatchCard(match))}
-
-            {loadingDirection === "down" && (
-              <ActivityIndicator
-                size="small"
-                color={Colors.primary}
-                style={{ marginVertical: 16 }}
-              />
-            )}
-
-            <View style={{ height: 20 }} />
-          </ScrollView>
+          {isInitialLoading ? (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          ) : (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={100}
+            >
+              {matches.map((match) => renderMatchCard(match))}
+              {loadingDirection === "down" && (
+                <ActivityIndicator
+                  size="small"
+                  color={Colors.primary}
+                  style={{ marginVertical: 16 }}
+                />
+              )}
+              <View style={{ height: 20 }} />
+            </ScrollView>
+          )}
         </View>
       </View>
     </Modal>

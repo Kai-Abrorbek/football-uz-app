@@ -8,10 +8,11 @@ import {
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
-import { Colors } from "../../../constants/colors";
+import { getColors } from "../../../constants/colors";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
-import { Player } from "../../../types";
+import { useError } from "../../../contexts/ErrorContext";
+import { useColors } from "../../../hooks/useColors";
 
 interface Props {
   leagueId: string;
@@ -19,12 +20,23 @@ interface Props {
 
 export default function LeaguePlayersTab({ leagueId }: Props) {
   const { t } = useTranslation();
+  const { errorComponent } = useError();
+  const Colors = useColors();
+  const styles = getStyles(Colors);
 
-  const { data: players } = useQuery<any>({
+  const { data: players, isError } = useQuery<any>({
     queryKey: ["league-players", leagueId],
     queryFn: () => api.get(`/players/league/${leagueId}`),
     staleTime: 1000 * 60 * 30,
+    retry: false,
   });
+
+  if (isError) {
+    return errorComponent(isError, {
+      icon: "person-outline",
+      title: t("player.notFound"),
+    });
+  }
 
   if (!players || players.length === 0) {
     return (
@@ -37,7 +49,7 @@ export default function LeaguePlayersTab({ leagueId }: Props) {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.grid}>
-        {players.map((player: any, index: number) => (
+        {players?.map((player: any, index: number) => (
           <TouchableOpacity
             key={index}
             style={styles.playerCard}
@@ -91,78 +103,79 @@ export default function LeaguePlayersTab({ leagueId }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 40,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    padding: 12,
-    gap: 6,
-  },
-  playerCard: {
-    width: "31.999%",
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  playerPhoto: {
-    width: "100%",
-    aspectRatio: 1,
-    backgroundColor: Colors.border,
-  },
-  playerPhotoPlaceholder: {
-    width: "100%",
-    aspectRatio: 1,
-    backgroundColor: Colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  playerPhotoText: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: Colors.textSecondary,
-  },
-  playerInfo: {
-    padding: 10,
-    gap: 4,
-  },
-  playerName: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  playerPosition: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-  teamRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginTop: 4,
-  },
-  teamLogo: {
-    width: 14,
-    height: 14,
-  },
-  teamName: {
-    flex: 1,
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    emptyContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 40,
+    },
+    emptyText: {
+      fontSize: 14,
+      color: Colors.textSecondary,
+    },
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      padding: 12,
+      gap: 6,
+    },
+    playerCard: {
+      width: "31.999%",
+      backgroundColor: Colors.surface,
+      borderRadius: 12,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    playerPhoto: {
+      width: "100%",
+      aspectRatio: 1,
+      backgroundColor: Colors.border,
+    },
+    playerPhotoPlaceholder: {
+      width: "100%",
+      aspectRatio: 1,
+      backgroundColor: Colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    playerPhotoText: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: Colors.textSecondary,
+    },
+    playerInfo: {
+      padding: 10,
+      gap: 4,
+    },
+    playerName: {
+      fontSize: 13,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    playerPosition: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+    teamRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      marginTop: 4,
+    },
+    teamLogo: {
+      width: 14,
+      height: 14,
+    },
+    teamName: {
+      flex: 1,
+      fontSize: 11,
+      color: Colors.textSecondary,
+    },
+  });

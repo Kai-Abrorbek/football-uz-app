@@ -178,7 +178,7 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
         onPress={() => setShowAllMatches(true)}
       >
         <Text style={styles.moreButtonText}>{t("leagueMatches.seeMore")}</Text>
-        <Ionicons name="chevron-forward" size={16} color={Colors.text} />
+        <Ionicons name="chevron-forward" size={16} color={Colors.text2} />
       </TouchableOpacity>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -215,7 +215,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.background2,
       marginHorizontal: 16,
       marginTop: 16,
       paddingVertical: 14,
@@ -227,7 +227,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     moreButtonText: {
       fontSize: 14,
       fontWeight: "600",
-      color: Colors.text,
+      color: Colors.text2,
     },
     dateSection: {
       marginTop: 16,

@@ -1,10 +1,13 @@
-import { Redirect, Tabs } from "expo-router";
-import { Colors } from "../../src/constants/colors";
+import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+import { useColors } from "../../src/hooks/useColors";
 
 export default function TabLayout() {
-  const { user, loading } = useAuth();
+  const { userData, setUser } = useAuth();
+  const { t } = useTranslation();
+  const Colors = useColors();
 
   // if (loading) return null;
   // if (!user) return <Redirect href="/profile" />;
@@ -21,7 +24,7 @@ export default function TabLayout() {
           paddingTop: 8,
         },
         tabBarActiveTintColor: Colors.tabBarActive,
-        tabBarInactiveTintColor: Colors.tabBarInactive,
+        tabBarInactiveTintColor: Colors.text,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: "500",
@@ -31,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "홈",
+          title: t("tabs.home"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
@@ -40,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="leagues"
         options={{
-          title: "천제 리그",
+          title: t("tabs.leagues"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="list-outline" size={size} color={color} />
           ),
@@ -49,7 +52,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="news"
         options={{
-          title: "뉴스",
+          title: t("tabs.news"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="newspaper-outline" size={size} color={color} />
           ),
@@ -58,7 +61,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: "AI 챗봇",
+          title: t("tabs.chat"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubble-outline" size={size} color={color} />
           ),
@@ -67,7 +70,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "프로필",
+          title: t("tabs.profile"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" size={size} color={color} />
           ),

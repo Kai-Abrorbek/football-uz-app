@@ -104,7 +104,7 @@ export default function LeagueDetailScreen() {
             else router.replace("/");
           }}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          {/* <Ionicons name="arrow-back" size={24} color={Colors.text} /> */}
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>
@@ -208,8 +208,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 8,
     },
     leagueLogo: {
-      width: 28,
-      height: 28,
+      width: 30,
+      height: 30,
+      backgroundColor: Colors.background2,
+      borderRadius: 50,
     },
     leagueName: {
       fontSize: 18,
