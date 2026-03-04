@@ -508,5 +508,14 @@
       "teamBadge": "🇺🇿 Uzbekistan"
     },
     "tabs": { "bracket": "Bracket" }
+  },
+  "notification": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "loginRequired": "Please log in to view notifications.",
+    "empty": "No notifications yet.",
+    "minutesAgo": "m ago",
+    "hoursAgo": "h ago",
+    "daysAgo": "d ago"
   }
 }

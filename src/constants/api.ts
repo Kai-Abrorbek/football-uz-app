@@ -1,4 +1,5 @@
-export const API_URL = "http://localhost:4000/api/v1";
+// export const API_URL = "http://localhost:4000/api/v1";
+export const API_URL = "http://10.0.2.2:4000/api/v1";
 // export const API_URL = "http://10.111.148.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
@@ -70,6 +71,9 @@ export const ENDPOINTS = {
   // notificationSettings
   notificationSettings: "/users/notification-settings",
   fcmToken: "/users/fcm-token",
+  notifications: "/notifications",
+  notificationsReadAll: "/notifications/read-all",
+  notificationRead: (id: string) => `/notifications/${id}/read`,
 
   // FixtureAbsence
   fixtureabsence: (matchId: number) => {

@@ -499,5 +499,14 @@
         "teamBadge": "🇺🇿 O‘zbekiston"
     },
     "tabs": { "bracket": "Jadval" }
+  },
+  "notification": {
+    "title": "Bildirishnomalar",
+    "markAllRead": "Barchasini o'qilgan deb belgilash",
+    "loginRequired": "Bildirishnomalarni ko'rish uchun tizimga kiring.",
+    "empty": "Hali bildirishnomalar yo'q.",
+    "minutesAgo": " daq oldin",
+    "hoursAgo": " soat oldin",
+    "daysAgo": " kun oldin"
   }
 }

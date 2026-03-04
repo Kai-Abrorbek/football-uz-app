@@ -17,6 +17,7 @@ interface Props {
   matches: Match[];
   teamGroupMap?: Record<number, string>;
   onMatchPress?: () => void; // 모달에서 쓸 때 닫기용
+  ListFooterComponent?: React.ReactElement;
 }
 
 const getRoundType = (round: string) => {

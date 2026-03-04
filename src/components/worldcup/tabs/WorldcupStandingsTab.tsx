@@ -82,12 +82,13 @@ export default function WorldcupStandingsTab() {
 
               {/* 오른쪽 스크롤 컬럼 - 헤더 + 데이터 통째로 */}
               <ScrollView
-                onScroll={(e) =>
+                onScroll={(e) => {
+                  if (!e?.nativeEvent?.contentOffset) return;
                   setScrolledGroups((prev) => ({
                     ...prev,
                     [groupName]: e.nativeEvent.contentOffset.x > 0,
-                  }))
-                }
+                  }));
+                }}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 style={styles.rightScroll}
@@ -159,7 +160,7 @@ export default function WorldcupStandingsTab() {
           gap: 15,
         }}
       >
-        <Text style={{ color: Colors.text, fontWeight: "600" }}>
+        <Text style={{ color: Colors.text2, fontWeight: "600" }}>
           {t("worldcup.qualifier")}
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>

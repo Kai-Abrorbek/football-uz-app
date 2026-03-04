@@ -259,12 +259,56 @@ function SubstitutesSection({
       <View style={styles.coach}>
         <Text style={styles.coachTitle}>감독</Text>
         <View style={styles.coachNameBox}>
-          <Text style={styles.coachName}>
-            {match.homeTeam?.coach?.name ?? ""}
-          </Text>
-          <Text style={styles.coachName}>
-            {match.awayTeam?.coach?.name ?? ""}
-          </Text>
+          {match.homeTeam?.coach?.photo ? (
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+              }}
+            >
+              <Image
+                source={match.homeTeam?.coach?.photo}
+                style={[styles.playerPhoto]}
+                contentFit="cover"
+              />
+              <Text style={styles.playerPhotoText} numberOfLines={1}>
+                {match.awayTeam?.coach?.name}
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.playerPhotoPlaceholder]}>
+              <Text style={styles.playerPhotoText}>
+                {match.homeTeam?.coach?.name?.charAt(0) || "?"}
+              </Text>
+            </View>
+          )}
+
+          <Text style={styles.coachName}></Text>
+          {match.awayTeam?.coach?.photo ? (
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+              }}
+            >
+              <Image
+                source={match.awayTeam?.coach?.photo}
+                style={[styles.playerPhoto]}
+                contentFit="cover"
+              />
+              <Text style={styles.playerPhotoText} numberOfLines={1}>
+                {match.awayTeam?.coach?.name}
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.playerPhotoPlaceholder]}>
+              <Text style={styles.playerPhotoText}>
+                {match.awayTeam?.coach?.name?.charAt(0) || "?"}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </View>
@@ -445,9 +489,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       backgroundColor: "rgba(255,215,0,0.3)",
     },
     playerPhotoText: {
-      fontSize: 18,
+      fontSize: 13,
       fontWeight: "700",
       color: "#ffffff",
+      overflow: "hidden",
     },
     playerName: {
       fontSize: 11,
@@ -563,7 +608,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     coachNameBox: {
       flexDirection: "row",
       justifyContent: "space-between",
-      padding: 15,
+      padding: 25,
     },
     coachName: {
       fontSize: 16,

@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
+import NotificationModal from "../../src/components/notifications/NotificationModal";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -163,6 +164,7 @@ export default function HomeScreen() {
       {/*  헤더 수정 */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>⚽ FootballUZ</Text>
+        {/* // 벨 아이콘 */}
         <TouchableOpacity
           onPress={() => setNotificationModalVisible(true)}
           style={styles.bellButton}
@@ -180,6 +182,12 @@ export default function HomeScreen() {
             </View>
           )}
         </TouchableOpacity>
+        {/* // 모달 */}
+        <NotificationModal
+          visible={notificationModalVisible}
+          onClose={() => setNotificationModalVisible(false)}
+          onUnreadCountChange={(count) => setUnreadCount(count)}
+        />
       </View>
       {/* 리그 칩 (상단) */}
       <View style={styles.leagueChipContainer}>

@@ -207,7 +207,7 @@ export default function WorldcupBracketTab() {
     );
   };
 
-  const renderSlide = ({ item }: { item: string[] }) => {
+  const renderSlide = ({ item, idx }: { item: string[]; idx: number }) => {
     const [leftRound, rightRound] = item;
     const leftMatches = roundGroups[leftRound] ?? [];
     const rightMatches = roundGroups[rightRound] ?? [];
@@ -281,9 +281,9 @@ export default function WorldcupBracketTab() {
       showsHorizontalScrollIndicator={false}
       scrollEventThrottle={16}
     >
-      {(activeSlides.length > 0 ? activeSlides : SLIDES).map((item, idx) =>
-        renderSlide({ item }),
-      )}
+      {(activeSlides.length > 0 ? activeSlides : SLIDES).map((item, idx) => (
+        <View key={idx.toString()}>{renderSlide({ item, idx })}</View>
+      ))}
     </ScrollView>
   );
 }

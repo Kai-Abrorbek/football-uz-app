@@ -25,28 +25,30 @@ export default function WorldcupOverviewTab({ matches, teamGroupMap }: Props) {
   const { t } = useTranslation();
 
   const previewMatches = matches.slice(0, 4);
+
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t("worldcup.matches")}</Text>
-
-        <WorldcupMatchesList matches={previewMatches} />
-
-        <TouchableOpacity
-          style={styles.moreButton}
-          onPress={() => setModalVisible(true)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.moreButtonText}>{t("worldcup.moreMatches")}</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
+      <WorldcupMatchesList
+        matches={previewMatches}
+        teamGroupMap={teamGroupMap}
+        ListFooterComponent={
+          <TouchableOpacity
+            style={styles.moreButton}
+            onPress={() => setModalVisible(true)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.moreButtonText}>
+              {t("worldcup.moreMatches")}
+            </Text>
+          </TouchableOpacity>
+        }
+      />
 
       <WorldcupMatchesModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        teamGroupMap={teamGroupMap}
       />
-    </ScrollView>
+    </View>
   );
 }
 
