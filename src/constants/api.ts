@@ -61,6 +61,8 @@ export const ENDPOINTS = {
   authLogin: "/auth/login",
   authRegister: "/auth/register",
   authSocial: "/auth/social",
+  authVerifyEmail: "/auth/verify-email",
+  authResendVerification: "/auth/resend-verification",
 
   // USER
   userProfile: "/users/profile",

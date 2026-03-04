@@ -38,7 +38,25 @@
       "confirm": "Are you sure you want to log out?",
       "title": "Log out",
       "cancel": "Cancel",
-      "action": "Log out"
+      "action": "Log out",
+      "resendFailed": "Failed to resend verification email."
+    },
+    "emailVerification": {
+      "title": "Email Verification",
+      "message": "A verification link has been sent to your email. Please verify within 24 hours.",
+      "notVerified": "Please verify your email address.",
+      "resend": "Resend",
+      "resendSuccess": "Verification email has been resent.",
+      "verifying": "Verifying your email...",
+      "successTitle": "Email Verified!",
+      "successMessage": "Your email has been successfully verified.",
+      "errorTitle": "Verification Failed",
+      "errorMessage": "The link is invalid or has expired. Please request a new one.",
+      "goToProfile": "Go to Profile",
+      "menuItem": "Email Verification",
+      "alreadyVerifiedTitle": "Already Verified",
+      "alreadyVerifiedMessage": "Your email is already verified.",
+      "resendConfirm": "Send verification link to {{email}}?"
     }
   },
 

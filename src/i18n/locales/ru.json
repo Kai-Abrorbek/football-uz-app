@@ -31,9 +31,27 @@
       "confirm": "Вы уверены, что хотите выйти?",
       "title": "Выйти",
       "cancel": "Отмена",
-      "action": "Выйти"
+      "action": "Выйти",
+      "resendFailed": "Не удалось отправить письмо повторно."
+    },
+    "emailVerification": {
+      "title": "Подтверждение email",
+      "message": "Ссылка для подтверждения отправлена на вашу почту. Подтвердите в течение 24 часов.",
+      "notVerified": "Пожалуйста, подтвердите ваш email.",
+      "resend": "Отправить снова",
+      "resendSuccess": "Письмо с подтверждением отправлено повторно.",
+      "verifying": "Проверка email...",
+      "successTitle": "Email подтверждён!",
+      "successMessage": "Ваш email успешно подтверждён.",
+      "errorTitle": "Ошибка подтверждения",
+      "errorMessage": "Ссылка недействительна или истекла. Запросите новую.",
+      "goToProfile": "Перейти в профиль",
+      "menuItem": "Подтверждение email",
+      "alreadyVerifiedTitle": "Уже подтверждён",
+      "alreadyVerifiedMessage": "Ваш email уже подтверждён.",
+      "resendConfirm": "Отправить ссылку на {{email}}?"
     }
-  },
+  },  
   "profile": {
     "stats": {
       "followingTeams": "Отслеживаемые команды",

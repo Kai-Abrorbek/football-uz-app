@@ -84,7 +84,7 @@ export default function WorldcupScreen() {
           <WorldcupMatchesTab matches={matches} teamGroupMap={teamGroupMap} />
         );
       case "bracket":
-        return <WorldcupBracketTab matches={matches} />;
+        return <WorldcupBracketTab />;
       case "standings":
         return <WorldcupStandingsTab />;
       default:

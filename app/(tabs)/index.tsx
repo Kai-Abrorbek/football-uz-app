@@ -35,6 +35,9 @@ export default function HomeScreen() {
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
   const { data: leagues } = useFeaturedLeagues();
   const { data: liveMatches } = useLiveMatches();
+  const [notificationModalVisible, setNotificationModalVisible] =
+    useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const Colors = useColors();
   const styles = getStyles(Colors);
 
@@ -157,18 +160,27 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
-      {/* 헤더 */}
+      {/*  헤더 수정 */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>⚽ FootballUZ</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setNotificationModalVisible(true)}
+          style={styles.bellButton}
+        >
           <Ionicons
             name="notifications-outline"
             size={24}
             color={Colors.text}
           />
+          {unreadCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
-
       {/* 리그 칩 (상단) */}
       <View style={styles.leagueChipContainer}>
         <ScrollView
@@ -233,7 +245,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
       </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -497,4 +508,18 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       color: Colors.textSecondary,
       fontWeight: "500",
     },
+    bellButton: { position: "relative", padding: 4 },
+    badge: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      minWidth: 16,
+      height: 16,
+      borderRadius: 8,
+      backgroundColor: "#ef4444",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 3,
+    },
+    badgeText: { fontSize: 10, fontWeight: "700", color: "#fff" },
   });

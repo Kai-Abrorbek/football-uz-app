@@ -253,6 +253,7 @@ export interface AuthResponseDto {
     email: string;
     language: string;
     avatar?: string;
+    isEmailVerified?: boolean;
   };
 }
 

@@ -84,6 +84,13 @@ export default function ProfileScreen() {
       await AsyncStorage.setItem("auth_token", response.accessToken);
       await AsyncStorage.setItem("user_data", JSON.stringify(response));
       setUser(response);
+
+      // ✅ 이메일 인증 안내
+      Alert.alert(
+        t("auth.emailVerification.title"),
+        t("auth.emailVerification.message"),
+        [{ text: t("common.confirm") }],
+      );
     } catch (error: any) {
       console.error("Sign up failed:", error);
       const message =
@@ -128,6 +135,64 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleResendVerification = async () => {
+    try {
+      await api.post(ENDPOINTS.authResendVerification, {
+        email: userData?.user?.email,
+      });
+      Alert.alert(
+        t("auth.emailVerification.title"),
+        t("auth.emailVerification.resendSuccess"),
+        [{ text: t("common.confirm") }],
+      );
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message || t("auth.errors.resendFailed");
+      alert(message);
+    }
+  };
+
+  const handleEmailVerification = async () => {
+    if (userData?.user?.isEmailVerified) {
+      if (Platform.OS === "web") {
+        window.alert(t("auth.emailVerification.alreadyVerifiedMessage"));
+      } else {
+        Alert.alert(
+          t("auth.emailVerification.alreadyVerifiedTitle"),
+          t("auth.emailVerification.alreadyVerifiedMessage"),
+          [{ text: t("common.confirm") }],
+        );
+      }
+      return;
+    }
+
+    if (Platform.OS === "web") {
+      if (
+        window.confirm(
+          t("auth.emailVerification.resendConfirm", {
+            email: userData?.user?.email,
+          }),
+        )
+      ) {
+        handleResendVerification();
+      }
+    } else {
+      Alert.alert(
+        t("auth.emailVerification.title"),
+        t("auth.emailVerification.resendConfirm", {
+          email: userData?.user?.email,
+        }),
+        [
+          { text: t("common.cancel"), style: "cancel" },
+          {
+            text: t("auth.emailVerification.resend"),
+            onPress: handleResendVerification,
+          },
+        ],
+      );
+    }
+  };
+
   const { promptAsync, isReady } = useGoogleAuth(handleGoogleSuccess);
 
   const handleLogout = async () => {
@@ -153,6 +218,22 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <ScrollView contentContainerStyle={styles.authContainer}>
+          {!userData?.user?.isEmailVerified && (
+            <View style={styles.verificationBanner}>
+              <Ionicons name="mail-outline" size={20} color="#fff" />
+              <Text style={styles.verificationBannerText}>
+                {t("auth.emailVerification.notVerified")}
+              </Text>
+              <TouchableOpacity
+                onPress={handleResendVerification}
+                style={styles.resendButton}
+              >
+                <Text style={styles.resendButtonText}>
+                  {t("auth.emailVerification.resend")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <View style={styles.authHeader}>
             <View style={styles.logoCircle}>
               <Ionicons name="football" size={60} color={Colors.primary} />
@@ -385,6 +466,30 @@ export default function ProfileScreen() {
               size={20}
               color={Colors.textSecondary}
             />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={handleEmailVerification}
+          >
+            <View style={styles.menuItemLeft}>
+              <Ionicons name="mail-outline" size={22} color={Colors.text} />
+              <Text style={styles.menuItemText}>
+                {t("auth.emailVerification.menuItem")}
+              </Text>
+            </View>
+            <View style={styles.menuItemRight}>
+              {userData.user?.isEmailVerified ? (
+                <Ionicons name="checkmark-circle" size={20} color="#22c55e" />
+              ) : (
+                <View style={styles.unverifiedDot} />
+              )}
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={Colors.textSecondary}
+              />
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -633,5 +738,37 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       color: Colors.textSecondary,
       textAlign: "center",
       marginTop: 24,
+    },
+
+    verificationBanner: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "#f59e0b",
+      padding: 12,
+      gap: 8,
+    },
+    verificationBannerText: {
+      flex: 1,
+      fontSize: 13,
+      color: "#fff",
+      fontWeight: "500",
+    },
+    resendButton: {
+      backgroundColor: "rgba(255,255,255,0.25)",
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 6,
+    },
+    resendButtonText: {
+      fontSize: 12,
+      color: "#fff",
+      fontWeight: "700",
+    },
+    menuItemRight: { flexDirection: "row", alignItems: "center", gap: 6 },
+    unverifiedDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: "#ef4444",
     },
   });

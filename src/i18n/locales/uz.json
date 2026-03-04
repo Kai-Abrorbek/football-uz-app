@@ -31,7 +31,26 @@
       "confirm": "Haqiqatan ham chiqmoqchimisiz?",
       "title": "Chiqish",
       "cancel": "Bekor qilish",
-      "action": "Chiqish"
+      "action": "Chiqish",
+      "resendFailed": "Emailni qayta yuborib bo'lmadi."
+    },
+
+    "emailVerification": {
+      "title": "Email tasdiqlash",
+      "message": "Tasdiqlash havolasi emailingizga yuborildi. 24 soat ichida tasdiqlang.",
+      "notVerified": "Iltimos, emailingizni tasdiqlang.",
+      "resend": "Qayta yuborish",
+      "resendSuccess": "Tasdiqlash emaili qayta yuborildi.",
+      "verifying": "Email tasdiqlanmoqda...",
+      "successTitle": "Email tasdiqlandi!",
+      "successMessage": "Emailingiz muvaffaqiyatli tasdiqlandi.",
+      "errorTitle": "Tasdiqlash xatosi",
+      "errorMessage": "Havola yaroqsiz yoki muddati o'tgan. Yangisini so'rang.",
+      "goToProfile": "Profilga o'tish",
+      "menuItem": "Email tasdiqlash",
+      "alreadyVerifiedTitle": "Allaqachon tasdiqlangan",
+      "alreadyVerifiedMessage": "Emailingiz allaqachon tasdiqlangan.",
+      "resendConfirm": "{{email}} ga havola yuborilsinmi?"
     }
   },
   "profile": {
