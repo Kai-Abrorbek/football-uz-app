@@ -16,6 +16,7 @@ import LeagueMatchesTab from "../../src/components/league-detail/tabs/LeagueMatc
 import LeagueStandingsTab from "../../src/components/league-detail/tabs/LeagueStandingsTab";
 import { useColors } from "../../src/hooks/useColors";
 import { useTranslation } from "react-i18next";
+import { SEASON } from "../../src/constants/leauges";
 
 const TABS = [
   { key: "overview" },
@@ -45,7 +46,9 @@ export default function LeagueDetailScreen() {
   } = useQuery<any>({
     queryKey: ["league", id],
     queryFn: async () => {
-      const res: any = await api.get(ENDPOINTS.leagueStandings(Number(id)));
+      const res: any = await api.get(
+        ENDPOINTS.leagueStandingsAndSeason(Number(id), SEASON),
+      );
       return res?.league ?? null;
     },
     staleTime: 1000 * 60 * 30,
@@ -104,7 +107,7 @@ export default function LeagueDetailScreen() {
             else router.replace("/");
           }}
         >
-          {/* <Ionicons name="arrow-back" size={24} color={Colors.text} /> */}
+          <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>

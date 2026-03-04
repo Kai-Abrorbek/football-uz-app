@@ -20,6 +20,7 @@ import WorldcupMatchesTab from "../../src/components/worldcup/tabs/WorldcupMatch
 import WorldcupPlayersTab from "../../src/components/worldcup/tabs/WorldcupPlayersTab";
 import WorldcupBracketTab from "../../src/components/worldcup/tabs/WorldcupBracketTab";
 import WorldcupStandingsTab from "../../src/components/worldcup/tabs/WorldcupStandingsTab";
+import { SEASON } from "../../src/constants/leauges";
 
 const TABS = [
   { key: "overview" },
@@ -51,7 +52,7 @@ export default function WorldcupScreen() {
     queryKey: ["worldcup-standings"],
     queryFn: async () => {
       const res: any = await api.get(
-        ENDPOINTS.leagueStandings(WORLDCUP_LEAGUE_ID),
+        ENDPOINTS.leagueStandingsAndSeason(WORLDCUP_LEAGUE_ID, WORLDCUP_SEASON),
       );
       return res;
     },

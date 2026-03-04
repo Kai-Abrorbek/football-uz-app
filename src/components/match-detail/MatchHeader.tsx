@@ -87,7 +87,7 @@ export default function MatchHeader({ match }: Props) {
             else router.replace("/");
           }}
         >
-          {/* <Ionicons name="arrow-back" size={24} color={Colors.text} /> */}
+          <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.leagueBtn}

@@ -19,6 +19,7 @@ import { ENDPOINTS } from "../../../constants/api";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 import { useError } from "../../../contexts/ErrorContext";
+import { SEASON } from "../../../constants/leauges";
 
 interface Props {
   match: Match;
@@ -55,7 +56,8 @@ export default function StandingsTab({ match }: Props) {
   // ✅ (서버 데이터 가져오는 부분 건드리지 않음)
   const { data: standing, isError } = useQuery<any>({
     queryKey: ["standings", match.league.id],
-    queryFn: () => api.get(ENDPOINTS.leagueStandings(match.league.id)),
+    queryFn: () =>
+      api.get(ENDPOINTS.leagueStandingsAndSeason(match.league.id, SEASON)),
     staleTime: 1000 * 60 * 30,
     retry: false,
   });

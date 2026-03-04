@@ -85,4 +85,4 @@ export const CONTINENTS = [
   },
 ];
 
-export const SEASON = 2025;
+export const SEASON = 2024;
