@@ -155,6 +155,7 @@ export default function NotificationModal({
         onPress={() => handleNotificationPress(item)}
         activeOpacity={0.7}
       >
+        {!item.isRead && <View style={styles.unreadBar} />}
         <View
           style={[styles.iconCircle, { backgroundColor: icon.color + "20" }]}
         >
@@ -190,7 +191,16 @@ export default function NotificationModal({
         <View style={styles.sheet}>
           {/* 헤더 */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>{t("notification.title")}</Text>
+            <View style={styles.headerLeft}>
+              <Text style={styles.headerTitle}>{t("notification.title")}</Text>
+              {notifications.filter((n) => !n.isRead).length > 0 && (
+                <View style={styles.unreadBadge}>
+                  <Text style={styles.unreadBadgeText}>
+                    {notifications.filter((n) => !n.isRead).length}
+                  </Text>
+                </View>
+              )}
+            </View>
             <View style={styles.headerRight}>
               {notifications.some((n) => !n.isRead) && (
                 <TouchableOpacity
@@ -203,7 +213,7 @@ export default function NotificationModal({
                 </TouchableOpacity>
               )}
               <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Ionicons name="close" size={24} color={Colors.text} />
+                <Ionicons name="close" size={18} color={Colors.text} />
               </TouchableOpacity>
             </View>
           </View>
@@ -251,66 +261,91 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     overlay: {
       flex: 1,
-      backgroundColor: "rgba(0,0,0,0.3)",
+      backgroundColor: "rgba(0,0,0,0.5)",
       justifyContent: "flex-end",
     },
     sheet: {
       flex: 1,
-      marginTop: 80,
+      marginTop: 60,
       backgroundColor: Colors.background,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
       overflow: "hidden",
     },
     header: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: 16,
-      paddingVertical: 16,
+      paddingHorizontal: 20,
+      paddingVertical: 18,
       backgroundColor: Colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
-    headerTitle: { fontSize: 18, fontWeight: "700", color: Colors.text },
-    headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
-    readAllButton: { paddingHorizontal: 10, paddingVertical: 6 },
-    readAllText: { fontSize: 13, color: Colors.primary, fontWeight: "600" },
+    headerLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
+    headerTitle: { fontSize: 20, fontWeight: "800", color: Colors.text },
+    unreadBadge: {
+      backgroundColor: Colors.primary,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 10,
+    },
+    unreadBadgeText: { fontSize: 11, fontWeight: "700", color: "#fff" },
+    headerRight: { flexDirection: "row", alignItems: "center", gap: 4 },
+    readAllButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 8,
+      backgroundColor: Colors.primary + "15",
+    },
+    readAllText: { fontSize: 12, color: Colors.primary, fontWeight: "700" },
     closeButton: {
-      width: 40,
-      height: 40,
+      width: 36,
+      height: 36,
       alignItems: "center",
       justifyContent: "center",
+      borderRadius: 18,
+      backgroundColor: Colors.border,
     },
     center: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      gap: 12,
+      gap: 16,
     },
-    emptyText: { fontSize: 14, color: Colors.textSecondary },
+    emptyText: { fontSize: 15, color: Colors.textSecondary, fontWeight: "500" },
     notificationItem: {
       flexDirection: "row",
       alignItems: "center",
-      padding: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 16,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
       gap: 12,
     },
     unreadItem: { backgroundColor: Colors.primary + "08" },
+    unreadBar: {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: 3,
+      backgroundColor: Colors.primary,
+      borderRadius: 2,
+    },
     iconCircle: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+      width: 46,
+      height: 46,
+      borderRadius: 23,
       alignItems: "center",
       justifyContent: "center",
     },
-    notificationContent: { flex: 1, gap: 3 },
-    notificationTitle: { fontSize: 14, fontWeight: "600", color: Colors.text },
+    notificationContent: { flex: 1, gap: 4 },
+    notificationTitle: { fontSize: 14, fontWeight: "700", color: Colors.text },
     notificationBody: {
       fontSize: 13,
       color: Colors.textSecondary,
-      lineHeight: 18,
+      lineHeight: 19,
     },
     notificationTime: {
       fontSize: 11,
@@ -322,5 +357,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       height: 8,
       borderRadius: 4,
       backgroundColor: Colors.primary,
+      alignSelf: "flex-start",
+      marginTop: 4,
     },
   });

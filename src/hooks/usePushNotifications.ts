@@ -47,7 +47,6 @@ export default function usePushNotifications() {
 
     // FCM 토큰 발급
     const token = (await Notifications.getDevicePushTokenAsync()).data;
-    console.log("FCM Token:", token);
 
     // 백엔드에 저장
     try {

@@ -508,5 +508,11 @@
     "minutesAgo": " daq oldin",
     "hoursAgo": " soat oldin",
     "daysAgo": " kun oldin"
+  },
+
+  "date": {
+    "today": "Bugun",
+    "yesterday": "O'tgan kun",
+    "tomorrow": "Ertaga"
   }
 }

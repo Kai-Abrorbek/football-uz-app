@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,16 +26,16 @@ import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
 import NotificationModal from "../../src/components/notifications/NotificationModal";
 import usePushNotifications from "../../src/hooks/usePushNotifications";
+import DateSelector from "../../src/components/match-detail/DateSelector";
 
-function getDateString(offset: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
+const formatDate = (date: Date): string => {
   return date.toISOString().split("T")[0];
-}
+};
 
 export default function HomeScreen() {
   usePushNotifications();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
   const { data: leagues } = useFeaturedLeagues();
   const { data: liveMatches } = useLiveMatches();
@@ -44,48 +45,27 @@ export default function HomeScreen() {
   const Colors = useColors();
   const styles = getStyles(Colors);
 
-  // 오늘/내일/모레 경기 모두 가져오기
   const {
-    data: todayMatches,
-    isLoading: l1,
-    refetch: r1,
-    isError: e1,
-  } = useMatches(getDateString(0), selectedLeague);
+    data: matches,
+    isLoading,
+    refetch,
+    isError,
+  } = useMatches(selectedDate, selectedLeague);
 
-  const {
-    data: tomorrowMatches,
-    isLoading: l2,
-    refetch: r2,
-    isError: e2,
-  } = useMatches(getDateString(1), selectedLeague);
-  const {
-    data: dayAfterMatches,
-    isLoading: l3,
-    refetch: r3,
-    isError: e3,
-  } = useMatches(getDateString(2), selectedLeague);
-  const {
-    data: yesterdayMatches,
-    isLoading: l4,
-    refetch: r4,
-    isError: e4,
-  } = useMatches(getDateString(-1), selectedLeague);
-  const {
-    data: beforeYesterdayMatches,
-    isLoading: l5,
-    refetch: r5,
-    isError: e5,
-  } = useMatches(getDateString(-2), selectedLeague);
+  const getDateLabel = (dateStr: string): string => {
+    const today = formatDate(new Date());
+    const yesterday = formatDate(new Date(Date.now() - 86400000));
+    const tomorrow = formatDate(new Date(Date.now() + 86400000));
 
-  const isLoading = l1 || l2 || l3 || l4 || l5;
-  const isError = e1 || e2 || e3 || e4 || e5;
+    if (dateStr === today) return t("date.today");
+    if (dateStr === yesterday) return t("date.yesterday");
+    if (dateStr === tomorrow) return t("date.tomorrow");
 
-  const refetch = () => {
-    r1();
-    r2();
-    r3();
-    r4();
-    r5();
+    return new Date(dateStr).toLocaleDateString(i18n.language, {
+      month: "long",
+      day: "numeric",
+      weekday: "short",
+    });
   };
 
   const groupByLeague = (matches: any[]) => {
@@ -161,6 +141,10 @@ export default function HomeScreen() {
     );
   };
 
+  const isRefatch = () => {
+    refetch();
+    setSelectedDate(formatDate(new Date()));
+  };
   return (
     <SafeAreaView style={styles.container} edges={[]}>
       {/*  헤더 수정 */}
@@ -255,10 +239,16 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
       </View>
+      {/* ✅ DateSelector를 ScrollView*/}
+      <DateSelector
+        selectedDate={selectedDate}
+        onDateSelect={setSelectedDate}
+        hasLive={liveMatches ? liveMatches.length > 0 : false}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+          <RefreshControl refreshing={isLoading} onRefresh={isRefatch} />
         }
       >
         <HeroBanner />
@@ -280,57 +270,26 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* 오늘 경기 (라이브 포함) */}
-        {renderDateSection(
-          t("home.dates.today"),
-          todayMatches?.reverse() || [],
-          true,
+        {renderDateSection(getDateLabel(selectedDate), matches || [])}
+
+        {!isLoading && !matches?.length && (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="football-outline" size={48} color={Colors.border} />
+            <Text style={styles.emptyText}>{t("home.empty.noMatches")}</Text>
+          </View>
         )}
 
         {/* 월드컵 배너 */}
         <WorldCupBanner />
-        {renderDateSection(
-          t("home.dates.tomorrow"),
-          tomorrowMatches?.reverse() || [],
-        )}
 
         {/* 우즈벡 선수 */}
         <UzbekPlayers />
 
-        {renderDateSection(
-          t("home.dates.dayAfterTomorrow"),
-          dayAfterMatches || [],
-        )}
-
-        {/* 지난 경기  */}
-        {renderDateSection(
-          t("home.dates.yesterday"),
-          yesterdayMatches?.reverse() || [],
-        )}
-        {renderDateSection(
-          t("home.dates.beforeYesterday"),
-          beforeYesterdayMatches?.reverse() || [],
-        )}
         {/* 최신 뉴스 */}
         <NewsSection />
 
         {/* AI 예측 */}
         <PredictionSection />
-
-        {/* 전부 없을 때 */}
-        {!isLoading &&
-          !todayMatches?.length &&
-          !tomorrowMatches?.length &&
-          !dayAfterMatches?.length && (
-            <View style={styles.emptyContainer}>
-              <Ionicons
-                name="football-outline"
-                size={48}
-                color={Colors.border}
-              />
-              <Text style={styles.emptyText}>{t("home.empty.noMatches")}</Text>
-            </View>
-          )}
 
         <View style={{ height: 20 }} />
       </ScrollView>

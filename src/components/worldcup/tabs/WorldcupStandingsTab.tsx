@@ -83,10 +83,10 @@ export default function WorldcupStandingsTab() {
               {/* 오른쪽 스크롤 컬럼 - 헤더 + 데이터 통째로 */}
               <ScrollView
                 onScroll={(e) => {
-                  if (!e?.nativeEvent?.contentOffset) return;
+                  const offsetX = e.nativeEvent?.contentOffset?.x ?? 0;
                   setScrolledGroups((prev) => ({
                     ...prev,
-                    [groupName]: e.nativeEvent.contentOffset.x > 0,
+                    [groupName]: offsetX > 0,
                   }));
                 }}
                 horizontal

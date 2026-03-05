@@ -80,8 +80,6 @@ export default function NotificationsScreen() {
         })
       ).data;
 
-      console.log("FCM Token:", token);
-
       // 서버에 토큰 등록
       await api.post(ENDPOINTS.fcmToken, { token });
     } catch (error) {
