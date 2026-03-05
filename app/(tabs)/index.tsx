@@ -24,6 +24,7 @@ import { router } from "expo-router";
 import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
 import NotificationModal from "../../src/components/notifications/NotificationModal";
+import usePushNotifications from "../../src/hooks/usePushNotifications";
 
 function getDateString(offset: number): string {
   const date = new Date();
@@ -32,6 +33,7 @@ function getDateString(offset: number): string {
 }
 
 export default function HomeScreen() {
+  usePushNotifications();
   const { t } = useTranslation();
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
   const { data: leagues } = useFeaturedLeagues();

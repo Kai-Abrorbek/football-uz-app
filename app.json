@@ -2,8 +2,8 @@
   "expo": {
     "scheme": "footballuz",
     "name": "Football UZ",
-    "slug": "football-uz-app",
-    "owner": "kai-dev",
+    "slug": "football-uz",
+    "owner": "kai_dev",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,6 +20,7 @@
     },
     "android": {
       "package": "com.footballuz.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -40,6 +41,12 @@
         }
       ],
       "expo-localization"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "47b7fd35-3976-4631-9f9c-1fe5e687466c"
+      }
+    }
   }
 }

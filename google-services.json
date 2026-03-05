@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "793550954290",
+    "project_id": "football-uz",
+    "storage_bucket": "football-uz.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:793550954290:android:f7f220d355b78bf72bc12b",
+        "android_client_info": {
+          "package_name": "com.footballuz.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhxjf5-NaPxjcnwc3BXfbQp7deDjRVhWE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
