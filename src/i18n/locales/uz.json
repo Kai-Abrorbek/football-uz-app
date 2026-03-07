@@ -514,5 +514,12 @@
     "today": "Bugun",
     "yesterday": "O'tgan kun",
     "tomorrow": "Ertaga"
+  },
+
+  "matchVote": {
+    "title": "Kim g'alaba qozonadi?",
+    "total": "Jami ovozlar: {{count}}",
+    "draw": "Durrang",
+    "loginRequired": "Ovoz berish uchun tizimga kiring."
   }
 }

@@ -507,6 +507,13 @@
     "minutesAgo": " мин назад",
     "hoursAgo": " ч назад",
     "daysAgo": " д назад"
+  },
+
+  "matchVote": {
+    "title": "Кто победит?",
+    "total": "Всего голосов: {{count}}",
+    "draw": "Ничья",
+    "loginRequired": "Войдите, чтобы проголосовать."
   }
   
 }

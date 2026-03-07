@@ -20,6 +20,7 @@ import { useColors } from "../../../hooks/useColors";
 import FixtureAbsenceSectionMock from "../FixtureAbsenceSectionMock";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SEASON } from "../../../constants/leauges";
+import MatchVote from "../MatchVote";
 
 interface Props {
   match: Match;
@@ -126,6 +127,13 @@ export default function OverviewTab({ match, onTabChange }: Props) {
       )}
 
       <ScrollView showsVerticalScrollIndicator={false}>
+        {/* 누가 이길까요?? */}
+        <MatchVote
+          matchId={match._id}
+          homeTeam={match.homeTeam}
+          awayTeam={match.awayTeam}
+        />
+
         {/* 승리 확률 - 항상 표시 */}
         {isLoading ? (
           <SafeAreaView style={styles.container} edges={["top"]}>
@@ -240,13 +248,6 @@ export default function OverviewTab({ match, onTabChange }: Props) {
 
         {/* 부상 및 출장 정지 */}
         <FixtureAbsenceSectionMock fixtureId={match.apiFootballId} />
-        {/* <CollapsibleSection
-          title={t("matchOverview.injuriesSuspensions")}
-          subtitle={t("matchOverview.injuriesSubtitle")}
-          key="injuries"
-        >
-          <InjurySection match={match} injuries={dummyInjuries} />
-        </CollapsibleSection> */}
 
         {/* 최근 성적 */}
         <CollapsibleSection
@@ -405,88 +406,6 @@ export default function OverviewTab({ match, onTabChange }: Props) {
       </ScrollView>
 
       <View style={{ height: 20 }} />
-    </View>
-  );
-}
-
-function InjurySection({ match, injuries }: { match: Match; injuries: any[] }) {
-  const [selectedTeam, setSelectedTeam] = useState<"home" | "away">("home");
-  const { t, i18n } = useTranslation();
-  const Colors = useColors();
-  const stylesInjury = injuryStyles(Colors);
-
-  const filteredInjuries = injuries.filter(
-    (i) =>
-      i.teamId ===
-      (selectedTeam === "home" ? match.homeTeam.id : match.awayTeam.id),
-  );
-
-  return (
-    <View>
-      {/* 팀 탭 */}
-      <View style={stylesInjury.teamTabs}>
-        <TouchableOpacity
-          style={[
-            stylesInjury.teamTab,
-            selectedTeam === "home" && stylesInjury.teamTabActive,
-          ]}
-          onPress={() => setSelectedTeam("home")}
-        >
-          <Image
-            source={match.homeTeam.logo}
-            style={stylesInjury.tabLogo}
-            contentFit="contain"
-          />
-          <Text
-            style={[
-              stylesInjury.tabText,
-              selectedTeam === "home" && stylesInjury.tabTextActive,
-            ]}
-          >
-            {match.homeTeam.name}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            stylesInjury.teamTab,
-            selectedTeam === "away" && stylesInjury.teamTabActive,
-          ]}
-          onPress={() => setSelectedTeam("away")}
-        >
-          <Image
-            source={match.awayTeam.logo}
-            style={stylesInjury.tabLogo}
-            contentFit="contain"
-          />
-          <Text
-            style={[
-              stylesInjury.tabText,
-              selectedTeam === "away" && stylesInjury.tabTextActive,
-            ]}
-          >
-            {match.awayTeam.name}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {filteredInjuries.length === 0 ? (
-        <Text style={stylesInjury.empty}>{t("injuries.empty")}</Text>
-      ) : (
-        filteredInjuries.map((injury, i) => (
-          <View key={i} style={stylesInjury.injuryRow}>
-            <View style={stylesInjury.injuryIcon}>
-              <Text>🚑</Text>
-            </View>
-            <View style={stylesInjury.injuryInfo}>
-              <Text style={stylesInjury.injuryName}>{injury.name}</Text>
-              <Text style={stylesInjury.injuryPos}>{injury.position}</Text>
-            </View>
-            <View style={stylesInjury.injuryBadge}>
-              <Text style={stylesInjury.injuryBadgeText}>{injury.reason}</Text>
-            </View>
-          </View>
-        ))
-      )}
     </View>
   );
 }
@@ -684,55 +603,4 @@ const h2hStyles = (Colors: ReturnType<typeof getColors>) =>
     matchTeamNameRight: { textAlign: "right" },
     winner: { fontWeight: "700", color: Colors.primary },
     matchScore: { fontSize: 15, fontWeight: "700", color: Colors.text },
-  });
-
-const injuryStyles = (Colors: ReturnType<typeof getColors>) =>
-  StyleSheet.create({
-    teamTabs: { flexDirection: "row", marginBottom: 12 },
-    teamTab: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      paddingVertical: 8,
-      gap: 6,
-      borderBottomWidth: 2,
-      borderBottomColor: "transparent",
-    },
-    teamTabActive: { borderBottomColor: Colors.primary },
-    tabLogo: { width: 18, height: 18 },
-    tabText: { fontSize: 12, color: Colors.textSecondary, fontWeight: "500" },
-    tabTextActive: { color: Colors.primary, fontWeight: "700" },
-    empty: {
-      fontSize: 13,
-      color: Colors.textSecondary,
-      textAlign: "center",
-      paddingVertical: 12,
-    },
-    injuryRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingVertical: 10,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
-      gap: 10,
-    },
-    injuryIcon: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      backgroundColor: Colors.background,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    injuryInfo: { flex: 1, gap: 2 },
-    injuryName: { fontSize: 14, fontWeight: "600", color: Colors.text },
-    injuryPos: { fontSize: 12, color: Colors.textSecondary },
-    injuryBadge: {
-      backgroundColor: Colors.background,
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 10,
-    },
-    injuryBadgeText: { fontSize: 11, color: Colors.live, fontWeight: "600" },
   });

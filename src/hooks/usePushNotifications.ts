@@ -8,11 +8,10 @@ import { useAuth } from "../contexts/AuthContext";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -25,6 +24,8 @@ export default function usePushNotifications() {
   }, [userData?.user]);
 
   const registerForPushNotifications = async () => {
+    if (Platform.OS === "web") return;
+
     if (!Device.isDevice) {
       console.log("실제 기기에서만 FCM 토큰 발급 가능");
       return;

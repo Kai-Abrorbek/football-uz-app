@@ -522,6 +522,11 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "tomorrow": "Tomorrow"
+  },
+  "matchVote": {
+    "title": "Who will win?",
+    "total": "Total votes: {{count}}",
+    "draw": "Draw",
+    "loginRequired": "Login to vote."
   }
-  
 }
