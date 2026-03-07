@@ -528,5 +528,17 @@
     "total": "Total votes: {{count}}",
     "draw": "Draw",
     "loginRequired": "Login to vote."
+  },
+  "venue": {
+    "weather": "Weather"
+  },
+  "matchAlert": {
+    "title": "Match Alert",
+    "receiveAlert": "Receive Alert",
+    "matchStart": "Match Start",
+    "goals": "Goals",
+    "matchEnd": "Match End",
+    "globalOff": "Global alerts are off. Please enable them in settings.",
+    "loginRequired": "Login to set alerts."
   }
 }

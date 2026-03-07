@@ -245,6 +245,14 @@ export interface News {
   category: string;
 }
 
+interface NotificationSettings {
+  matchStart: boolean;
+  goals: boolean;
+  matchEnd: boolean;
+  news: boolean;
+  predictions: boolean;
+}
+
 export interface AuthResponseDto {
   accessToken: string;
   user: {
@@ -254,6 +262,7 @@ export interface AuthResponseDto {
     language: string;
     avatar?: string;
     isEmailVerified?: boolean;
+    notificationSettings?: NotificationSettings;
   };
 }
 

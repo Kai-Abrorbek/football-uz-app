@@ -233,7 +233,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      paddingVertical: 14,
+      paddingVertical: 5,
       borderRadius: 8,
       borderWidth: 1,
       borderColor: Colors.border,

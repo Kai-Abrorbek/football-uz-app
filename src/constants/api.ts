@@ -70,11 +70,17 @@ export const ENDPOINTS = {
 
   // notificationSettings
   notificationSettings: "/users/notification-settings",
+  matchAlert: (matchId: string) => `/notifications/match-alert/${matchId}`,
+  matchAlertSet: (matchId: string) => `/notifications/match-alert/${matchId}`,
+  matchAlertDelete: (matchId: string) =>
+    `/notifications/match-alert/${matchId}`,
+
   // fcmToken: "/users/fcm-token",
   notifications: "/notifications",
   notificationsReadAll: "/notifications/read-all",
   notificationRead: (id: string) => `/notifications/${id}/read`,
   fcmToken: "/notifications/fcm-token",
+
   // FixtureAbsence
   fixtureabsence: (matchId: number) => {
     const url = `/fixtureabsence/match-absence?matchId=${matchId}`;

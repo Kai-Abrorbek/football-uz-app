@@ -239,6 +239,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
       </View>
+
       {/* ✅ DateSelector를 ScrollView*/}
       <DateSelector
         selectedDate={selectedDate}

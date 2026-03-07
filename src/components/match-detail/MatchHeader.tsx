@@ -13,6 +13,7 @@ import { Match } from "../../types";
 import { useState } from "react";
 import { useColors } from "../../hooks/useColors";
 import { useTranslation } from "react-i18next";
+import MatchAlertModal from "./MatchAlertModal";
 
 interface Props {
   match: Match;
@@ -20,6 +21,7 @@ interface Props {
 
 export default function MatchHeader({ match }: Props) {
   const [isFollowing, setIsFollowing] = useState(false);
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
   const Colors = useColors();
   const styles = getStyles(Colors);
@@ -112,23 +114,43 @@ export default function MatchHeader({ match }: Props) {
             color={Colors.textSecondary}
           />
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.followButton,
-            isFollowing && styles.followButtonActive,
-          ]}
-          onPress={() => setIsFollowing(!isFollowing)}
-        >
-          <Text
-            style={[
-              styles.followButtonText,
-              isFollowing && styles.followButtonTextActive,
-            ]}
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <TouchableOpacity
+            style={styles.alertBtn}
+            onPress={() => setAlertModalVisible(true)}
           >
-            {isFollowing ? t("matchHeader.following") : t("matchHeader.follow")}
-          </Text>
-        </TouchableOpacity>
+            <Ionicons
+              name="notifications-outline"
+              size={22}
+              color={Colors.text}
+            />
+          </TouchableOpacity>
+          {/* // 모달 */}
+          <MatchAlertModal
+            visible={alertModalVisible}
+            onClose={() => setAlertModalVisible(false)}
+            matchId={match._id}
+          />
+
+          <TouchableOpacity
+            style={[
+              styles.followButton,
+              isFollowing && styles.followButtonActive,
+            ]}
+            onPress={() => setIsFollowing(!isFollowing)}
+          >
+            <Text
+              style={[
+                styles.followButtonText,
+                isFollowing && styles.followButtonTextActive,
+              ]}
+            >
+              {isFollowing
+                ? t("matchHeader.following")
+                : t("matchHeader.follow")}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* 스코어 영역 */}
@@ -515,4 +537,5 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     followButtonTextActive: {
       color: "#ffffff",
     },
+    alertBtn: { padding: 6 },
   });

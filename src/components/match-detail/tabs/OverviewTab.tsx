@@ -21,6 +21,7 @@ import FixtureAbsenceSectionMock from "../FixtureAbsenceSectionMock";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SEASON } from "../../../constants/leauges";
 import MatchVote from "../MatchVote";
+import VenueWeather from "../VenueWeather";
 
 interface Props {
   match: Match;
@@ -117,15 +118,6 @@ export default function OverviewTab({ match, onTabChange }: Props) {
 
   return (
     <View style={styles.container}>
-      {/* 경기장 정보 */}
-      {match.venue && (
-        <View style={styles.venueContainer}>
-          <Text style={styles.venueText}>
-            🏟 {match.venue.name}, {match.venue.city}
-          </Text>
-        </View>
-      )}
-
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 누가 이길까요?? */}
         <MatchVote
@@ -182,6 +174,14 @@ export default function OverviewTab({ match, onTabChange }: Props) {
               </View>
             </View>
           </CollapsibleSection>
+        )}
+
+        {/* 경기장 정보 */}
+        {match.venue?.name && (
+          <VenueWeather
+            venueName={match.venue.name}
+            venueCity={match.venue.city}
+          />
         )}
 
         {/* 순위 */}

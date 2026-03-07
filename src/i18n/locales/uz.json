@@ -521,5 +521,17 @@
     "total": "Jami ovozlar: {{count}}",
     "draw": "Durrang",
     "loginRequired": "Ovoz berish uchun tizimga kiring."
+  },
+  "venue": {
+    "weather": "Ob-havo"
+  },
+  "matchAlert": {
+    "title": "O'yin bildirishnomalari",
+    "receiveAlert": "Bildirishnoma olish",
+    "matchStart": "O'yin boshlanishi",
+    "goals": "Gollar",
+    "matchEnd": "O'yin tugashi",
+    "globalOff": "Umumiy bildirishnomalar o'chirilgan. Sozlamalarda yoqing.",
+    "loginRequired": "Bildirishnoma sozlash uchun tizimga kiring."
   }
 }

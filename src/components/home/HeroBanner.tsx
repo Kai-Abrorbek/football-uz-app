@@ -165,8 +165,8 @@ export default function HeroBanner() {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { height: 180, marginBottom: 4 },
-    slide: { width, height: 180 },
+    container: { height: 200, marginBottom: 4, marginTop: 4 },
+    slide: { width, height: 200 },
     image: { width: "100%", height: "100%" },
     overlay: {
       ...StyleSheet.absoluteFillObject,
