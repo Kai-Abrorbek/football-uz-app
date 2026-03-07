@@ -74,6 +74,8 @@ export default function OverviewTab({ match, onTabChange }: Props) {
   const stylesForm = formStyles(Colors);
   const stylesMini = miniStyles(Colors);
   const stylesH2H = h2hStyles(Colors);
+  const homeColor = match.homeTeam.color ?? "#4285f4";
+  const awayColor = match.awayTeam.color ?? "#ea4335";
 
   const { data: prediction, isLoading } = useQuery<any>({
     queryKey: ["prediction", match.apiFootballId],
@@ -143,7 +145,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
             <View style={styles.probContainer}>
               <View style={styles.probRow}>
                 <View style={styles.probTeam}>
-                  <Text style={[styles.probPercent, { color: "#4285f4" }]}>
+                  <Text style={[styles.probPercent, { color: homeColor }]}>
                     {homeWinProb}%
                   </Text>
                   <Text style={styles.probTeamName} numberOfLines={1}>
@@ -159,7 +161,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
                   </Text>
                 </View>
                 <View style={[styles.probTeam, { alignItems: "flex-end" }]}>
-                  <Text style={[styles.probPercent, { color: "#ea4335" }]}>
+                  <Text style={[styles.probPercent, { color: awayColor }]}>
                     {awayWinProb}%
                   </Text>
                   <Text style={styles.probTeamName} numberOfLines={1}>
@@ -168,9 +170,19 @@ export default function OverviewTab({ match, onTabChange }: Props) {
                 </View>
               </View>
               <View style={styles.probBar}>
-                <View style={[styles.probBarHome, { flex: homeWinProb }]} />
+                <View
+                  style={[
+                    styles.probBarHome,
+                    { flex: homeWinProb, backgroundColor: homeColor },
+                  ]}
+                />
                 <View style={[styles.probBarDraw, { flex: drawProb }]} />
-                <View style={[styles.probBarAway, { flex: awayWinProb }]} />
+                <View
+                  style={[
+                    styles.probBarAway,
+                    { flex: awayWinProb, backgroundColor: awayColor },
+                  ]}
+                />
               </View>
             </View>
           </CollapsibleSection>

@@ -15,6 +15,7 @@ export interface Match {
     logo: string;
     winner?: boolean;
     coach?: TeamCoach;
+    color?: string;
   };
   awayTeam: {
     id: number;
@@ -22,6 +23,7 @@ export interface Match {
     logo: string;
     winner?: boolean;
     coach?: TeamCoach;
+    color?: string;
   };
   goals: {
     home: number | null;
