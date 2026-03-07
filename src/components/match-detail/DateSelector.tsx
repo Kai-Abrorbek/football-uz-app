@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,8 +16,11 @@ interface Props {
   hasLive?: boolean;
 }
 
-const formatDate = (date: Date): string => {
-  return date.toISOString().split("T")[0];
+export const formatDate = (date: Date): string => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 };
 
 const generateDates = (selectedDate: string): Date[] => {
@@ -78,12 +81,11 @@ export default function DateSelector({
   const Colors = useColors();
   const styles = getStyles(Colors);
   const scrollRef = useRef<ScrollView>(null);
+  const [dates, setDates] = useState<Date[]>(() => generateDates(selectedDate));
 
   const today = formatDate(new Date());
   const yesterday = formatDate(new Date(Date.now() - 86400000));
   const tomorrow = formatDate(new Date(Date.now() + 86400000));
-
-  const dates = generateDates(selectedDate);
 
   const getLabel = (date: Date): string => {
     const key = formatDate(date);
@@ -106,6 +108,28 @@ export default function DateSelector({
     }
   }, [selectedDate]);
 
+  const handleDateSelect = (key: string) => {
+    const selected = new Date(key);
+    const lastDate = dates[dates.length - 1];
+
+    // 선택한 날짜 + 7일이 현재 마지막 날짜보다 크면 추가
+    const selectedPlus7 = new Date(selected);
+    selectedPlus7.setDate(selected.getDate() + 7);
+
+    if (selectedPlus7 > lastDate) {
+      const newDates = [...dates];
+      const current = new Date(lastDate);
+
+      while (formatDate(current) < formatDate(selectedPlus7)) {
+        current.setDate(current.getDate() + 1);
+        newDates.push(new Date(current));
+      }
+      setDates(newDates);
+    }
+
+    onDateSelect(key);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -123,7 +147,7 @@ export default function DateSelector({
             <TouchableOpacity
               key={key}
               style={[styles.item, isSelected && styles.selectedItem]}
-              onPress={() => onDateSelect(key)}
+              onPress={() => handleDateSelect(key)}
               activeOpacity={0.7}
             >
               <Text style={[styles.label, isSelected && styles.selectedLabel]}>
