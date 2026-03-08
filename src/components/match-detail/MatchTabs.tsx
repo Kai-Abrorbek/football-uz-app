@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Animated,
 } from "react-native";
 import { getColors } from "../../constants/colors";
 import { useColors } from "../../hooks/useColors";

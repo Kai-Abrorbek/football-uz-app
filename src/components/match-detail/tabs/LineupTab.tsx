@@ -107,7 +107,7 @@ export default function LineupTab({ match }: Props) {
   ];
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
       {/* 포메이션 헤더 */}
       <View style={styles.formationHeader}>
         <View style={styles.teamHeader}>
@@ -206,7 +206,7 @@ export default function LineupTab({ match }: Props) {
 
       <FixtureAbsenceSectionMock fixtureId={match.apiFootballId} />
       <View style={{ height: 40 }} />
-    </ScrollView>
+    </View>
   );
 }
 

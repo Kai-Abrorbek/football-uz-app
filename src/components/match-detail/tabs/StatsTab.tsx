@@ -141,7 +141,7 @@ export default function StatsTab({ match }: Props) {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
       {/* 팀 헤더 */}
       <View style={styles.teamHeader}>
         <Text style={styles.teamName}>{match.homeTeam.name}</Text>
@@ -187,7 +187,7 @@ export default function StatsTab({ match }: Props) {
       </View>
 
       <View style={{ height: 20 }} />
-    </ScrollView>
+    </View>
   );
 }
 

@@ -22,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SEASON } from "../../../constants/leauges";
 import MatchVote from "../MatchVote";
 import VenueWeather from "../VenueWeather";
+import TeamMatchesTab from "../TeamRecords";
 
 interface Props {
   match: Match;
@@ -120,7 +121,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <View>
         {/* 누가 이길까요?? */}
         <MatchVote
           matchId={match._id}
@@ -310,7 +311,10 @@ export default function OverviewTab({ match, onTabChange }: Props) {
             );
           })}
         </CollapsibleSection>
-
+        <TeamMatchesTab
+          team1Id={match.homeTeam.id}
+          team2Id={match.awayTeam.id}
+        />
         {/* 상대 전적 */}
         <CollapsibleSection
           title="상대 전적"
@@ -415,7 +419,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
             </View>
           )}
         </CollapsibleSection>
-      </ScrollView>
+      </View>
 
       <View style={{ height: 20 }} />
     </View>

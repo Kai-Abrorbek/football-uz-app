@@ -161,7 +161,7 @@ export default function StandingsTab({ match }: Props) {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
       <View style={styles.tableWrap}>
         {/* ✅ 표 본체: 왼쪽(고정) + 오른쪽(가로 스크롤 1개) */}
         <View style={styles.tableBody}>
@@ -310,7 +310,7 @@ export default function StandingsTab({ match }: Props) {
       </View>
 
       <View style={{ height: 20 }} />
-    </ScrollView>
+    </View>
   );
 }
 

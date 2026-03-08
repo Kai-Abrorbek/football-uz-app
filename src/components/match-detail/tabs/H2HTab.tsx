@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { Colors, getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
@@ -43,7 +43,7 @@ export default function H2HTab({ match }: Props) {
   const draws = h2hMatches.length - homeWins - awayWins;
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
       {/* 경기 목록 */}
       {h2hMatches.map((m, index) => {
         const homeGoals = m.goals.home ?? 0;
@@ -125,7 +125,7 @@ export default function H2HTab({ match }: Props) {
       })}
 
       <View style={{ height: 20 }} />
-    </ScrollView>
+    </View>
   );
 }
 

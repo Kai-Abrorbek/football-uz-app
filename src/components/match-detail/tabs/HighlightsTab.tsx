@@ -245,12 +245,11 @@ export default function HighlightsTab({ match }: Props) {
   };
 
   return (
-    <ScrollView
+    <View
       style={styles.container}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-      }
+      // refreshControl={
+      //   <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+      // }
     >
       {highlights.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -266,7 +265,7 @@ export default function HighlightsTab({ match }: Props) {
       )}
 
       <View style={{ height: 20 }} />
-    </ScrollView>
+    </View>
   );
 }
 

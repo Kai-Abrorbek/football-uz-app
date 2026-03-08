@@ -1,5 +1,5 @@
-// export const API_URL = "http://localhost:4000/api/v1";
-export const API_URL = "https://5deb-144-124-192-232.ngrok-free.app/api/v1";
+export const API_URL = "http://localhost:4000/api/v1";
+// export const API_URL = "https://5deb-144-124-192-232.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.111.148.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
@@ -14,6 +14,8 @@ export const ENDPOINTS = {
   teamMatchDetail: (id: number) => `/matches/team-allmatches/${id}`,
   getTeamDetail: (id: number) => `/matches/team/${id}?limit=999`,
   teamMatchRecent: (id: number) => `/matches/team-recent/${id}`,
+  teamsRecentMatches: (id1: number, id2: number) =>
+    `/matches/recent-matches/${id1}/${id2}?limit=5`,
   liveMatches: "/matches/live",
   upcomingMatches: "/matches/upcoming",
 

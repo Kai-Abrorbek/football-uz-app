@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { useState, useRef } from "react";
+import { View, StyleSheet, Animated } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
@@ -21,9 +21,13 @@ import H2HTab from "../../src/components/match-detail/tabs/H2HTab";
 import LiveTab from "../../src/components/match-detail/tabs/HighlightsTab";
 import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
 
+const COMPACT_HEADER_HEIGHT = 60; // 콤팩트 헤더 높이
+
 export default function MatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("overview");
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const { data: match, isLoading } = useQuery<Match>({
     queryKey: ["match", id],
@@ -50,11 +54,7 @@ export default function MatchDetailScreen() {
     return UPCOMING_TABS;
   };
 
-  // 라이브면 기본 탭 실시간으로
-  const getDefaultTab = () => {
-    if (isLive) return "live";
-    return "overview";
-  };
+  const getDefaultTab = () => (isLive ? "live" : "overview");
 
   const renderTab = () => {
     switch (activeTab) {
@@ -70,41 +70,77 @@ export default function MatchDetailScreen() {
         return <H2HTab match={match} />;
       case "highlights":
         return <LiveTab match={match} />;
-      // case "rating": // 추가
-      //   return <PlayerRatingTab match={match} />;
       default:
         return <OverviewTab match={match} onTabChange={setActiveTab} />;
     }
   };
 
+  // 콤팩트 헤더 크기를 제외한 나머지 밀려 올라갈 거리 계산
+  const scrollDistance =
+    headerHeight > COMPACT_HEADER_HEIGHT
+      ? headerHeight - COMPACT_HEADER_HEIGHT
+      : 150;
+
+  // 헤더와 탭 전체를 묶어서 스크롤에 맞춰 위로 밀어올림
+  const headerTranslateY = scrollY.interpolate({
+    inputRange: [0, scrollDistance],
+    outputRange: [0, -scrollDistance],
+    extrapolate: "clamp",
+  });
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 경기 헤더 */}
-      <MatchHeader match={match} />
+      {/* 1. ScrollView: 화면 전체 스크롤 담당 (헤더+탭 높이만큼 패딩을 줘서 공간 확보) */}
+      <Animated.ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
+        )}
+        contentContainerStyle={{
+          paddingTop: headerHeight > 0 ? headerHeight + 50 : 250,
+        }} // 50은 탭 기본 높이
+      >
+        <View style={styles.content}>{renderTab()}</View>
+      </Animated.ScrollView>
 
-      {/* 탭 메뉴 */}
-      <MatchTabs
-        tabs={getTabs()}
-        activeTab={activeTab || getDefaultTab()}
-        onTabChange={setActiveTab}
-      />
-
-      {/* 탭 컨텐츠 */}
-      <View style={styles.content}>{renderTab()}</View>
+      {/* 2. 최상단에 떠서 같이 밀려 올라가는 헤더+탭 그룹 (position: absolute) */}
+      <Animated.View
+        style={[
+          styles.headerContainer,
+          { transform: [{ translateY: headerTranslateY }] },
+        ]}
+      >
+        <MatchHeader
+          match={match}
+          scrollY={scrollY}
+          headerHeight={headerHeight}
+          onHeaderLayout={setHeaderHeight}
+          scrollDistance={scrollDistance}
+        />
+        <MatchTabs
+          tabs={getTabs()}
+          activeTab={activeTab || getDefaultTab()}
+          onTabChange={setActiveTab}
+        />
+      </Animated.View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1, backgroundColor: Colors.background },
+  loadingContainer: { flex: 1, backgroundColor: Colors.background },
+  scrollView: { flex: 1 },
+  content: { flex: 1 },
+  headerContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
     backgroundColor: Colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
   },
 });
