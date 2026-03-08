@@ -43,6 +43,7 @@ export const ENDPOINTS = {
   // Players
   players: "/players",
   playerDetail: (id: number) => `/players/${id}`,
+  playersByIds: "/players/by-ids",
 
   // Predictions
   predictions: "/predictions",
