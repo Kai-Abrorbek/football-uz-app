@@ -57,6 +57,12 @@
       "alreadyVerifiedTitle": "Already Verified",
       "alreadyVerifiedMessage": "Your email is already verified.",
       "resendConfirm": "Send verification link to {{email}}?"
+    },
+    "telegram": {
+      "login": "Login with Telegram",
+      "waiting": "Waiting for Telegram auth...",
+      "successTitle": "Login Successful!",
+      "successMessage": "Welcome, {{name}}!"
     }
   },
 
@@ -377,7 +383,8 @@
     "loading": "Loading...",
     "share": "Share",
     "save": "Save",
-    "comments": "Comments"
+    "comments": "Comments",
+    "confirm": "Confirm"
   },
   "time": {
     "minutesAgo": "{{count}}m ago",

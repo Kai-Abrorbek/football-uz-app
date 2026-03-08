@@ -1,5 +1,5 @@
-export const API_URL = "http://localhost:4000/api/v1";
-// export const API_URL = "https://85a4-37-110-210-212.ngrok-free.app/api/v1";
+// export const API_URL = "http://localhost:4000/api/v1";
+export const API_URL = "https://5deb-144-124-192-232.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.111.148.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 

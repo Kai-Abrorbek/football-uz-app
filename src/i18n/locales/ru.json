@@ -50,6 +50,12 @@
       "alreadyVerifiedTitle": "Уже подтверждён",
       "alreadyVerifiedMessage": "Ваш email уже подтверждён.",
       "resendConfirm": "Отправить ссылку на {{email}}?"
+    },
+    "telegram": {
+      "login": "Войти через Telegram",
+      "waiting": "Ожидание авторизации...",
+      "successTitle": "Вход выполнен!",
+      "successMessage": "Привет, {{name}}!"
     }
   },  
   "profile": {
@@ -276,15 +282,8 @@
     "empty": "Событий пока нет"
   },
 
-  "lineup": {
-    "notAvailable": "Tarkib o‘yin boshlanishidan 1 soat oldin e’lon qilinadi",
-    "awayMissing": "Mehmon tarkibi yo‘q",
-    "homeMissing": "Mezbon tarkibi yo‘q",
-    "substitutes": "Zaxira o‘yinchilar",
-    "unknown": "Noma’lum"
-  },
 
-   "matchOverview": {
+  "matchOverview": {
     "winProbability": "Вероятность победы",
     "winProbabilitySubtitle": "Шансы по командам",
     "draw": "Ничья",
@@ -362,22 +361,29 @@
       "passAccuracy": "Точность пасов"
     }
   },
-
+  "lineup": {
+    "notAvailable": "Состав будет объявлен за 1 час до начала матча",
+    "awayMissing": "Состав гостей недоступен",
+    "homeMissing": "Состав хозяев недоступен",
+    "substitutes": "Запасные игроки",
+    "unknown": "Неизвестно"
+  },
   "common": {
-    "loading": "Yuklanmoqda...",
-    "share": "Ulashish",
-    "save": "Saqlash",
-    "comments": "Izohlar"
+    "loading": "Загрузка...",
+    "share": "Поделиться",
+    "save": "Сохранить",
+    "comments": "Комментарии",
+    "confirm": "Подтвердить"
   },
   "time": {
-    "minutesAgo": "{{count}} daqiqa oldin",
-    "hoursAgo": "{{count}} soat oldin",
-    "daysAgo": "{{count}} kun oldin"
+    "minutesAgo": "{{count}} минут назад",
+    "hoursAgo": "{{count}} часов назад",
+    "daysAgo": "{{count}} дней назад"
   },
   "newsDetail": {
-    "openSource": "Manbani ochish",
-    "shareSectionTitle": "Maqolani ulashish",
-    "shareFail": "Ulashishda xatolik:"
+    "openSource": "Открыть источник",
+    "shareSectionTitle": "Поделиться статьёй",
+    "shareFail": "Ошибка при публикации:"
   },
   "player": {
     "age": "Возраст",

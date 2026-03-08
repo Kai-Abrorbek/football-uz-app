@@ -51,6 +51,12 @@
       "alreadyVerifiedTitle": "Allaqachon tasdiqlangan",
       "alreadyVerifiedMessage": "Emailingiz allaqachon tasdiqlangan.",
       "resendConfirm": "{{email}} ga havola yuborilsinmi?"
+    },
+    "telegram": {
+      "login": "Telegram orqali kirish",
+      "waiting": "Telegram tasdiqi kutilmoqda...",
+      "successTitle": "Muvaffaqiyatli kirish!",
+      "successMessage": "Xush kelibsiz, {{name}}!"
     }
   },
   "profile": {
@@ -367,7 +373,8 @@
     "loading": "Yuklanmoqda...",
     "share": "Ulashish",
     "save": "Saqlash",
-    "comments": "Izohlar"
+    "comments": "Izohlar",
+    "confirm": "Tasdiqlash"
   },
   "time": {
     "minutesAgo": "{{count}} daqiqa oldin",

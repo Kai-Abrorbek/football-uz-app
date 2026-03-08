@@ -17,12 +17,12 @@ import { Colors, getColors } from "../../src/constants/colors";
 import { ENDPOINTS } from "../../src/constants/api";
 import api from "../../src/services/api";
 import { AuthResponseDto } from "../../src/types";
-import TelegramLoginButton from "../../src/components/common/TelegramLoginButton";
 import { useGoogleAuth } from "../../src/hooks/useGoogleAuth";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useColors } from "../../src/hooks/useColors";
+import TelegramLoginButton from "../../src/components/auth/TelegramLoginButton";
 
 export default function ProfileScreen() {
   const { userData, setUser, logout } = useAuth();
@@ -196,8 +196,6 @@ export default function ProfileScreen() {
   const { promptAsync, isReady } = useGoogleAuth(handleGoogleSuccess);
 
   const handleLogout = async () => {
-    console.log("Logout clicked");
-
     if (Platform.OS === "web") {
       if (window.confirm(t("auth.logout.confirm"))) {
         logout();
@@ -218,22 +216,6 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <ScrollView contentContainerStyle={styles.authContainer}>
-          {!userData?.user?.isEmailVerified && (
-            <View style={styles.verificationBanner}>
-              <Ionicons name="mail-outline" size={20} color="#fff" />
-              <Text style={styles.verificationBannerText}>
-                {t("auth.emailVerification.notVerified")}
-              </Text>
-              <TouchableOpacity
-                onPress={handleResendVerification}
-                style={styles.resendButton}
-              >
-                <Text style={styles.resendButtonText}>
-                  {t("auth.emailVerification.resend")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
           <View style={styles.authHeader}>
             <View style={styles.logoCircle}>
               <Ionicons name="football" size={60} color={Colors.primary} />
@@ -342,6 +324,14 @@ export default function ProfileScreen() {
               <Text style={styles.socialButtonText}>
                 {t("auth.continueWithGoogle")}
               </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={() => promptAsync()}
+              disabled={!isReady}
+            >
+              <TelegramLoginButton />
             </TouchableOpacity>
           </View>
         </ScrollView>

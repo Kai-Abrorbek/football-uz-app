@@ -88,8 +88,6 @@ export default function WorldcupBracketTab() {
     );
   }, [matches]);
 
-  console.log(roundGroups["Quarter-finals"]);
-
   const activeSlides = useMemo(() => {
     return SLIDES.filter(
       ([left, right]) =>
