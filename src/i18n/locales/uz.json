@@ -334,7 +334,13 @@
     "goalsFor": "GF",
     "goalsAgainst": "GA",
     "goalDiff": "GD",
-    "last5": "So‘nggi 5"
+    "last5": "So‘nggi 5",
+    "legend": {
+      "champions": "Chempionlar ligasi",
+      "europa": "Yevropa ligasi",
+      "conference": "Konferentsiya ligasi",
+      "relegation": "Patsayish"
+    }
   },
 
   "leagueOverview": {
@@ -504,7 +510,8 @@
     "title": "Kim g'alaba qozonadi?",
     "total": "Jami ovozlar: {{count}}",
     "draw": "Durrang",
-    "loginRequired": "Ovoz berish uchun tizimga kiring."
+    "loginHint": "Ovoz berish uchun tizimga kiring.",
+    "predict": "AI bashorati"
   },
   "venue": {
     "weather": "Ob-havo"

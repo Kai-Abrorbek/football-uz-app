@@ -89,7 +89,7 @@ export default function TeamMatchesTab({ team1Id, team2Id }: TeamMatchesProps) {
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface,
       borderRadius: 20,
       padding: 20,
       margin: 15,

@@ -343,7 +343,13 @@
     "goalsFor": "GF",
     "goalsAgainst": "GA",
     "goalDiff": "GD",
-    "last5": "Last 5"
+    "last5": "Last 5",
+    "legend": {
+      "champions": "UEFA Champions League",
+      "europa": "UEFA Europa League",
+      "conference": "UEFA Conference League",
+      "relegation": "Relegation"
+    }
   },
 
   "leagueOverview": {
@@ -507,10 +513,11 @@
     "tomorrow": "Tomorrow"
   },
   "matchVote": {
-    "title": "Who will win?",
+     "title": "Who will win?",
     "total": "Total votes: {{count}}",
     "draw": "Draw",
-    "loginRequired": "Login to vote."
+    "loginHint": "Login required to vote.",
+    "predict": "AI Match Prediction"
   },
   "venue": {
     "weather": "Weather"

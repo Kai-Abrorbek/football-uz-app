@@ -327,7 +327,13 @@
     "goalsFor": "ЗМ",
     "goalsAgainst": "ПМ",
     "goalDiff": "РМ",
-    "last5": "Последние 5"
+    "last5": "Последние 5",
+    "legend": {
+      "champions": "Лига чемпионов",
+      "europa": "Лига Европы",
+      "conference": "Лига конференций",
+      "relegation": "Вылет"
+    }
   },
 
   "leagueOverview": {
@@ -497,7 +503,8 @@
     "title": "Кто победит?",
     "total": "Всего голосов: {{count}}",
     "draw": "Ничья",
-    "loginRequired": "Войдите, чтобы проголосовать."
+    "loginHint": "Для голосования необходимо войти.",
+    "predict": "AI прогноз"
   },
   "venue": {
     "weather": "Погода"

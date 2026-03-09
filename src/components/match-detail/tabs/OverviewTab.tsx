@@ -311,6 +311,8 @@ export default function OverviewTab({ match, onTabChange }: Props) {
             );
           })}
         </CollapsibleSection>
+
+        {/* 팀 기록 */}
         <TeamMatchesTab
           team1Id={match.homeTeam.id}
           team2Id={match.awayTeam.id}
@@ -428,7 +430,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, backgroundColor: Colors.background },
     venueContainer: {
       backgroundColor: Colors.surface,
       paddingHorizontal: 16,

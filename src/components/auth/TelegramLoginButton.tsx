@@ -56,7 +56,7 @@ export default function TelegramLoginButton() {
             // ✅ JWT 저장
             const { accessToken, user } = res.data;
             await AsyncStorage.setItem("auth_token", accessToken);
-            await AsyncStorage.setItem("user_data", JSON.stringify(user));
+            await AsyncStorage.setItem("user_data", JSON.stringify(res.data));
 
             setUser({
               accessToken: accessToken,

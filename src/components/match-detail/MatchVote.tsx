@@ -88,9 +88,9 @@ export default function MatchVote({ matchId, homeTeam, awayTeam }: Props) {
     return (
       <View style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.title}>누가 이길까요?</Text>
+          <Text style={styles.title}>{t("matchVote.title")}</Text>
           <Text style={styles.total}>
-            총 득표: {voteData.total.toLocaleString()}
+            {t("matchVote.total", { count: voteData.total })}
           </Text>
         </View>
 
@@ -115,7 +115,7 @@ export default function MatchVote({ matchId, homeTeam, awayTeam }: Props) {
 
           {/* 비김 결과 */}
           <View style={styles.resultItem}>
-            <Text style={styles.drawLabel}>비김</Text>
+            <Text style={[styles.drawLabel]}>{t("matchVote.draw")}</Text>
             <Text
               style={[
                 styles.resultPercent,
@@ -148,7 +148,7 @@ export default function MatchVote({ matchId, homeTeam, awayTeam }: Props) {
 
         <TouchableOpacity style={styles.predictBtn} activeOpacity={0.8}>
           <View style={styles.predictIcon} />
-          <Text style={styles.predictBtnText}>플레이 FotMob Predict</Text>
+          <Text style={styles.predictBtnText}>{t("matchVote.predict")}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -161,7 +161,7 @@ export default function MatchVote({ matchId, homeTeam, awayTeam }: Props) {
         <Text style={styles.title}>누가 이길까요?</Text>
         {voteData && voteData.total >= 0 && (
           <Text style={styles.total}>
-            총 득표: {voteData.total.toLocaleString()}
+            {t("matchVote.total", { count: voteData.total })}
           </Text>
         )}
       </View>
@@ -204,7 +204,7 @@ export default function MatchVote({ matchId, homeTeam, awayTeam }: Props) {
       </View>
 
       {!userData?.user && (
-        <Text style={styles.loginHint}>투표하려면 로그인이 필요합니다.</Text>
+        <Text style={styles.loginHint}>{t("matchVote.loginHint")}</Text>
       )}
     </View>
   );
@@ -237,10 +237,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderRadius: 8,
       borderWidth: 1,
       borderColor: Colors.border,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.background2,
     },
     teamLogo: { width: 32, height: 32 },
-    voteDrawText: { fontSize: 15, fontWeight: "600", color: Colors.text },
+    voteDrawText: { fontSize: 15, fontWeight: "600", color: Colors.text2 },
 
     resultRow: {
       flexDirection: "row",
@@ -255,11 +255,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       gap: 8,
     },
     teamLogoSmall: { width: 24, height: 24 },
-    drawLabel: { fontSize: 15, color: Colors.textSecondary, fontWeight: "600" },
+    drawLabel: { fontSize: 15, color: Colors.text2, fontWeight: "600" },
     resultPercent: {
       fontSize: 16,
       fontWeight: "600",
-      color: Colors.textSecondary,
+      color: Colors.text,
     },
     votedText: {
       fontWeight: "800",
@@ -289,7 +289,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
 
     loginHint: {
       fontSize: 12,
-      color: Colors.textSecondary,
+      color: Colors.text,
       textAlign: "center",
       marginTop: 12,
     },

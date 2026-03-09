@@ -12,7 +12,7 @@ import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Colors, getColors } from "../../../constants/colors";
+import { getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
@@ -20,6 +20,7 @@ import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 import { useError } from "../../../contexts/ErrorContext";
 import { SEASON } from "../../../constants/leauges";
+import { useLiveMatches } from "../../../hooks/useMatches";
 
 interface Props {
   match: Match;
@@ -36,16 +37,30 @@ type StandingEntry = {
   goalsFor?: number;
   goalsAgainst?: number;
   goalsDiff?: number;
-  form?: string; // "WWDLW"
+  form?: string;
 };
 
-const LEFT_W = 190;
+const LEFT_W = 215;
 const COL_W = 32;
 const FORM_W = 140;
-
-// ✅ 줄 어긋남 방지 (왼쪽/오른쪽 높이 고정)
 const ROW_H = 46;
 const HEADER_H = 42;
+
+// 범례 색상
+const ZONE_COLORS = {
+  champions: "#2e7d32", // 챔피언스리그
+  europa: "#1565c0", // 유로파리그
+  conference: "#00b0d7", // 유로파 컨퍼런스
+  relegation: "#d32f2f", // 강등
+};
+
+const getZoneColor = (rank: number, total: number): string | null => {
+  if (rank <= 4) return ZONE_COLORS.champions;
+  if (rank === 5) return ZONE_COLORS.europa;
+  if (rank === 6) return ZONE_COLORS.conference;
+  if (rank > total - 3) return ZONE_COLORS.relegation;
+  return null;
+};
 
 export default function StandingsTab({ match }: Props) {
   const { t } = useTranslation();
@@ -53,7 +68,6 @@ export default function StandingsTab({ match }: Props) {
   const styles = getStyles(Colors);
   const { errorComponent } = useError();
 
-  // ✅ (서버 데이터 가져오는 부분 건드리지 않음)
   const { data: standing, isError } = useQuery<any>({
     queryKey: ["standings", match.league.id],
     queryFn: () =>
@@ -61,6 +75,39 @@ export default function StandingsTab({ match }: Props) {
     staleTime: 1000 * 60 * 30,
     retry: false,
   });
+
+  const { data: liveMatches } = useLiveMatches();
+
+  // 현재 리그의 라이브 경기만 필터링 후 팀id → 스코어 맵
+  const liveScoreMap = useMemo(() => {
+    if (!liveMatches) return {};
+    const map: Record<
+      number,
+      {
+        home: number;
+        away: number;
+        homeId: number;
+        awayId: number;
+        isLive: boolean;
+      }
+    > = {};
+
+    liveMatches
+      .filter((m: any) => m.league.id === match.league.id)
+      .forEach((m: any) => {
+        const score = {
+          home: m.goals.home ?? 0,
+          away: m.goals.away ?? 0,
+          homeId: m.homeTeam.id,
+          awayId: m.awayTeam.id,
+          isLive: true,
+        };
+        map[m.homeTeam.id] = score;
+        map[m.awayTeam.id] = score;
+      });
+
+    return map;
+  }, [liveMatches, match.league.id]);
 
   const standings: StandingEntry[] = useMemo(() => {
     const raw = standing?.standings?.[0] ?? [];
@@ -74,28 +121,23 @@ export default function StandingsTab({ match }: Props) {
       points: e.points,
       goalsFor: e.goalsFor ?? e.all?.goals?.for,
       goalsAgainst: e.goalsAgainst ?? e.all?.goals?.against,
-      goalsDiff: e.goalsDiff ?? e.all?.goalsDiff ?? e.goalsDiff,
+      goalsDiff: e.goalsDiff ?? e.all?.goals?.diff ?? e.goalsDiff,
       form: e.form,
     }));
   }, [standing]);
 
+  const total = standings.length;
   const homeTeamId = match.homeTeam.id;
   const awayTeamId = match.awayTeam.id;
 
-  // ✅ 오른쪽 가로 스크롤 1개
   const rightScrollRef = useRef<ScrollView>(null);
-
-  // ✅ 현재 x 추적 (왼쪽 드래그 시 scrollTo)
   const currentXRef = useRef(0);
-
-  // ✅ 가운데 구분선 (x>0)
   const [showMidDivider, setShowMidDivider] = useState(false);
   const lastDividerRef = useRef(false);
 
   const onTableRightScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
     currentXRef.current = x;
-
     const next = x > 0;
     if (lastDividerRef.current !== next) {
       lastDividerRef.current = next;
@@ -103,7 +145,6 @@ export default function StandingsTab({ match }: Props) {
     }
   };
 
-  // ✅ 왼쪽 영역에서도 가로 드래그하면 오른쪽 스크롤이 움직이게
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, g) => {
@@ -114,7 +155,6 @@ export default function StandingsTab({ match }: Props) {
       onPanResponderMove: (_, g) => {
         const nextX = Math.max(0, currentXRef.current - g.dx);
         rightScrollRef.current?.scrollTo({ x: nextX, animated: false });
-
         const nextDivider = nextX > 0;
         if (lastDividerRef.current !== nextDivider) {
           lastDividerRef.current = nextDivider;
@@ -144,6 +184,29 @@ export default function StandingsTab({ match }: Props) {
     );
   };
 
+  // 라이브 스코어 칩
+  const renderLiveChip = (teamId: number) => {
+    const live = liveScoreMap[teamId];
+    if (!live) return null;
+
+    const isHome = live.homeId === teamId;
+    // 이기고 있으면 초록, 지고 있으면 빨강, 비기면 회색
+    const homeWin = live.home > live.away;
+    const awayWin = live.away > live.home;
+    const winning = (isHome && homeWin) || (!isHome && awayWin);
+    const losing = (isHome && awayWin) || (!isHome && homeWin);
+
+    const chipBg = winning ? "#2e7d32" : losing ? "#d32f2f" : "#757575";
+
+    return (
+      <View style={[styles.liveChip, { backgroundColor: chipBg }]}>
+        <Text style={styles.liveChipText}>
+          {live.home} - {live.away}
+        </Text>
+      </View>
+    );
+  };
+
   if (isError) {
     return errorComponent(isError, {
       icon: "podium-outline",
@@ -163,11 +226,9 @@ export default function StandingsTab({ match }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.tableWrap}>
-        {/* ✅ 표 본체: 왼쪽(고정) + 오른쪽(가로 스크롤 1개) */}
         <View style={styles.tableBody}>
-          {/* 왼쪽 고정 (여기서 드래그해도 오른쪽이 움직임) */}
+          {/* 왼쪽 고정 */}
           <View style={styles.leftPane} {...panResponder.panHandlers}>
-            {/* 헤더 */}
             <View style={styles.leftHeader}>
               <Text style={styles.hText}>#</Text>
               <Text style={[styles.hText, { marginLeft: 10 }]}>
@@ -175,11 +236,10 @@ export default function StandingsTab({ match }: Props) {
               </Text>
             </View>
 
-            {/* 바디 */}
             {standings.map((entry) => {
               const isHighlighted =
                 entry.team.id === homeTeamId || entry.team.id === awayTeamId;
-
+              const zoneColor = getZoneColor(entry.rank, total);
               const rowKey = `${entry.rank}-${entry.team.id}`;
 
               return (
@@ -190,6 +250,13 @@ export default function StandingsTab({ match }: Props) {
                     isHighlighted && styles.rowHighlight,
                   ]}
                 >
+                  {/* 왼쪽 zone border */}
+                  <View
+                    style={[
+                      styles.zoneBorder,
+                      { backgroundColor: zoneColor ?? "transparent" },
+                    ]}
+                  />
                   <Text style={styles.rank}>{entry.rank}</Text>
                   <Image
                     source={entry.team.logo}
@@ -203,12 +270,14 @@ export default function StandingsTab({ match }: Props) {
                   >
                     {entry.team.name}
                   </Text>
+                  {/* 라이브 칩 */}
+                  {renderLiveChip(entry.team.id)}
                 </View>
               );
             })}
           </View>
 
-          {/* 오른쪽 가로 스크롤 영역 (헤더 + 바디) - ✅ ScrollView는 딱 1개 */}
+          {/* 오른쪽 가로 스크롤 */}
           <ScrollView
             ref={rightScrollRef}
             horizontal
@@ -217,7 +286,6 @@ export default function StandingsTab({ match }: Props) {
             scrollEventThrottle={16}
           >
             <View>
-              {/* 헤더 */}
               <View style={styles.rightHeaderRow}>
                 <Text style={[styles.hText, styles.col]}>
                   {t("standingsTab.played")}
@@ -248,16 +316,13 @@ export default function StandingsTab({ match }: Props) {
                 </Text>
               </View>
 
-              {/* 바디 */}
               {standings.map((entry) => {
                 const isHighlighted =
                   entry.team.id === homeTeamId || entry.team.id === awayTeamId;
-
                 const formArr = (entry.form || "")
                   .split("")
                   .filter(Boolean)
                   .slice(-5);
-
                 const rowKey = `${entry.rank}-${entry.team.id}`;
 
                 return (
@@ -274,11 +339,9 @@ export default function StandingsTab({ match }: Props) {
                     <Text style={[styles.bText, styles.col]}>{entry.win}</Text>
                     <Text style={[styles.bText, styles.col]}>{entry.draw}</Text>
                     <Text style={[styles.bText, styles.col]}>{entry.lose}</Text>
-
                     <Text style={[styles.bText, styles.colPts, styles.pts]}>
                       {entry.points}
                     </Text>
-
                     <Text style={[styles.bText, styles.col]}>
                       {entry.goalsFor ?? "-"}
                     </Text>
@@ -288,7 +351,6 @@ export default function StandingsTab({ match }: Props) {
                     <Text style={[styles.bText, styles.col]}>
                       {entry.goalsDiff ?? "-"}
                     </Text>
-
                     <View style={[styles.colForm, styles.formCell]}>
                       <View style={styles.formRow}>
                         {formArr.map((r, i) => (
@@ -302,11 +364,34 @@ export default function StandingsTab({ match }: Props) {
             </View>
           </ScrollView>
 
-          {/* ✅ 가운데 세로 구분선 (스크롤 시작 시 등장) */}
           {showMidDivider && (
             <View pointerEvents="none" style={styles.midDivider} />
           )}
         </View>
+      </View>
+
+      {/* 범례 */}
+      <View style={styles.legend}>
+        {[
+          {
+            color: ZONE_COLORS.champions,
+            label: t("standingsTab.legend.champions"),
+          },
+          { color: ZONE_COLORS.europa, label: t("standingsTab.legend.europa") },
+          {
+            color: ZONE_COLORS.conference,
+            label: t("standingsTab.legend.conference"),
+          },
+          {
+            color: ZONE_COLORS.relegation,
+            label: t("standingsTab.legend.relegation"),
+          },
+        ].map((item) => (
+          <View key={item.label} style={styles.legendItem}>
+            <View style={[styles.legendDot, { backgroundColor: item.color }]} />
+            <Text style={styles.legendText}>{item.label}</Text>
+          </View>
+        ))}
       </View>
 
       <View style={{ height: 20 }} />
@@ -328,7 +413,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
 
     tableWrap: { backgroundColor: Colors.surface },
 
-    // ✅ 표 레이아웃
     tableBody: {
       flexDirection: "row",
       alignItems: "flex-start",
@@ -341,7 +425,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       backgroundColor: Colors.surface,
     },
 
-    // ✅ 높이 고정
     leftHeader: {
       height: HEADER_H,
       flexDirection: "row",
@@ -356,7 +439,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       height: HEADER_H,
       flexDirection: "row",
       alignItems: "center",
-      paddingVertical: 0,
       paddingRight: 14,
       backgroundColor: Colors.background,
       borderBottomWidth: 1,
@@ -365,30 +447,37 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
 
     rowHighlight: { backgroundColor: Colors.background2 },
 
-    // ✅ 높이 고정
     leftCell: {
       height: ROW_H,
       flexDirection: "row",
       alignItems: "center",
-      gap: 10,
-      paddingHorizontal: 14,
+      gap: 4,
+      paddingRight: 8,
       backgroundColor: Colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
+      overflow: "hidden",
+    },
+
+    // zone border (왼쪽 4px 세로선)
+    zoneBorder: {
+      width: 4,
+      height: ROW_H,
+      flexShrink: 0,
+      borderTopRightRadius: 50,
+      borderBottomRightRadius: 50,
     },
 
     rightRow: {
       height: ROW_H,
       flexDirection: "row",
       alignItems: "center",
-      paddingVertical: 0,
       paddingRight: 14,
       backgroundColor: Colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
 
-    // ✅ 가운데 세로 구분선 (x>0일 때만 렌더)
     midDivider: {
       position: "absolute",
       left: LEFT_W,
@@ -408,7 +497,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
 
     rank: {
       width: 22,
-      textAlign: "right",
+      textAlign: "center",
       fontSize: 14,
       fontWeight: "800",
       color: Colors.text,
@@ -434,4 +523,41 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     formW: { backgroundColor: "#2e7d32" },
     formL: { backgroundColor: "#d32f2f" },
     formD: { backgroundColor: "#9e9e9e" },
+
+    // 라이브 칩
+    liveChip: {
+      paddingHorizontal: 7,
+      paddingVertical: 3,
+      borderRadius: 10,
+      flexShrink: 0,
+    },
+    liveChipText: {
+      fontSize: 11,
+      fontWeight: "700",
+      color: "#ffffff",
+    },
+
+    // 범례
+    legend: {
+      backgroundColor: Colors.surface,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      margin: 8,
+      gap: 10,
+      borderRadius: 15,
+    },
+    legendItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    legendDot: {
+      width: 14,
+      height: 14,
+      borderRadius: 4,
+    },
+    legendText: {
+      fontSize: 13,
+      color: Colors.textSecondary,
+    },
   });
