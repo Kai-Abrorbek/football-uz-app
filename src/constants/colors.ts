@@ -18,7 +18,7 @@
 
 export const getColors = (isDark: boolean) => ({
   primary: "#7c3aed",
-  secondary: isDark ? "#8b5cf6" : "#34a853",
+  secondary: isDark ? "#665cf6" : "#34a853",
   background: isDark ? "#0a0a0a" : "#f8f8f8",
   background2: isDark ? "#d0cccc" : "#f8f8f8",
   surface: isDark ? "#1a1a1a" : "#ffffff",

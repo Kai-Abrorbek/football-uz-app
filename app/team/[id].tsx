@@ -14,6 +14,7 @@ import TeamMatchesTab from "../../src/components/team-detail/tabs/TeamMatchesTab
 import TeamStandingsTab from "../../src/components/team-detail/tabs/TeamStandingsTab";
 import { Image } from "expo-image";
 import { useColors } from "../../src/hooks/useColors";
+import MatchAlertModal from "../../src/components/match-detail/MatchAlertModal";
 
 const TABS = [
   { key: "overview", label: "개요" },
@@ -24,6 +25,7 @@ const TABS = [
 
 export default function TeamDetailScreen() {
   const params = useLocalSearchParams<{ team: string; leagueId: string }>();
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
   const Colors = useColors();
   const styles = getStyles(Colors);
   const { team, leagueId } = params;
@@ -91,48 +93,56 @@ export default function TeamDetailScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            if (router.canGoBack()) router.back();
-            else router.replace("/");
-          }}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
+      {/* 헤더 */}
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: teamData.color ?? Colors.primary },
+        ]}
+      >
+        {/* 상단 바 */}
+        <View style={styles.headerTop}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace("/");
+            }}
+          >
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          </TouchableOpacity>
 
-        <View style={styles.headerCenter}>
-          <Image
-            source={teamData.logo}
-            style={styles.leagueLogo}
-            contentFit="contain"
-          />
-          <Text style={styles.leagueName} numberOfLines={1}>
-            {teamData.name}
-          </Text>
+          <View style={styles.headerRight}>
+            <TouchableOpacity
+              style={[
+                styles.followButton,
+                isFollowing && styles.followButtonActive,
+              ]}
+              onPress={() => setIsFollowing(!isFollowing)}
+            >
+              <Text
+                style={[
+                  styles.followButtonText,
+                  isFollowing && { color: teamData.color ?? Colors.primary },
+                ]}
+              >
+                {isFollowing ? "팔로잉" : "팔로우"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.moreButton}>
-            <Ionicons name="ellipsis-vertical" size={20} color={Colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.followButton,
-              isFollowing && styles.followButtonActive,
-            ]}
-            onPress={() => setIsFollowing(!isFollowing)}
-          >
-            <Text
-              style={[
-                styles.followButtonText,
-                isFollowing && styles.followButtonTextActive,
-              ]}
-            >
-              {isFollowing ? "팔로잉" : "팔로우"}
-            </Text>
-          </TouchableOpacity>
+        {/* 팀 정보 */}
+        <View style={styles.headerInfo}>
+          <Image
+            source={teamData.logo}
+            style={styles.teamLogo}
+            contentFit="contain"
+          />
+          <View style={styles.teamTextWrap}>
+            <Text style={styles.teamName}>{teamData.name}</Text>
+            <Text style={styles.teamCountry}>{teamData.country ?? ""}</Text>
+          </View>
         </View>
       </View>
 
@@ -174,18 +184,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     container: {
       flex: 1,
       backgroundColor: Colors.background,
+      marginBottom: 40,
     },
     loadingContainer: {
       flex: 1,
-    },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      backgroundColor: Colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
     },
     backButton: {
       width: 40,
@@ -233,14 +235,49 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       backgroundColor: Colors.primary,
     },
     followButtonText: {
-      fontSize: 13,
-      fontWeight: "600",
+      fontSize: 14,
+      fontWeight: "700",
       color: Colors.primary,
-    },
-    followButtonTextActive: {
-      color: "#ffffff",
     },
     content: {
       flex: 1,
+    },
+    header: {
+      paddingTop: 8,
+      paddingBottom: 20,
+      paddingHorizontal: 16,
+    },
+    headerTop: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 20,
+    },
+    iconButton: {
+      width: 36,
+      height: 36,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headerInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+    },
+    teamLogo: {
+      width: 72,
+      height: 72,
+    },
+    teamTextWrap: {
+      gap: 4,
+    },
+    teamName: {
+      fontSize: 26,
+      fontWeight: "800",
+      color: Colors.text,
+    },
+    teamCountry: {
+      fontSize: 14,
+      color: "rgba(255,255,255,0.8)",
     },
   });

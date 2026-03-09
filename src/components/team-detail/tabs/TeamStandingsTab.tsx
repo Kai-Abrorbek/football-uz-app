@@ -21,6 +21,7 @@ import { router } from "expo-router";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 import { useError } from "../../../contexts/ErrorContext";
+import { useLiveMatches } from "../../../hooks/useMatches";
 
 interface Props {
   teamId: string;
@@ -38,14 +39,27 @@ const SEASONS = [
   { value: "2023", label: "2023~24" },
 ];
 
-const LEFT_W = 190;
+const LEFT_W = 200;
 const COL_W = 32;
 const FORM_W = 140;
+const TOP_UI_H = 70;
+const HEADER_H = 44;
+const ROW_H = 45;
 
-// ✅ 스크롤 위치 계산용(고정 높이로 맞춤)
-const TOP_UI_H = 70; // 리그/시즌 선택 영역 대충
-const HEADER_H = 44; // headerRow 높이
-const ROW_H = 58; // bodyRow 높이 (styles.bodyRow height랑 맞춰야 함)
+const ZONE_COLORS = {
+  champions: "#2e7d32",
+  europa: "#1565c0",
+  conference: "#00b0d7",
+  relegation: "#d32f2f",
+};
+
+const getZoneColor = (rank: number, total: number): string | null => {
+  if (rank <= 4) return ZONE_COLORS.champions;
+  if (rank === 5) return ZONE_COLORS.europa;
+  if (rank === 6) return ZONE_COLORS.conference;
+  if (rank > total - 3) return ZONE_COLORS.relegation;
+  return null;
+};
 
 export default function TeamStandingsTab({ teamId, leagueId }: Props) {
   const { t } = useTranslation();
@@ -62,6 +76,8 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
   const currentXRef = useRef(0);
   const [showMidDivider, setShowMidDivider] = useState(false);
   const lastDividerRef = useRef(false);
+
+  const { data: liveMatches } = useLiveMatches();
 
   const onTableRightScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
@@ -100,17 +116,18 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
 
   const leaguesList: League[] = useMemo(
     () =>
-      leaguesData?.map((t: Team) => {
-        return { name: t.name, id: t.apiFootballId };
-      }) ?? [],
+      leaguesData?.map((t: Team) => ({
+        name: t.name,
+        id: t.apiFootballId,
+      })) ?? [],
     [leaguesData],
   );
 
   useEffect(() => {
     if (leaguesList.length && !selectedLeague?.id) {
       setSelectedLeague({
-        name: leaguesList?.[0].name ?? leaguesList[0].name,
-        id: leaguesList?.[0].id ?? leaguesList[0].id,
+        name: leaguesList[0].name,
+        id: leaguesList[0].id,
       });
     }
   }, [leaguesList, selectedLeague?.id]);
@@ -146,10 +163,34 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
       points: e.points,
       goalsFor: e.goalsFor ?? e.all?.goals?.for,
       goalsAgainst: e.goalsAgainst ?? e.all?.goals?.against,
-      goalsDiff: e.goalsDiff ?? e.all?.goalsDiff ?? e.goalsDiff,
+      goalsDiff: e.goalsDiff ?? e.all?.goalsDiff,
       form: e.form,
     }));
   }, [standingsData]);
+
+  const total = standings.length;
+
+  // 라이브 스코어 맵
+  const liveScoreMap = useMemo(() => {
+    if (!liveMatches) return {};
+    const map: Record<
+      number,
+      { home: number; away: number; homeId: number; awayId: number }
+    > = {};
+    liveMatches
+      .filter((m: any) => m.league.id === selectedLeague?.id)
+      .forEach((m: any) => {
+        const score = {
+          home: m.goals.home ?? 0,
+          away: m.goals.away ?? 0,
+          homeId: m.homeTeam.id,
+          awayId: m.awayTeam.id,
+        };
+        map[m.homeTeam.id] = score;
+        map[m.awayTeam.id] = score;
+      });
+    return map;
+  }, [liveMatches, selectedLeague?.id]);
 
   const myEntry = useMemo(
     () => standings.find((s) => String(s.team.id) === String(teamId)),
@@ -186,6 +227,25 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
     );
   };
 
+  const renderLiveChip = (teamId: number) => {
+    const live = liveScoreMap[teamId];
+    if (!live) return null;
+    const isHome = live.homeId === teamId;
+    const homeWin = live.home > live.away;
+    const awayWin = live.away > live.home;
+    const winning = (isHome && homeWin) || (!isHome && awayWin);
+    const losing = (isHome && awayWin) || (!isHome && homeWin);
+    const chipBg = winning ? "#2e7d32" : losing ? "#d32f2f" : "#757575";
+
+    return (
+      <View style={[styles.liveChip, { backgroundColor: chipBg }]}>
+        <Text style={styles.liveChipText}>
+          {live.home} - {live.away}
+        </Text>
+      </View>
+    );
+  };
+
   if (isError) {
     return errorComponent(isError, {
       icon: "podium-outline",
@@ -201,6 +261,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.tableWrap}>
+        {/* 리그/시즌 선택 */}
         <View style={{ flexDirection: "row", gap: 40, flex: 1 }}>
           <TouchableOpacity
             style={styles.seasonSelector}
@@ -229,7 +290,9 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
           </TouchableOpacity>
         </View>
 
+        {/* 테이블 */}
         <View style={styles.tableBody}>
+          {/* 왼쪽 고정 */}
           <View style={styles.leftPane} {...panResponder.panHandlers}>
             <View style={styles.leftHeader}>
               <Text style={styles.hText}>#</Text>
@@ -248,6 +311,8 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
               standings.map((entry) => {
                 const rowKey = `${entry.rank}-${entry.team.id}`;
                 const isMine = myRowKey === rowKey;
+                const zoneColor = getZoneColor(entry.rank, total);
+
                 return (
                   <TouchableOpacity
                     key={rowKey}
@@ -264,6 +329,13 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                     <View
                       style={[styles.leftCell, isMine && styles.rowHighlight]}
                     >
+                      {/* zone border */}
+                      <View
+                        style={[
+                          styles.zoneBorder,
+                          { backgroundColor: zoneColor ?? "transparent" },
+                        ]}
+                      />
                       <Text
                         style={[styles.rank, isMine && styles.rankHighlight]}
                       >
@@ -276,6 +348,8 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                       <Text style={styles.teamName} numberOfLines={1}>
                         {entry.team.name}
                       </Text>
+                      {/* 라이브 칩 */}
+                      {renderLiveChip(entry.team.id)}
                     </View>
                   </TouchableOpacity>
                 );
@@ -283,6 +357,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
             )}
           </View>
 
+          {/* 오른쪽 가로 스크롤 */}
           <ScrollView
             ref={rightScrollRef}
             horizontal
@@ -330,6 +405,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                     .slice(-5);
                   const rowKey = `${entry.rank}-${entry.team.id}`;
                   const isMine = myRowKey === rowKey;
+
                   return (
                     <TouchableOpacity
                       key={rowKey}
@@ -383,10 +459,35 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                 })}
             </View>
           </ScrollView>
+
           {showMidDivider && (
             <View pointerEvents="none" style={styles.midDivider} />
           )}
         </View>
+      </View>
+
+      {/* 범례 */}
+      <View style={styles.legend}>
+        {[
+          {
+            color: ZONE_COLORS.champions,
+            label: t("standingsTab.legend.champions"),
+          },
+          { color: ZONE_COLORS.europa, label: t("standingsTab.legend.europa") },
+          {
+            color: ZONE_COLORS.conference,
+            label: t("standingsTab.legend.conference"),
+          },
+          {
+            color: ZONE_COLORS.relegation,
+            label: t("standingsTab.legend.relegation"),
+          },
+        ].map((item) => (
+          <View key={item.label} style={styles.legendItem}>
+            <View style={[styles.legendDot, { backgroundColor: item.color }]} />
+            <Text style={styles.legendText}>{item.label}</Text>
+          </View>
+        ))}
       </View>
 
       {/* 시즌 선택 모달 */}
@@ -407,26 +508,22 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                 key={season.value}
                 style={[
                   styles.seasonOption,
-
                   selectedSeason === season.value && styles.seasonOptionActive,
                 ]}
                 onPress={() => {
                   setSelectedSeason(season.value);
-
                   setShowSeasonPicker(false);
                 }}
               >
                 <Text
                   style={[
                     styles.seasonOptionText,
-
                     selectedSeason === season.value &&
                       styles.seasonOptionTextActive,
                   ]}
                 >
                   {season.label}
                 </Text>
-
                 {selectedSeason === season.value && (
                   <Ionicons name="checkmark" size={20} color={Colors.primary} />
                 )}
@@ -454,20 +551,17 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                 key={league.id}
                 style={[
                   styles.seasonOption,
-
                   selectedLeague?.name === league.name &&
                     styles.seasonOptionActive,
                 ]}
                 onPress={() => {
                   setSelectedLeague(league);
-
                   setShowLeaguePicker(false);
                 }}
               >
                 <Text
                   style={[
                     styles.seasonOptionText,
-
                     selectedLeague?.name === league.name &&
                       styles.seasonOptionTextActive,
                   ]}
@@ -475,7 +569,6 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
                 >
                   {league.name}
                 </Text>
-
                 {selectedLeague?.name === league.name && (
                   <Ionicons name="checkmark" size={20} color={Colors.primary} />
                 )}
@@ -484,6 +577,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
           </View>
         </TouchableOpacity>
       </Modal>
+
       <View style={{ height: 20 }} />
     </ScrollView>
   );
@@ -491,7 +585,7 @@ export default function TeamStandingsTab({ teamId, leagueId }: Props) {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: "white" },
+    container: { flex: 1, backgroundColor: Colors.background },
 
     seasonSelector: {
       flex: 0.5,
@@ -527,12 +621,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       marginTop: 150,
       width: 400,
     },
-
     emptyText: { fontSize: 14, color: Colors.textSecondary },
 
     tableWrap: { backgroundColor: Colors.surface },
 
-    // ✅ 표 레이아웃 (추가)
     tableBody: {
       flexDirection: "row",
       alignItems: "flex-start",
@@ -540,7 +632,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       backgroundColor: Colors.surface,
     },
 
-    // ✅ 왼쪽 고정 패널 (추가)
     leftPane: {
       width: LEFT_W,
       backgroundColor: Colors.surface,
@@ -578,7 +669,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderBottomColor: Colors.border,
     },
 
-    // ✅ 내 팀 하이라이트
     rowHighlight: { backgroundColor: Colors.background },
 
     leftCell: {
@@ -586,11 +676,20 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       width: LEFT_W,
       flexDirection: "row",
       alignItems: "center",
-      gap: 10,
-      paddingHorizontal: 14,
+      gap: 4,
+      paddingRight: 8,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
       backgroundColor: Colors.surface,
+      overflow: "hidden",
+    },
+
+    zoneBorder: {
+      width: 4,
+      height: ROW_H,
+      flexShrink: 0,
+      borderTopRightRadius: 50,
+      borderBottomRightRadius: 50,
     },
 
     rightRow: {
@@ -603,7 +702,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       backgroundColor: Colors.surface,
     },
 
-    // ✅ 가운데 세로 줄 (추가)
     midDivider: {
       position: "absolute",
       left: LEFT_W,
@@ -623,14 +721,12 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
 
     rank: {
       width: 22,
-      textAlign: "right",
+      textAlign: "center",
       fontSize: 14,
       fontWeight: "800",
       color: Colors.text,
     },
-    rankHighlight: {
-      color: Colors.primary,
-    },
+    rankHighlight: { color: Colors.primary },
 
     teamLogo: { width: 22, height: 22 },
     teamName: { flex: 1, fontSize: 14, fontWeight: "600", color: Colors.text },
@@ -654,6 +750,40 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     formL: { backgroundColor: "#d32f2f" },
     formD: { backgroundColor: "#9e9e9e" },
 
+    liveChip: {
+      paddingHorizontal: 7,
+      paddingVertical: 3,
+      borderRadius: 10,
+      flexShrink: 0,
+    },
+    liveChipText: {
+      fontSize: 11,
+      fontWeight: "700",
+      color: "#ffffff",
+    },
+
+    legend: {
+      backgroundColor: Colors.surface,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      marginTop: 8,
+      gap: 10,
+    },
+    legendItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    legendDot: {
+      width: 20,
+      height: 20,
+      borderRadius: 6,
+    },
+    legendText: {
+      fontSize: 13,
+      color: Colors.textSecondary,
+    },
+
     modalOverlay: {
       flex: 1,
       backgroundColor: "rgba(0,0,0,0.5)",
@@ -676,9 +806,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
-    seasonOptionActive: {
-      backgroundColor: Colors.background,
-    },
+    seasonOptionActive: { backgroundColor: Colors.background },
     seasonOptionText: {
       fontSize: 15,
       color: Colors.text,

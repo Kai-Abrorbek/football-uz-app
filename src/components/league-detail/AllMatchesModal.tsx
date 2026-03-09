@@ -444,6 +444,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flex: 1,
       backgroundColor: "rgba(0,0,0,0.3)",
       justifyContent: "flex-end",
+      marginBottom: 20,
     },
     modalSheet: {
       flex: 1,
