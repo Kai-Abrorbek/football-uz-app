@@ -346,29 +346,6 @@
     "seeMore": "Barcha o‘yinlarni ko‘rish",
     "modalTitle": "{{league}} o‘yinlari"
   },
-  "matchStats": {
-    "empty": "O‘yin statistikasi mavjud emas",
-    "vs": "vs",
-    "categories": {
-      "main": "Asosiy",
-      "attack": "Hujum",
-      "defense": "Himoya",
-      "foul": "Qoidabuzarlik"
-    },
-    "stats": {
-      "possession": "To‘p nazorati",
-      "shots": "Zarbalar",
-      "shotsOnTarget": "Darvoza tomon zarbalar",
-      "corners": "Burchak zarbalari",
-      "fouls": "Qoidabuzarliklar",
-      "yellowCards": "Sariq kartochkalar",
-      "redCards": "Qizil kartochkalar",
-      "offsides": "Ofsaydlar",
-      "passes": "Paslar",
-      "passAccuracy": "Pas aniqligi"
-    }
-  },
-
   "common": {
     "loading": "Yuklanmoqda...",
     "share": "Ulashish",
@@ -540,5 +517,51 @@
     "matchEnd": "O'yin tugashi",
     "globalOff": "Umumiy bildirishnomalar o'chirilgan. Sozlamalarda yoqing.",
     "loginRequired": "Bildirishnoma sozlash uchun tizimga kiring."
+  },
+
+  "matchStats": {
+    "empty": "Statistika mavjud emas",
+    "sections": {
+      "main": "Asosiy statistika",
+      "shots": "Zarba",
+      "passes": "Pas",
+      "defense": "Mudofaa",
+      "duels": "To'p kurashi",
+      "fouls": "Qoidabuzarlik"
+    },
+    "stats": {
+      "ballPossession": "To'p egaligi",
+      "totalShots": "Jami zarba",
+      "shotsOnTarget": "Maqsadli zarba",
+      "shotsOffGoal": "Nishondan chetga",
+      "blockedShots": "Bloklangan zarba",
+      "shotsInsidebox": "Jarima maydoni ichidan zarba",
+      "shotsOutsidebox": "Jarima maydoni tashqarisidan zarba",
+      "keyPasses": "Aniq uzatma",
+      "totalPasses": "Jami uzatma",
+      "accuratePasses": "Aniq uzatma",
+      "forwardPasses": "Raqib yarim maydoni",
+      "backwardPasses": "O'z yarim maydoni",
+      "longBalls": "Aniq uzun uzatma",
+      "accurateCrosses": "Aniq cross",
+      "throwins": "Yon chiziqdan kiritish",
+      "tackles": "Takkl",
+      "interceptions": "To'xtatish",
+      "clearances": "Urib yuborish",
+      "goalkeeperSaves": "Darvozabon himoyasi",
+      "duels": "To'p kurashi g'alabasi",
+      "duelsWon": "To'p kurashi g'alabasi",
+      "groundDuels": "Yerda to'p kurashi g'alabasi",
+      "aerialDuels": "Havoda to'p kurashi g'alabasi",
+      "dribbles": "Dribbling muvaffaqiyati",
+      "fouls": "Qoidabuzarlik",
+      "offsides": "Ofsayd",
+      "corners": "Burchak zarbasi",
+      "yellowCards": "Sariq kartochka",
+      "redCards": "Qizil kartochka",
+      "expectedGoals": "Kutilgan gol (xG)",
+      "passAccuracy": "Pas aniqligi",
+      "goalsPrevented": "Oldini olingan gol"
+    }
   }
 }

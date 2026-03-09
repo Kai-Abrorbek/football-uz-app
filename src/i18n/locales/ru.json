@@ -339,28 +339,6 @@
     "seeMore": "Показать все матчи",
     "modalTitle": "Матчи {{league}}"
   },
-  "matchStats": {
-    "empty": "Статистика матча недоступна",
-    "vs": "vs",
-    "categories": {
-      "main": "Основное",
-      "attack": "Атака",
-      "defense": "Оборона",
-      "foul": "Фолы"
-    },
-    "stats": {
-      "possession": "Владение мячом",
-      "shots": "Удары",
-      "shotsOnTarget": "Удары в створ",
-      "corners": "Угловые",
-      "fouls": "Фолы",
-      "yellowCards": "Жёлтые карточки",
-      "redCards": "Красные карточки",
-      "offsides": "Офсайды",
-      "passes": "Пасы",
-      "passAccuracy": "Точность пасов"
-    }
-  },
   "lineup": {
     "notAvailable": "Состав будет объявлен за 1 час до начала матча",
     "awayMissing": "Состав гостей недоступен",
@@ -532,6 +510,52 @@
     "matchEnd": "Конец матча",
     "globalOff": "Глобальные уведомления отключены. Включите их в настройках.",
     "loginRequired": "Войдите для настройки уведомлений."
+  },
+
+  "matchStats": {
+    "empty": "Статистика недоступна",
+    "sections": {
+      "main": "Основная статистика",
+      "shots": "Удары",
+      "passes": "Передачи",
+      "defense": "Защита",
+      "duels": "Единоборства",
+      "fouls": "Нарушения"
+    },
+    "stats": {
+      "ballPossession": "Владение мячом",
+      "totalShots": "Всего ударов",
+      "shotsOnTarget": "Удары в створ",
+      "shotsOffGoal": "Удары мимо",
+      "blockedShots": "Заблокированные удары",
+      "shotsInsidebox": "Удары из штрафной",
+      "shotsOutsidebox": "Удары из-за штрафной",
+      "keyPasses": "Точные передачи",
+      "totalPasses": "Всего передач",
+      "accuratePasses": "Точные передачи",
+      "forwardPasses": "На чужой половине",
+      "backwardPasses": "На своей половине",
+      "longBalls": "Точные длинные передачи",
+      "accurateCrosses": "Точные кросы",
+      "throwins": "Вбрасывания",
+      "tackles": "Отборы",
+      "interceptions": "Перехваты",
+      "clearances": "Выносы",
+      "goalkeeperSaves": "Сейвы вратаря",
+      "duels": "Единоборства выиграны",
+      "duelsWon": "Единоборства выиграны",
+      "groundDuels": "Наземные единоборства",
+      "aerialDuels": "Воздушные единоборства",
+      "dribbles": "Успешные дриблинги",
+      "fouls": "Нарушения",
+      "offsides": "Офсайды",
+      "corners": "Угловые",
+      "yellowCards": "Жёлтые карточки",
+      "redCards": "Красные карточки",
+      "expectedGoals": "Ожидаемые голы (xG)",
+      "passAccuracy": "Точность передач",
+      "goalsPrevented": "Предотвращённые голы"
+    }
   }
   
 }

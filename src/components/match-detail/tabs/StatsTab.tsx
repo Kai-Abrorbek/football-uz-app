@@ -1,12 +1,5 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { useState } from "react";
-import { Colors, getColors } from "../../../constants/colors";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
@@ -14,45 +7,61 @@ import { useTranslation } from "react-i18next";
 interface Props {
   match: Match;
 }
-const STAT_CATEGORIES = [
-  { key: "main" },
-  { key: "attack" },
-  { key: "defense" },
-  { key: "foul" },
-] as const;
 
-const STATS_MAP: Record<
-  (typeof STAT_CATEGORIES)[number]["key"],
-  { key: string }[]
-> = {
-  main: [
-    { key: "possession" },
-    { key: "shots" },
-    { key: "shotsOnTarget" },
-    { key: "corners" },
-    { key: "fouls" },
-    { key: "yellowCards" },
-    { key: "redCards" },
-    { key: "offsides" },
-  ],
-  attack: [
-    { key: "shots" },
-    { key: "shotsOnTarget" },
-    { key: "corners" },
-    { key: "offsides" },
-  ],
-  defense: [{ key: "passes" }, { key: "passAccuracy" }, { key: "possession" }],
-  foul: [{ key: "fouls" }, { key: "yellowCards" }, { key: "redCards" }],
+// API-Football type 문자열 → 내부 키 매핑
+const STAT_TYPE_MAP: Record<string, string> = {
+  "Shots on Goal": "shotsOnTarget",
+  "Shots off Goal": "shotsOffGoal",
+  "Total Shots": "totalShots",
+  "Blocked Shots": "blockedShots",
+  "Shots insidebox": "shotsInsidebox",
+  "Shots outsidebox": "shotsOutsidebox",
+  Fouls: "fouls",
+  "Corner Kicks": "corners",
+  Offsides: "offsides",
+  "Ball Possession": "ballPossession",
+  "Yellow Cards": "yellowCards",
+  "Red Cards": "redCards",
+  "Goalkeeper Saves": "goalkeeperSaves",
+  "Total passes": "totalPasses",
+  "Passes accurate": "accuratePasses",
+  "Passes %": "passAccuracy",
+  expected_goals: "expectedGoals",
+  goals_prevented: "goalsPrevented",
+};
+
+// statisticsRaw 배열을 { key: value } 객체로 변환
+const parseRawStats = (rawStats: { type: string; value: any }[]) => {
+  const result: Record<string, any> = {};
+  rawStats.forEach(({ type, value }) => {
+    const key = STAT_TYPE_MAP[type];
+    if (key) result[key] = value;
+  });
+  return result;
 };
 
 export default function StatsTab({ match }: Props) {
   const Colors = useColors();
   const styles = getStyles(Colors);
   const { t } = useTranslation();
-  const [activeCategory, setActiveCategory] =
-    useState<(typeof STAT_CATEGORIES)[number]["key"]>("main");
 
-  if (!match.statistics || match.statistics.length === 0) {
+  const homeColor = match.homeTeam.color ?? "#4285f4";
+  const awayColor = match.awayTeam.color ?? "#ea4335";
+
+  // statisticsRaw 기준으로 홈/어웨이 파싱
+  const homeRaw = match.statisticsRaw?.find(
+    (s: any) => s.team.id === match.homeTeam.id,
+  );
+  const awayRaw = match.statisticsRaw?.find(
+    (s: any) => s.team.id === match.awayTeam.id,
+  );
+
+  const homeStats = homeRaw ? parseRawStats(homeRaw.statistics) : {};
+  const awayStats = awayRaw ? parseRawStats(awayRaw.statistics) : {};
+
+  const hasData = match.statisticsRaw && match.statisticsRaw.length > 0;
+
+  if (!hasData) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>{t("matchStats.empty")}</Text>
@@ -60,79 +69,66 @@ export default function StatsTab({ match }: Props) {
     );
   }
 
-  const homeStats = match.statistics.find((s) => s.side === "home");
-  const awayStats = match.statistics.find((s) => s.side === "away");
-
-  const getStatValue = (stats: any, key: string) => {
-    if (!stats) return 0;
+  const getVal = (stats: Record<string, any>, key: string): number => {
     const val = stats[key];
+    if (val === null || val === undefined) return 0;
     if (typeof val === "string" && val.includes("%")) return parseFloat(val);
-    return val || 0;
+    return Number(val) || 0;
   };
 
-  const renderStatRow = (labelKey: string, key: string) => {
-    const homeVal = getStatValue(homeStats, key);
-    const awayVal = getStatValue(awayStats, key);
+  const getRawVal = (stats: Record<string, any>, key: string): string => {
+    const val = stats[key];
+    if (val === null || val === undefined) return "0";
+    return String(val);
+  };
 
-    const total = (Number(homeVal) || 0) + (Number(awayVal) || 0);
-    const homeWidth = total > 0 ? (Number(homeVal) / total) * 100 : 50;
-    const awayWidth = total > 0 ? (Number(awayVal) / total) * 100 : 50;
-
-    const isHomeBetter = Number(homeVal) > Number(awayVal);
-    const isAwayBetter = Number(awayVal) > Number(homeVal);
-
-    const homeIsPercent =
-      typeof homeStats?.[key] === "string" && homeStats[key].includes("%");
-    const awayIsPercent =
-      typeof awayStats?.[key] === "string" && awayStats[key].includes("%");
+  // 일반 stat 행 - 높은 쪽 버블 팀 컬러
+  const renderStatRow = (labelKey: string, key: string, isLast = false) => {
+    const hVal = getVal(homeStats, key);
+    const aVal = getVal(awayStats, key);
+    const hRaw = getRawVal(homeStats, key);
+    const aRaw = getRawVal(awayStats, key);
+    const isHomeBetter = hVal > aVal;
+    const isAwayBetter = aVal > hVal;
 
     return (
-      <View key={key} style={styles.statRow}>
-        {/* 홈 값 */}
-        <View style={styles.statValueContainer}>
+      <View key={key} style={[styles.statRow, isLast && styles.statRowLast]}>
+        {/* 홈 버블 */}
+        <View style={styles.bubbleWrap}>
           <View
             style={[
-              styles.statBubble,
-              isHomeBetter && styles.statBubbleHighlight,
+              styles.bubble,
+              isHomeBetter && { backgroundColor: homeColor },
             ]}
           >
             <Text
               style={[
-                styles.statValue,
-                isHomeBetter && styles.statValueHighlight,
+                styles.bubbleText,
+                isHomeBetter && styles.bubbleTextHighlight,
               ]}
             >
-              {homeVal}
-              {homeIsPercent ? "%" : ""}
+              {hRaw}
             </Text>
           </View>
         </View>
 
-        {/* 라벨 + 바 */}
-        <View style={styles.statCenter}>
-          <Text style={styles.statLabel}>{t(labelKey)}</Text>
-          <View style={styles.statBar}>
-            <View style={[styles.statBarHome, { width: `${homeWidth}%` }]} />
-            <View style={[styles.statBarAway, { width: `${awayWidth}%` }]} />
-          </View>
-        </View>
+        <Text style={styles.statLabel}>{t(labelKey)}</Text>
 
-        {/* 원정 값 */}
-        <View style={[styles.statValueContainer, { alignItems: "flex-end" }]}>
+        {/* 어웨이 버블 */}
+        <View style={[styles.bubbleWrap, { alignItems: "flex-end" }]}>
           <View
             style={[
-              styles.statBubble,
-              isAwayBetter && styles.statBubbleHighlight,
+              styles.bubble,
+              isAwayBetter && { backgroundColor: awayColor },
             ]}
           >
             <Text
               style={[
-                styles.statValue,
-                isAwayBetter && styles.statValueHighlight,
+                styles.bubbleText,
+                isAwayBetter && styles.bubbleTextHighlight,
               ]}
             >
-              {awayVal}
-              {awayIsPercent ? "%" : ""}
+              {aRaw}
             </Text>
           </View>
         </View>
@@ -140,54 +136,218 @@ export default function StatsTab({ match }: Props) {
     );
   };
 
-  return (
-    <View style={styles.container}>
-      {/* 팀 헤더 */}
-      <View style={styles.teamHeader}>
-        <Text style={styles.teamName}>{match.homeTeam.name}</Text>
-        <Text style={styles.vsText}>{t("matchStats.vs")}</Text>
-        <Text style={[styles.teamName, { textAlign: "right" }]}>
-          {match.awayTeam.name}
+  // 점유율 큰 바
+  const renderPossession = () => {
+    const hVal = getVal(homeStats, "ballPossession");
+    const aVal = getVal(awayStats, "ballPossession");
+    const total = hVal + aVal;
+    const hFlex = total > 0 ? (hVal / total) * 100 : 50;
+    const aFlex = total > 0 ? (aVal / total) * 100 : 50;
+
+    return (
+      <View style={styles.possessionContainer}>
+        <Text style={styles.possessionLabel}>
+          {t("matchStats.stats.ballPossession")}
         </Text>
+        <View style={styles.possessionBar}>
+          <View
+            style={[
+              styles.possessionSide,
+              {
+                flex: hFlex,
+                backgroundColor: homeColor,
+                borderTopLeftRadius: 22,
+                borderBottomLeftRadius: 22,
+              },
+            ]}
+          >
+            <Text style={styles.possessionText}>
+              {hVal > 0 ? `${hVal}%` : "0%"}
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.possessionSide,
+              {
+                flex: aFlex,
+                backgroundColor: awayColor,
+                borderTopRightRadius: 22,
+                borderBottomRightRadius: 22,
+                alignItems: "flex-end",
+              },
+            ]}
+          >
+            <Text style={styles.possessionText}>
+              {aVal > 0 ? `${aVal}%` : "0%"}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  // 슛 중첩 카드
+  const renderShotSection = () => {
+    const missed = {
+      h: getVal(homeStats, "shotsOffGoal"),
+      a: getVal(awayStats, "shotsOffGoal"),
+    };
+    const onTarget = {
+      h: getVal(homeStats, "shotsOnTarget"),
+      a: getVal(awayStats, "shotsOnTarget"),
+    };
+
+    return (
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{t("matchStats.sections.shots")}</Text>
+
+        {renderStatRow("matchStats.stats.totalShots", "totalShots")}
+
+        {/* 빗나간 슛 외곽 카드 */}
+        <View style={styles.nestedOuter}>
+          <View style={styles.nestedOuterRow}>
+            <View style={styles.bubbleWrap}>
+              <View
+                style={[
+                  styles.bubble,
+                  missed.h > missed.a && { backgroundColor: homeColor },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.bubbleText,
+                    missed.h > missed.a && styles.bubbleTextHighlight,
+                  ]}
+                >
+                  {getRawVal(homeStats, "shotsOffGoal")}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.statLabel}>
+              {t("matchStats.stats.shotsOffGoal")}
+            </Text>
+            <View style={[styles.bubbleWrap, { alignItems: "flex-end" }]}>
+              <View
+                style={[
+                  styles.bubble,
+                  missed.a > missed.h && { backgroundColor: awayColor },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.bubbleText,
+                    missed.a > missed.h && styles.bubbleTextHighlight,
+                  ]}
+                >
+                  {getRawVal(awayStats, "shotsOffGoal")}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* 유효 슈팅 내부 카드 */}
+          <View style={styles.nestedInner}>
+            <View style={styles.bubbleWrap}>
+              <View
+                style={[
+                  styles.bubble,
+                  onTarget.h > onTarget.a && { backgroundColor: homeColor },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.bubbleText,
+                    onTarget.h > onTarget.a && styles.bubbleTextHighlight,
+                  ]}
+                >
+                  {getRawVal(homeStats, "shotsOnTarget")}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.statLabel}>
+              {t("matchStats.stats.shotsOnTarget")}
+            </Text>
+            <View style={[styles.bubbleWrap, { alignItems: "flex-end" }]}>
+              <View
+                style={[
+                  styles.bubble,
+                  onTarget.a > onTarget.h && { backgroundColor: awayColor },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.bubbleText,
+                    onTarget.a > onTarget.h && styles.bubbleTextHighlight,
+                  ]}
+                >
+                  {getRawVal(awayStats, "shotsOnTarget")}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {renderStatRow("matchStats.stats.blockedShots", "blockedShots")}
+        {renderStatRow("matchStats.stats.goalkeeperSaves", "goalkeeperSaves")}
+        {renderStatRow("matchStats.stats.shotsInsidebox", "shotsInsidebox")}
+        {renderStatRow(
+          "matchStats.stats.shotsOutsidebox",
+          "shotsOutsidebox",
+          true,
+        )}
+      </View>
+    );
+  };
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── 주요 통계 ── */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{t("matchStats.sections.main")}</Text>
+        {renderPossession()}
+        {renderStatRow("matchStats.stats.expectedGoals", "expectedGoals")}
+        {renderStatRow("matchStats.stats.totalShots", "totalShots")}
+        {renderStatRow("matchStats.stats.shotsOnTarget", "shotsOnTarget")}
+        {renderStatRow("matchStats.stats.accuratePasses", "accuratePasses")}
+        {renderStatRow("matchStats.stats.fouls", "fouls")}
+        {renderStatRow("matchStats.stats.offsides", "offsides")}
+        {renderStatRow("matchStats.stats.corners", "corners", true)}
       </View>
 
-      {/* 카테고리 탭 */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoryTabs}
-        contentContainerStyle={styles.categoryTabsContent}
-      >
-        {STAT_CATEGORIES.map((cat) => (
-          <TouchableOpacity
-            key={cat.key}
-            style={[
-              styles.categoryTab,
-              activeCategory === cat.key && styles.categoryTabActive,
-            ]}
-            onPress={() => setActiveCategory(cat.key)}
-          >
-            <Text
-              style={[
-                styles.categoryTabText,
-                activeCategory === cat.key && styles.categoryTabTextActive,
-              ]}
-            >
-              {t(`matchStats.categories.${cat.key}`)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* ── 슛 ── */}
+      {renderShotSection()}
 
-      {/* 통계 목록 */}
-      <View style={styles.statsContainer}>
-        {STATS_MAP[activeCategory].map((stat) =>
-          renderStatRow(`matchStats.stats.${stat.key}`, stat.key),
+      {/* ── 패스 ── */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{t("matchStats.sections.passes")}</Text>
+        {renderStatRow("matchStats.stats.totalPasses", "totalPasses")}
+        {renderStatRow("matchStats.stats.accuratePasses", "accuratePasses")}
+        {renderStatRow("matchStats.stats.passAccuracy", "passAccuracy", true)}
+      </View>
+
+      {/* ── 수비 ── */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{t("matchStats.sections.defense")}</Text>
+        {renderStatRow("matchStats.stats.goalkeeperSaves", "goalkeeperSaves")}
+        {renderStatRow(
+          "matchStats.stats.goalsPrevented",
+          "goalsPrevented",
+          true,
         )}
       </View>
 
-      <View style={{ height: 20 }} />
-    </View>
+      {/* ── 반칙 ── */}
+      <View style={[styles.card, { marginBottom: 24 }]}>
+        <Text style={styles.cardTitle}>{t("matchStats.sections.fouls")}</Text>
+        {renderStatRow("matchStats.stats.fouls", "fouls")}
+        {renderStatRow("matchStats.stats.yellowCards", "yellowCards")}
+        {renderStatRow("matchStats.stats.redCards", "redCards", true)}
+      </View>
+    </ScrollView>
   );
 }
 
@@ -196,6 +356,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     container: {
       flex: 1,
       backgroundColor: Colors.background,
+    },
+    contentContainer: {
+      padding: 12,
+      gap: 12,
     },
     emptyContainer: {
       flex: 1,
@@ -208,116 +372,109 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontSize: 14,
       color: Colors.textSecondary,
     },
-    teamHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+    card: {
       backgroundColor: Colors.surface,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      marginBottom: 8,
-    },
-    teamName: {
-      flex: 1,
-      fontSize: 13,
-      fontWeight: "600",
-      color: Colors.text,
-    },
-    vsText: {
-      fontSize: 12,
-      color: Colors.textSecondary,
-      paddingHorizontal: 8,
-    },
-    categoryTabs: {
-      backgroundColor: Colors.surface,
-      marginBottom: 8,
-    },
-    categoryTabsContent: {
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      gap: 8,
-    },
-    categoryTab: {
-      paddingHorizontal: 14,
-      paddingVertical: 6,
       borderRadius: 16,
-      backgroundColor: Colors.background,
-      borderWidth: 1,
-      borderColor: Colors.border,
+      paddingVertical: 16,
+      paddingHorizontal: 16,
     },
-    categoryTabActive: {
-      backgroundColor: Colors.primary,
-      borderColor: Colors.primary,
+    cardTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: Colors.text,
+      textAlign: "center",
+      marginBottom: 12,
     },
-    categoryTabText: {
-      fontSize: 12,
+
+    // 점유율
+    possessionContainer: {
+      marginBottom: 12,
+    },
+    possessionLabel: {
+      fontSize: 13,
       color: Colors.textSecondary,
-      fontWeight: "500",
+      textAlign: "center",
+      marginBottom: 10,
     },
-    categoryTabTextActive: {
+    possessionBar: {
+      flexDirection: "row",
+      height: 44,
+      borderRadius: 22,
+      overflow: "hidden",
+    },
+    possessionSide: {
+      justifyContent: "center",
+      paddingHorizontal: 14,
+    },
+    possessionText: {
+      fontSize: 15,
+      fontWeight: "700",
       color: "#ffffff",
     },
-    statsContainer: {
-      backgroundColor: Colors.surface,
-      paddingVertical: 8,
-    },
+
+    // 일반 행
     statRow: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 16,
+      justifyContent: "space-between",
       paddingVertical: 10,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
-      gap: 8,
     },
-    statValueContainer: {
-      width: 60,
+    statRowLast: {
+      borderBottomWidth: 0,
+    },
+    statLabel: {
+      flex: 1,
+      fontSize: 13,
+      color: Colors.text,
+      textAlign: "center",
+    },
+
+    // 버블
+    bubbleWrap: {
+      width: 70,
       alignItems: "flex-start",
     },
-    statBubble: {
+    bubble: {
       minWidth: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: Colors.background,
+      backgroundColor: "transparent",
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 8,
     },
-    statBubbleHighlight: {
-      backgroundColor: "#ea4335",
-    },
-    statValue: {
+    bubbleText: {
       fontSize: 14,
-      fontWeight: "700",
+      fontWeight: "600",
       color: Colors.text,
     },
-    statValueHighlight: {
+    bubbleTextHighlight: {
       color: "#ffffff",
+      fontWeight: "800",
     },
-    statCenter: {
-      flex: 1,
-      alignItems: "center",
-      gap: 6,
+
+    // 슛 중첩
+    nestedOuter: {
+      backgroundColor: Colors.background,
+      borderRadius: 12,
+      padding: 12,
+      marginVertical: 4,
     },
-    statLabel: {
-      fontSize: 13,
-      color: Colors.text,
-      fontWeight: "500",
-    },
-    statBar: {
+    nestedOuterRow: {
       flexDirection: "row",
-      width: "100%",
-      height: 4,
-      borderRadius: 2,
-      overflow: "hidden",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 10,
+    },
+    nestedInner: {
       backgroundColor: Colors.border,
-    },
-    statBarHome: {
-      height: "100%",
-      backgroundColor: "#4285f4",
-    },
-    statBarAway: {
-      height: "100%",
-      backgroundColor: "#ea4335",
+      borderRadius: 8,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
   });

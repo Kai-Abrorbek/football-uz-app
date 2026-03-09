@@ -355,30 +355,6 @@
     "seeMore": "See more matches",
     "modalTitle": "{{league}} Matches"
   },
-
-  "matchStats": {
-    "empty": "No match statistics available",
-    "vs": "vs",
-    "categories": {
-      "main": "Main",
-      "attack": "Attack",
-      "defense": "Defense",
-      "foul": "Fouls"
-    },
-    "stats": {
-      "possession": "Possession",
-      "shots": "Shots",
-      "shotsOnTarget": "Shots on target",
-      "corners": "Corners",
-      "fouls": "Fouls",
-      "yellowCards": "Yellow cards",
-      "redCards": "Red cards",
-      "offsides": "Offsides",
-      "passes": "Passes",
-      "passAccuracy": "Pass accuracy"
-    }
-  },
-
   "common": {
     "loading": "Loading...",
     "share": "Share",
@@ -547,5 +523,51 @@
     "matchEnd": "Match End",
     "globalOff": "Global alerts are off. Please enable them in settings.",
     "loginRequired": "Login to set alerts."
+  },
+
+  "matchStats": {
+    "empty": "No statistics available",
+    "sections": {
+      "main": "Main Stats",
+      "shots": "Shots",
+      "passes": "Passes",
+      "defense": "Defense",
+      "duels": "Duels",
+      "fouls": "Fouls"
+    },
+    "stats": {
+      "ballPossession": "Ball Possession",
+      "totalShots": "Total Shots",
+      "shotsOnTarget": "Shots on Target",
+      "shotsOffGoal": "Shots off Goal",
+      "blockedShots": "Blocked Shots",
+      "shotsInsidebox": "Shots Inside Box",
+      "shotsOutsidebox": "Shots Outside Box",
+      "keyPasses": "Key Passes",
+      "totalPasses": "Total Passes",
+      "accuratePasses": "Accurate Passes",
+      "forwardPasses": "Forward Passes",
+      "backwardPasses": "Backward Passes",
+      "longBalls": "Long Balls",
+      "accurateCrosses": "Accurate Crosses",
+      "throwins": "Throw-ins",
+      "tackles": "Tackles",
+      "interceptions": "Interceptions",
+      "clearances": "Clearances",
+      "goalkeeperSaves": "Goalkeeper Saves",
+      "duels": "Duels",
+      "duelsWon": "Duels Won",
+      "groundDuels": "Ground Duels",
+      "aerialDuels": "Aerial Duels",
+      "dribbles": "Dribbles",
+      "fouls": "Fouls",
+      "offsides": "Offsides",
+      "corners": "Corners",
+      "yellowCards": "Yellow Cards",
+      "redCards": "Red Cards",
+      "expectedGoals": "Expected Goals (xG)", 
+      "passAccuracy": "Pass Accuracy",
+      "goalsPrevented": "Goals Prevented"
+    }
   }
 }

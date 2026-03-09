@@ -51,6 +51,7 @@ export interface Match {
   lineups?: Lineups;
   statistics: MatchStatistic[];
   isWorldCup2026: boolean;
+  statisticsRaw: any;
 }
 
 export interface MatchEvent {
