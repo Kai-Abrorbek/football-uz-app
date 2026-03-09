@@ -269,7 +269,13 @@
   },
   "h2h": {
     "empty": "Нет очных матчей",
-    "fulltime": "Финальный свисток"
+    "wins": "Победы",
+    "draws": "Ничьи",
+    "home": "Дома",
+    "thisTournament": "Этот турнир",
+    "showAll": "Показать все",
+    "showLess": "Свернуть",
+    "fulltime": "FT"
   },
 
   "highlights": {

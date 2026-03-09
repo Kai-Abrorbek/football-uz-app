@@ -106,9 +106,7 @@ export default function LeagueDetailScreen() {
             if (router.canGoBack()) router.back();
             else router.replace("/");
           }}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
+        ></TouchableOpacity>
 
         <View style={styles.headerCenter}>
           <Image

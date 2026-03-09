@@ -270,7 +270,13 @@
   },
   "h2h": {
     "empty": "O‘zaro o‘yinlar yo‘q",
-    "fulltime": "To‘liq vaqt"
+    "wins": "G'alaba",
+    "draws": "Durrang",
+    "home": "Uy",
+    "thisTournament": "Ushbu turnir",
+    "showAll": "Hammasini ko'rish",
+    "showLess": "Yig'ish",
+    "fulltime": "FT"
   },
 
   "highlights": {

@@ -134,9 +134,7 @@ export default function MatchHeader({
                 if (router.canGoBack()) router.back();
                 else router.replace("/");
               }}
-            >
-              <Ionicons name="arrow-back" size={24} color={Colors.text} />
-            </TouchableOpacity>
+            ></TouchableOpacity>
 
             <TouchableOpacity
               style={styles.leagueBtn}
@@ -395,9 +393,7 @@ export default function MatchHeader({
             if (router.canGoBack()) router.back();
             else router.replace("/");
           }}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
+        ></TouchableOpacity>
 
         <View style={styles.compactCenter}>
           <Image
@@ -405,7 +401,7 @@ export default function MatchHeader({
             style={styles.compactLogo}
             contentFit="contain"
           />
-          <Text style={styles.compactScore}>{match.goals.home ?? 0}</Text>
+          <Text style={styles.compactScore}>{match.goals.home ?? ""}</Text>
           <View style={styles.compactStatusBadge}>
             <Text
               style={[
@@ -420,7 +416,7 @@ export default function MatchHeader({
                   : getTimeText()}
             </Text>
           </View>
-          <Text style={styles.compactScore}>{match.goals.away ?? 0}</Text>
+          <Text style={styles.compactScore}>{match.goals.away ?? ""}</Text>
           <Image
             source={match.awayTeam.logo}
             style={styles.compactLogo}
@@ -443,6 +439,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     wrapper: {
       backgroundColor: Colors.surface,
+      paddingTop: 30,
     },
     container: {
       backgroundColor: Colors.surface,
@@ -466,8 +463,9 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       gap: 10,
+      padding: 10,
     },
-    compactLogo: { width: 28, height: 28 },
+    compactLogo: { width: 45, height: 45 },
     compactScore: { fontSize: 20, fontWeight: "800", color: Colors.text },
     compactStatusBadge: {
       paddingHorizontal: 8,
@@ -476,7 +474,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderRadius: 8,
     },
     compactStatusText: {
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: "700",
       color: Colors.textSecondary,
     },

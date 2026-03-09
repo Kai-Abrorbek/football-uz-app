@@ -37,7 +37,7 @@ export default function RootLayout() {
                     headerShown: true,
                     headerTransparent: true,
                     headerTitle: "",
-                    headerTintColor: "#fff",
+                    headerTintColor: Colors.text,
                   }}
                 />
                 <Stack.Screen
@@ -46,7 +46,7 @@ export default function RootLayout() {
                     headerShown: true,
                     headerTransparent: true,
                     headerTitle: "",
-                    headerTintColor: "#fff",
+                    headerTintColor: Colors.text,
                   }}
                 />
               </Stack>

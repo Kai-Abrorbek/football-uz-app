@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import { View, StyleSheet, Animated, Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +21,8 @@ import H2HTab from "../../src/components/match-detail/tabs/H2HTab";
 import LiveTab from "../../src/components/match-detail/tabs/HighlightsTab";
 import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
 
-const COMPACT_HEADER_HEIGHT = 60; // 콤팩트 헤더 높이
+const COMPACT_HEADER_HEIGHT = 80;
+const TAB_HEIGHT = 50;
 
 export default function MatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -75,38 +76,22 @@ export default function MatchDetailScreen() {
     }
   };
 
-  // 콤팩트 헤더 크기를 제외한 나머지 밀려 올라갈 거리 계산
   const scrollDistance =
     headerHeight > COMPACT_HEADER_HEIGHT
       ? headerHeight - COMPACT_HEADER_HEIGHT
       : 150;
 
-  // 헤더와 탭 전체를 묶어서 스크롤에 맞춰 위로 밀어올림
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, scrollDistance],
     outputRange: [0, -scrollDistance],
     extrapolate: "clamp",
   });
 
+  const totalHeaderHeight = headerHeight > 0 ? headerHeight + TAB_HEIGHT : 250;
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 1. ScrollView: 화면 전체 스크롤 담당 (헤더+탭 높이만큼 패딩을 줘서 공간 확보) */}
-      <Animated.ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
-        )}
-        contentContainerStyle={{
-          paddingTop: headerHeight > 0 ? headerHeight + 50 : 250,
-        }} // 50은 탭 기본 높이
-      >
-        <View style={styles.content}>{renderTab()}</View>
-      </Animated.ScrollView>
-
-      {/* 2. 최상단에 떠서 같이 밀려 올라가는 헤더+탭 그룹 (position: absolute) */}
+      {/* 1. 헤더+탭 (absolute 아님! 그냥 위에 배치) */}
       <Animated.View
         style={[
           styles.headerContainer,
@@ -126,20 +111,32 @@ export default function MatchDetailScreen() {
           onTabChange={setActiveTab}
         />
       </Animated.View>
+
+      {/* 2. ScrollView: 헤더 아래부터 시작 */}
+      <Animated.ScrollView
+        style={[styles.scrollView, { marginTop: -totalHeaderHeight }]}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
+        )}
+        contentContainerStyle={{
+          paddingTop: totalHeaderHeight,
+        }}
+      >
+        <View style={styles.content}>{renderTab()}</View>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background },
+  container: { flex: 1, backgroundColor: Colors.background, marginBottom: 40 },
   loadingContainer: { flex: 1, backgroundColor: Colors.background },
   scrollView: { flex: 1 },
   content: { flex: 1 },
   headerContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
     zIndex: 10,
     backgroundColor: Colors.background,
   },

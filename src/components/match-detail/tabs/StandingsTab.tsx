@@ -401,7 +401,11 @@ export default function StandingsTab({ match }: Props) {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+      marginBottom: 40,
+    },
 
     emptyContainer: {
       flex: 1,

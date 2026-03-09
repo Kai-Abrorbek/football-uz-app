@@ -278,7 +278,13 @@
   },
   "h2h": {
     "empty": "No head-to-head matches",
-    "fulltime": "Full Time"
+    "wins": "Wins",
+    "draws": "Draws",
+    "home": "Home",
+    "thisTournament": "This Tournament",
+    "showAll": "Show All",
+    "showLess": "Show Less",
+    "fulltime": "FT"
   },
 
   "highlights": {
