@@ -20,7 +20,6 @@ import WorldcupMatchesTab from "../../src/components/worldcup/tabs/WorldcupMatch
 import WorldcupPlayersTab from "../../src/components/worldcup/tabs/WorldcupPlayersTab";
 import WorldcupBracketTab from "../../src/components/worldcup/tabs/WorldcupBracketTab";
 import WorldcupStandingsTab from "../../src/components/worldcup/tabs/WorldcupStandingsTab";
-import { SEASON } from "../../src/constants/leauges";
 
 const TABS = [
   { key: "overview" },

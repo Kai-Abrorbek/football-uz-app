@@ -17,16 +17,17 @@ import {
   View,
 } from "react-native";
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { LeagueMatchesResponse, Match } from "../../types";
 import { useColors } from "../../hooks/useColors";
 import { ENDPOINTS } from "../../constants/api";
 import api from "../../services/api";
 import { getColors } from "../../constants/colors";
-import { SEASON } from "../../constants/leauges";
+import { MATCH_SEASON, SEASON } from "../../constants/leauges";
 
 interface Props {
   visible: boolean;
@@ -41,6 +42,138 @@ const sortMatches = (arr: Match[]) =>
     if (roundA !== roundB) return roundA - roundB;
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
+
+function MatchCard({ match, onClose, styles, Colors, t, i18n }: any) {
+  const router = useRouter();
+  const isFinished = match.status.short === "FT";
+  const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
+  const isUpcoming = match.status.short === "NS";
+  const homeGoals = match.goals.home ?? 0;
+  const awayGoals = match.goals.away ?? 0;
+  const homeWon = homeGoals > awayGoals;
+  const awayWon = awayGoals > homeGoals;
+
+  const today = new Date();
+  const matchDate = new Date(match.date);
+  const isToday =
+    isUpcoming &&
+    matchDate.getFullYear() === today.getFullYear() &&
+    matchDate.getMonth() === today.getMonth() &&
+    matchDate.getDate() === today.getDate();
+
+  const { data: highlight } = useQuery<any>({
+    queryKey: ["highlight", match._id],
+    queryFn: () =>
+      api.get(
+        ENDPOINTS.matchHighlight(
+          match._id,
+          match.homeTeam.name,
+          match.awayTeam.name,
+          match.date,
+        ),
+      ),
+    enabled: isFinished,
+    staleTime: 1000 * 60 * 60 * 24,
+    retry: false,
+  });
+
+  return (
+    <TouchableOpacity
+      style={styles.matchCard}
+      onPress={() => {
+        router.push(`/match/${match._id}`);
+        onClose();
+      }}
+      activeOpacity={0.7}
+    >
+      <View style={styles.matchBody}>
+        {/* 왼쪽: 팀 및 스코어 */}
+        <View style={styles.leftSection}>
+          <View style={styles.teamScoreRow}>
+            <Image
+              source={match.homeTeam.logo}
+              style={styles.teamLogo}
+              contentFit="contain"
+            />
+            <Text style={styles.teamName} numberOfLines={1}>
+              {match.homeTeam.name}
+            </Text>
+            <Text style={[styles.score, homeWon && styles.scoreWinner]}>
+              {isFinished || isLive ? homeGoals : ""}
+            </Text>
+            <View style={styles.winnerIconContainer}>
+              {homeWon && <Text style={styles.winnerIcon}>◀</Text>}
+            </View>
+          </View>
+
+          <View style={[styles.teamScoreRow, { marginTop: 12 }]}>
+            <Image
+              source={match.awayTeam.logo}
+              style={styles.teamLogo}
+              contentFit="contain"
+            />
+            <Text style={styles.teamName} numberOfLines={1}>
+              {match.awayTeam.name}
+            </Text>
+            <Text style={[styles.score, awayWon && styles.scoreWinner]}>
+              {isFinished || isLive ? awayGoals : ""}
+            </Text>
+            <View style={styles.winnerIconContainer}>
+              {awayWon && <Text style={styles.winnerIcon}>◀</Text>}
+            </View>
+          </View>
+        </View>
+
+        {/* 세로 구분선 */}
+        <View style={styles.divider} />
+
+        {/* 오른쪽: 상태, 날짜, 하이라이트 */}
+        <View style={styles.rightSection}>
+          <Text style={styles.statusText}>
+            {isFinished
+              ? t("leagueMatches.fulltime", "풀타임")
+              : isLive
+                ? "LIVE"
+                : isToday
+                  ? t("leagueMatches.today", "오늘")
+                  : t("leagueMatches.scheduled", "예정")}
+          </Text>
+          <Text style={styles.dateText}>
+            {new Date(match.date).getMonth() + 1}.{" "}
+            {new Date(match.date).getDate()}.
+          </Text>
+
+          {highlight?.videoId ? (
+            <TouchableOpacity
+              style={styles.highlightThumb}
+              onPress={(e) => {
+                e.stopPropagation();
+                onClose();
+                router.push({
+                  pathname: `/highlight/${match._id}`,
+                  params: { videoId: highlight.videoId },
+                });
+              }}
+              activeOpacity={0.8}
+            >
+              <Image
+                source={{ uri: highlight.thumbnail }}
+                style={styles.highlightThumbImg}
+                contentFit="cover"
+              />
+              <View style={styles.highlightOverlay}>
+                <Ionicons name="play" size={10} color="#fff" />
+                <Text style={styles.highlightTime}>{highlight.duration}</Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.emptySpace} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -68,7 +201,7 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
       try {
         const directionParam = direction ? `&direction=${direction}` : "";
         const res: any = await api.get(
-          `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${SEASON}&round=${round}${directionParam}`,
+          `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${MATCH_SEASON}&round=${round}${directionParam}`,
         );
         return res as LeagueMatchesResponse;
       } catch (e) {
@@ -79,35 +212,25 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
     [leagueId],
   );
 
-  // 초기화
   useEffect(() => {
     if (!visible || isInitialized.current) return;
-
     const init = async () => {
       setIsInitialLoading(true);
-      // direction 없이 → 서버가 현재 기준 앞뒤로 줌
       const res = await fetchMatches(0);
       if (!res) {
         setIsInitialLoading(false);
         return;
       }
-
-      const { matches: initialMatches, roundsData: initialRoundsData } = res;
-
-      setMatches(sortMatches(initialMatches ?? []));
-      setRoundsData(initialRoundsData ?? []);
-
-      minLoadedRound.current = Math.min(...(initialRoundsData ?? [0]));
-      maxLoadedRound.current = Math.max(...(initialRoundsData ?? [0]));
-
+      setMatches(sortMatches(res.matches ?? []));
+      setRoundsData(res.roundsData ?? []);
+      minLoadedRound.current = Math.min(...(res.roundsData ?? [0]));
+      maxLoadedRound.current = Math.max(...(res.roundsData ?? [0]));
       isInitialized.current = true;
       setIsInitialLoading(false);
     };
-
     init();
   }, [visible, fetchMatches]);
 
-  // 모달 닫힐 때 초기화
   useEffect(() => {
     if (!visible) {
       setMatches([]);
@@ -122,31 +245,23 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
     }
   }, [visible]);
 
-  // 다음 라운드 로드 (아래 스크롤) - direction=next
   const loadNextRound = useCallback(async () => {
     if (isFetchingRef.current) return;
     const max = maxLoadedRound.current;
     if (max === null) return;
-
     isFetchingRef.current = true;
     setLoadingDirection("down");
-
     try {
-      // max 기준으로 next → 서버가 max ~ max+3 범위로 줌
       const res = await fetchMatches(max, "next");
       if (!res?.matches?.length) return;
-
       const newMax = Math.max(...(res.roundsData ?? [max]));
-      // 이전이랑 같으면 더 가져올 데이터 없음
       if (newMax <= max) return;
       maxLoadedRound.current = newMax;
-
       setMatches((prev) => {
         const prevIds = new Set(prev.map((m) => m._id));
         const incoming = res.matches.filter((m) => !prevIds.has(m._id));
         return sortMatches([...prev, ...incoming]);
       });
-
       setRoundsData((prev) =>
         Array.from(new Set([...prev, ...(res.roundsData ?? [])])).sort(
           (a, b) => a - b,
@@ -158,31 +273,23 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
     }
   }, [fetchMatches]);
 
-  // 이전 라운드 로드 (위 스크롤) - direction=prev
   const loadPrevRound = useCallback(async () => {
     if (isFetchingRef.current) return;
     const min = minLoadedRound.current;
     if (min === null || min <= 1) return;
-
     isFetchingRef.current = true;
     setLoadingDirection("up");
-
     try {
-      // min 기준으로 prev → 서버가 min-3 ~ min 범위로 줌
       const res = await fetchMatches(min, "prev");
       if (!res?.matches?.length) return;
-
       const newMin = Math.min(...(res.roundsData ?? [min]));
-      // 이전이랑 같으면 더 가져올 데이터 없음
       if (newMin >= min) return;
       minLoadedRound.current = newMin;
-
       setMatches((prev) => {
         const prevIds = new Set(prev.map((m) => m._id));
         const incoming = res.matches.filter((m) => !prevIds.has(m._id));
         return sortMatches([...incoming, ...prev]);
       });
-
       setRoundsData((prev) =>
         Array.from(new Set([...prev, ...(res.roundsData ?? [])])).sort(
           (a, b) => a - b,
@@ -194,7 +301,6 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
     }
   }, [fetchMatches]);
 
-  // 맨 위 스크롤 감지
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const offsetY = event.nativeEvent.contentOffset.y;
@@ -202,16 +308,13 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
       const layoutHeight = event.nativeEvent.layoutMeasurement.height;
       const distanceFromBottom = contentHeight - offsetY - layoutHeight;
 
-      // 아래 끝 감지 → 바닥에 닿았다가 살짝 올라올 때만 (50px 이상 올라왔을 때)
       if (
-        distanceFromBottom > 50 && // ✅ 바닥에서 살짝 올라온 상태
-        distanceFromBottom < 150 && // ✅ 너무 멀리는 아닐 때
+        distanceFromBottom > 50 &&
+        distanceFromBottom < 150 &&
         !isFetchingRef.current
       ) {
         loadNextRound();
       }
-
-      // 위 끝 감지
       if (offsetY > 80) hasFetchedTopRef.current = false;
       if (offsetY < 10 && !isFetchingRef.current && !hasFetchedTopRef.current) {
         hasFetchedTopRef.current = true;
@@ -221,135 +324,20 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
     [loadNextRound, loadPrevRound],
   );
 
-  // 그룹핑
   const sections = useMemo(() => {
     const grouped = matches.reduce((acc: Record<string, Match[]>, match) => {
       const matchRound = Number(match.round?.match(/(\d+)\s*$/)?.[1]);
       if (!roundsData.includes(matchRound)) return acc;
-
       const key = t("leagueMatches.matchday", {
         current: matchRound,
         total: 38,
       });
-
       if (!acc[key]) acc[key] = [];
       acc[key].push(match);
       return acc;
     }, {});
-
     return Object.entries(grouped).map(([title, data]) => ({ title, data }));
   }, [matches, roundsData, t]);
-
-  const renderMatchCard = (match: Match) => {
-    const homeGoals = match.goals.home ?? 0;
-    const awayGoals = match.goals.away ?? 0;
-    const isFinished = match.status.short === "FT";
-    const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
-    const isUpcoming = match.status.short === "NS";
-    const homeWon = homeGoals > awayGoals;
-    const awayWon = awayGoals > homeGoals;
-    const today = new Date();
-    const matchDate = new Date(match.date);
-    const isToday =
-      isUpcoming &&
-      matchDate.getFullYear() === today.getFullYear() &&
-      matchDate.getMonth() === today.getMonth() &&
-      matchDate.getDate() === today.getDate();
-
-    const hasHighlight = isFinished && Math.random() > 0.5;
-
-    return (
-      <TouchableOpacity
-        key={match._id}
-        style={styles.matchCard}
-        onPress={() => {
-          router.push(`/match/${match._id}`);
-          onClose();
-        }}
-        activeOpacity={0.7}
-      >
-        <View style={styles.matchBody}>
-          <View style={styles.teamsContainer}>
-            <View style={styles.teamRow}>
-              <Image
-                source={match.homeTeam.logo}
-                style={styles.teamLogo}
-                contentFit="contain"
-              />
-              <Text style={styles.teamName} numberOfLines={1}>
-                {match.homeTeam.name}
-              </Text>
-            </View>
-            <View style={styles.teamRow}>
-              <Image
-                source={match.awayTeam.logo}
-                style={styles.teamLogo}
-                contentFit="contain"
-              />
-              <Text style={styles.teamName} numberOfLines={1}>
-                {match.awayTeam.name}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.scoreSection}>
-            {isFinished || isLive ? (
-              <>
-                <View style={styles.scoreRow}>
-                  <Text style={[styles.score, homeWon && styles.scoreWinner]}>
-                    {homeGoals}
-                  </Text>
-                  {homeWon && <Text style={styles.winnerIcon}>◀</Text>}
-                </View>
-                <View style={styles.scoreRow}>
-                  <Text style={[styles.score, awayWon && styles.scoreWinner]}>
-                    {awayGoals}
-                  </Text>
-                  {awayWon && <Text style={styles.winnerIcon}>◀</Text>}
-                </View>
-              </>
-            ) : (
-              <Text style={styles.scheduledText}>
-                {t("leagueMatches.scheduled")}
-              </Text>
-            )}
-          </View>
-
-          <View style={styles.rightSection}>
-            {hasHighlight ? (
-              <View style={styles.highlightThumb}>
-                <View style={styles.playIcon}>
-                  <Ionicons name="play" size={16} color="#fff" />
-                </View>
-                <Text style={styles.highlightTime}>2:53</Text>
-              </View>
-            ) : (
-              <View style={styles.dateBox}>
-                <Text style={styles.statusText}>
-                  {isFinished
-                    ? t("leagueMatches.fulltime")
-                    : isLive
-                      ? "LIVE"
-                      : isToday
-                        ? t("leagueMatches.today")
-                        : ""}
-                </Text>
-                <Text style={styles.timeText}>
-                  {new Date(match.date).toLocaleString(i18n.language, {
-                    month: "numeric",
-                    day: "numeric",
-                    weekday: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
 
   if (isInitialLoading) {
     return (
@@ -379,7 +367,6 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
           activeOpacity={1}
           onPress={onClose}
         />
-
         <View style={styles.modalSheet}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>
@@ -407,15 +394,22 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
           <SectionList<Match, any>
             sections={sections}
             keyExtractor={(item) => item._id}
-            renderItem={({ item }) => renderMatchCard(item)}
+            renderItem={({ item }) => (
+              <MatchCard
+                match={item}
+                onClose={onClose}
+                styles={styles}
+                Colors={Colors}
+                t={t}
+                i18n={i18n}
+              />
+            )}
             renderSectionHeader={({ section: { title } }) => (
               <View style={styles.dateSection}>
                 <Text style={styles.dateTitle}>{title}</Text>
               </View>
             )}
             showsVerticalScrollIndicator={false}
-            // onEndReached={loadNextRound}
-            // onEndReachedThreshold={0.3}
             onScroll={handleScroll}
             scrollEventThrottle={300}
             maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
@@ -464,11 +458,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
-    modalTitle: {
-      fontSize: 18,
-      fontWeight: "700",
-      color: Colors.text,
-    },
+    modalTitle: { fontSize: 18, fontWeight: "700", color: Colors.text },
     modalClose: {
       width: 40,
       height: 40,
@@ -480,113 +470,109 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       marginHorizontal: 16,
       marginBottom: 12,
       borderRadius: 12,
-      padding: 14,
+      paddingVertical: 16,
+      paddingHorizontal: 16,
       borderWidth: 1,
       borderColor: Colors.border,
     },
     matchBody: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 12,
     },
-    teamsContainer: {
+    leftSection: {
       flex: 1,
-      gap: 8,
     },
-    teamRow: {
+    teamScoreRow: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 8,
     },
     teamLogo: {
       width: 24,
       height: 24,
+      marginRight: 10,
     },
     teamName: {
       flex: 1,
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: "500",
       color: Colors.text,
     },
-    scoreSection: {
-      width: 50,
-      gap: 8,
-    },
-    scoreRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "flex-end",
-      gap: 4,
-    },
     score: {
-      fontSize: 18,
-      fontWeight: "700",
+      fontSize: 16,
+      fontWeight: "400",
       color: Colors.textSecondary,
-      minWidth: 28,
       textAlign: "right",
     },
     scoreWinner: {
+      fontWeight: "600",
       color: Colors.text,
+    },
+    winnerIconContainer: {
+      width: 16,
+      alignItems: "center",
+      justifyContent: "center",
     },
     winnerIcon: {
       fontSize: 10,
       color: Colors.text,
+      marginLeft: 4,
     },
-    scheduledText: {
-      fontSize: 13,
-      fontWeight: "600",
-      color: Colors.textSecondary,
-      textAlign: "center",
+    divider: {
+      width: 1,
+      height: "100%",
+      backgroundColor: Colors.border,
+      marginHorizontal: 16,
     },
     rightSection: {
       width: 80,
-      alignItems: "flex-end",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    statusText: {
+      fontSize: 14,
+      fontWeight: "500",
+      color: Colors.text,
+      marginBottom: 2,
+    },
+    dateText: {
+      fontSize: 14,
+      color: Colors.textSecondary,
+      marginBottom: 8,
+    },
+    emptySpace: {
+      width: 80,
+      height: 45,
     },
     highlightThumb: {
       width: 80,
-      height: 60,
-      borderRadius: 8,
+      height: 45,
+      borderRadius: 6,
       backgroundColor: "#1a1a1a",
-      alignItems: "center",
-      justifyContent: "center",
-      position: "relative",
+      overflow: "hidden",
     },
-    playIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: "rgba(255,255,255,0.3)",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    highlightTime: {
+    highlightThumbImg: {
       position: "absolute",
-      bottom: 4,
-      right: 4,
-      fontSize: 10,
-      fontWeight: "700",
-      color: "#fff",
+      width: "100%",
+      height: "100%",
+    },
+    highlightOverlay: {
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      flexDirection: "row",
+      alignItems: "center",
       backgroundColor: "rgba(0,0,0,0.7)",
       paddingHorizontal: 4,
       paddingVertical: 2,
-      borderRadius: 4,
+      borderTopLeftRadius: 4,
     },
-    dateBox: {
-      alignItems: "flex-end",
-      gap: 2,
-    },
-    statusText: {
-      fontSize: 12,
+    highlightTime: {
+      fontSize: 10,
       fontWeight: "600",
-      color: Colors.textSecondary,
+      color: "#fff",
+      marginLeft: 2,
     },
-    timeText: {
-      fontSize: 11,
-      color: Colors.textSecondary,
-    },
-    dateSection: {
-      marginTop: 16,
-    },
+    dateSection: { marginTop: 16 },
     dateTitle: {
       fontSize: 16,
       fontWeight: "700",

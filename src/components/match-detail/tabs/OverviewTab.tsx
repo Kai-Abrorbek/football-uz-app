@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Pressable,
   ActivityIndicator,
 } from "react-native";
@@ -19,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { useColors } from "../../../hooks/useColors";
 import FixtureAbsenceSectionMock from "../FixtureAbsenceSectionMock";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SEASON } from "../../../constants/leauges";
+import { STANDING_SEASON } from "../../../constants/leauges";
 import MatchVote from "../MatchVote";
 import VenueWeather from "../VenueWeather";
 import TeamMatchesTab from "../TeamRecords";
@@ -90,7 +89,9 @@ export default function OverviewTab({ match, onTabChange }: Props) {
   const { data: standing } = useQuery({
     queryKey: ["standings", match.league.id],
     queryFn: () =>
-      api.get(ENDPOINTS.leagueStandingsAndSeason(match.league.id, SEASON)),
+      api.get(
+        ENDPOINTS.leagueStandingsAndSeason(match.league.id, STANDING_SEASON),
+      ),
     staleTime: 1000 * 60 * 30,
   });
 

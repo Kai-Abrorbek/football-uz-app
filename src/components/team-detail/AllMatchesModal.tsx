@@ -13,12 +13,14 @@ import {
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors, getColors } from "../../constants/colors";
+import { getColors } from "../../constants/colors";
 import { Match } from "../../types";
 import { useColors } from "../../hooks/useColors";
 import { ENDPOINTS } from "../../constants/api";
 import api from "../../services/api";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { MATCH_SEASON } from "../../constants/leauges";
 
 interface Props {
   visible: boolean;
@@ -31,6 +33,147 @@ interface TeamMatchesResponse {
   nextCursor: string | null;
   prevCursor: string | null;
   hasMore: boolean;
+}
+
+// 카드 컴포넌트 분리
+function MatchCard({ match, onClose, styles, Colors, t, i18n }: any) {
+  const isFinished = match.status.short === "FT";
+  const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
+  const homeGoals = match.goals.home ?? "-";
+  const awayGoals = match.goals.away ?? "-";
+  const homeWon = (match.goals.home ?? 0) > (match.goals.away ?? 0);
+  const awayWon = (match.goals.away ?? 0) > (match.goals.home ?? 0);
+  const sectionTitle = match.league
+    ? `${match.league.name} · ${match.round || ""}`
+    : "";
+
+  const { data: highlight } = useQuery<any>({
+    queryKey: ["highlight", match._id],
+    queryFn: () =>
+      api.get(
+        ENDPOINTS.matchHighlight(
+          match._id,
+          match.homeTeam.name,
+          match.awayTeam.name,
+          match.date,
+        ),
+      ),
+    enabled: isFinished,
+    staleTime: 1000 * 60 * 60 * 24,
+    retry: false,
+  });
+
+  return (
+    <TouchableOpacity
+      key={match._id}
+      style={styles.modalMatchCard}
+      activeOpacity={0.85}
+      onPress={() => {
+        onClose();
+        router.push(`/match/${match._id}`);
+      }}
+    >
+      <Text style={styles.matchLeagueTitle}>{sectionTitle}</Text>
+
+      <View style={styles.modalMatchRow}>
+        {/* 왼쪽: 팀 및 스코어 */}
+        <View style={styles.modalLeft}>
+          <View style={styles.modalTeamRow}>
+            <Image
+              source={{ uri: match.homeTeam.logo }}
+              style={styles.modalLogo}
+            />
+            <Text
+              style={[
+                styles.modalTeamName,
+                (isFinished || isLive) && homeWon && styles.winnerText,
+              ]}
+              numberOfLines={1}
+            >
+              {match.homeTeam.name}
+            </Text>
+            <Text
+              style={[styles.modalSmallScore, homeWon && styles.winnerText]}
+            >
+              {isFinished || isLive ? homeGoals : ""}
+            </Text>
+            <View style={styles.winnerIconContainer}>
+              {homeWon && <Text style={styles.winnerIcon}>◀</Text>}
+            </View>
+          </View>
+
+          <View style={[styles.modalTeamRow, { marginTop: 12 }]}>
+            <Image
+              source={{ uri: match.awayTeam.logo }}
+              style={styles.modalLogo}
+            />
+            <Text
+              style={[
+                styles.modalTeamName,
+                (isFinished || isLive) && awayWon && styles.winnerText,
+              ]}
+              numberOfLines={1}
+            >
+              {match.awayTeam.name}
+            </Text>
+            <Text
+              style={[styles.modalSmallScore, awayWon && styles.winnerText]}
+            >
+              {isFinished || isLive ? awayGoals : ""}
+            </Text>
+            <View style={styles.winnerIconContainer}>
+              {awayWon && <Text style={styles.winnerIcon}>◀</Text>}
+            </View>
+          </View>
+        </View>
+
+        {/* 세로 구분선 */}
+        <View style={styles.modalDivider} />
+
+        {/* 오른쪽: 하이라이트 or 날짜/상태 */}
+        <View style={styles.modalRight}>
+          <Text style={styles.modalRightStatus}>
+            {isFinished
+              ? t("allMatches.fullTime", "풀타임")
+              : isLive
+                ? t("allMatches.live", "라이브")
+                : t("allMatches.scheduled", "예정")}
+          </Text>
+          <Text style={styles.modalRightDate}>
+            {new Date(match.date).getMonth() + 1}.{" "}
+            {new Date(match.date).getDate()}.
+          </Text>
+
+          {highlight?.videoId ? (
+            <TouchableOpacity
+              style={styles.highlightThumb}
+              onPress={(e) => {
+                e.stopPropagation();
+                onClose();
+                router.push({
+                  pathname: `/highlight/${match._id}`,
+                  params: { videoId: highlight.videoId },
+                });
+              }}
+              activeOpacity={0.8}
+            >
+              <Image
+                source={{ uri: highlight.thumbnail }}
+                style={styles.highlightThumbImg}
+                contentFit="cover"
+              />
+              <View style={styles.highlightOverlay}>
+                <Ionicons name="play" size={10} color="#fff" />
+                <Text style={styles.highlightTime}>{highlight.duration}</Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.emptySpace} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
@@ -51,20 +194,6 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
   const Colors = useColors();
   const styles = getStyles(Colors);
 
-  // 언어 설정에 따른 로케일 헬퍼
-  const getLocale = () => {
-    switch (i18n.language) {
-      case "ko":
-        return "ko-KR";
-      case "ru":
-        return "ru-RU";
-      case "uz":
-        return "uz-UZ";
-      default:
-        return "en-US";
-    }
-  };
-
   const fetchMatches = useCallback(
     async (
       cursor?: string,
@@ -74,6 +203,7 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
         const params = new URLSearchParams();
         params.append("teamId", String(teamId));
         params.append("limit", "15");
+        params.append("season", MATCH_SEASON.toString());
         if (cursor) params.append("cursor", cursor);
         if (direction) params.append("direction", direction);
         const url = `${ENDPOINTS.teamMatchDetail(teamId)}?${params.toString()}`;
@@ -168,13 +298,11 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
       const offsetY = event.nativeEvent.contentOffset.y;
       const contentHeight = event.nativeEvent.contentSize.height;
       const layoutHeight = event.nativeEvent.layoutMeasurement.height;
-
       if (
         contentHeight - offsetY - layoutHeight < 100 &&
         !isFetchingRef.current
-      ) {
+      )
         loadNext();
-      }
       if (offsetY > 80) hasFetchedTopRef.current = false;
       if (offsetY < 10 && !isFetchingRef.current && !hasFetchedTopRef.current) {
         hasFetchedTopRef.current = true;
@@ -183,121 +311,6 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
     },
     [loadNext, loadPrev],
   );
-
-  const renderMatchCard = (match: any) => {
-    const isFinished = match.status.short === "FT";
-    const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
-    const homeGoals = match.goals.home ?? "-";
-    const awayGoals = match.goals.away ?? "-";
-    const homeWon = (match.goals.home ?? 0) > (match.goals.away ?? 0);
-    const awayWon = (match.goals.away ?? 0) > (match.goals.home ?? 0);
-
-    // 섹션 타이틀 (리그 정보)은 데이터가 서버에서 오는 것이므로 그대로 유지
-    const sectionTitle = match.league
-      ? `${match.league.name} · ${match.round || ""}`
-      : "";
-
-    return (
-      <TouchableOpacity
-        key={match._id}
-        style={styles.modalMatchCard}
-        activeOpacity={0.85}
-        onPress={() => {
-          onClose();
-          router.push(`/match/${match._id}`);
-        }}
-      >
-        <Text style={styles.matchLeagueTitle}>{sectionTitle}</Text>
-
-        <View style={styles.modalMatchRow}>
-          <View style={styles.modalLeft}>
-            <View style={styles.modalTeamRow}>
-              <Image
-                source={{ uri: match.homeTeam.logo }}
-                style={styles.modalLogo}
-              />
-              <Text
-                style={[
-                  styles.modalTeamName,
-                  (isFinished || isLive) && homeWon && styles.winnerText,
-                ]}
-                numberOfLines={1}
-              >
-                {match.homeTeam.name}
-              </Text>
-              {(isFinished || isLive) && (
-                <Text
-                  style={[styles.modalSmallScore, homeWon && styles.winnerText]}
-                >
-                  {homeGoals}
-                </Text>
-              )}
-            </View>
-
-            <View style={styles.modalTeamRow}>
-              <Image
-                source={{ uri: match.awayTeam.logo }}
-                style={styles.modalLogo}
-              />
-              <Text
-                style={[
-                  styles.modalTeamName,
-                  (isFinished || isLive) && awayWon && styles.winnerText,
-                ]}
-                numberOfLines={1}
-              >
-                {match.awayTeam.name}
-              </Text>
-              {(isFinished || isLive) && (
-                <Text
-                  style={[styles.modalSmallScore, awayWon && styles.winnerText]}
-                >
-                  {awayGoals}
-                </Text>
-              )}
-            </View>
-          </View>
-
-          <View style={styles.modalDivider} />
-
-          <View style={styles.modalRight}>
-            {isLive ? (
-              <Text style={styles.liveText}>{t("allMatches.live")}</Text>
-            ) : isFinished ? (
-              <>
-                <Text style={styles.modalRightStatus}>
-                  {t("allMatches.fullTime")}
-                </Text>
-                <Text style={styles.modalRightDate}>
-                  {new Date(match.date).toLocaleDateString(getLocale(), {
-                    month: "numeric",
-                    day: "numeric",
-                    weekday: "short",
-                  })}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.modalRightDate}>
-                  {new Date(match.date).toLocaleDateString(getLocale(), {
-                    month: "numeric",
-                    day: "numeric",
-                    weekday: "short",
-                  })}
-                </Text>
-                <Text style={styles.modalRightTime}>
-                  {new Date(match.date).toLocaleTimeString(getLocale(), {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Text>
-              </>
-            )}
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
 
   return (
     <Modal
@@ -348,7 +361,17 @@ export default function AllMatchesModal({ visible, teamId, onClose }: Props) {
               onScroll={handleScroll}
               scrollEventThrottle={100}
             >
-              {matches.map((match) => renderMatchCard(match))}
+              {matches.map((match) => (
+                <MatchCard
+                  key={match._id}
+                  match={match}
+                  onClose={onClose}
+                  styles={styles}
+                  Colors={Colors}
+                  t={t}
+                  i18n={i18n}
+                />
+              ))}
               {loadingDirection === "down" && (
                 <ActivityIndicator
                   size="small"
@@ -370,18 +393,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     matchLeagueTitle: {
       fontSize: 12,
       color: Colors.textSecondary,
-      marginBottom: 8,
+      marginBottom: 12,
       fontWeight: "500",
     },
-    winnerText: {
-      fontWeight: "700",
-      color: Colors.text,
-    },
-    liveText: {
-      fontSize: 12,
-      color: "red",
-      fontWeight: "700",
-    },
+    winnerText: { fontWeight: "700", color: Colors.text },
+    liveText: { fontSize: 12, color: "red", fontWeight: "700" },
     modalOverlay: {
       flex: 1,
       backgroundColor: "rgba(0,0,0,0.3)",
@@ -406,85 +422,117 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
-    modalTitle: {
-      fontSize: 18,
-      fontWeight: "700",
-      color: Colors.text,
-    },
+    modalTitle: { fontSize: 18, fontWeight: "700", color: Colors.text },
     modalClose: {
       width: 40,
       height: 40,
       alignItems: "center",
       justifyContent: "center",
     },
-    modalSectionTitle: {
-      fontSize: 16,
-      fontWeight: "700",
-      color: Colors.text,
-      paddingHorizontal: 16,
-      paddingTop: 16,
-      paddingBottom: 12,
-    },
     modalMatchCard: {
       backgroundColor: Colors.surface,
       marginHorizontal: 16,
-      marginBottom: 12,
+      marginTop: 12,
       borderRadius: 12,
-      padding: 16,
+      paddingVertical: 16,
+      paddingHorizontal: 16,
+      borderWidth: 1,
+      borderColor: Colors.border,
     },
     modalMatchRow: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 12,
     },
     modalLeft: {
       flex: 1,
-      gap: 10,
     },
     modalTeamRow: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 8,
     },
     modalLogo: {
       width: 24,
       height: 24,
+      marginRight: 10,
     },
     modalTeamName: {
       flex: 1,
-      fontSize: 14,
+      fontSize: 15,
       fontWeight: "500",
       color: Colors.text,
     },
     modalSmallScore: {
       fontSize: 16,
-      fontWeight: "700",
-      color: Colors.text,
-      minWidth: 20,
+      fontWeight: "400",
+      color: Colors.textSecondary,
       textAlign: "right",
+    },
+    winnerIconContainer: {
+      width: 16,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    winnerIcon: {
+      fontSize: 10,
+      color: Colors.text,
+      marginLeft: 4,
     },
     modalDivider: {
       width: 1,
-      height: 50,
+      height: "100%",
       backgroundColor: Colors.border,
+      marginHorizontal: 16,
     },
     modalRight: {
-      alignItems: "flex-end",
-      gap: 4,
-      minWidth: 70,
+      width: 80,
+      alignItems: "center",
+      justifyContent: "center",
     },
     modalRightStatus: {
-      fontSize: 13,
-      fontWeight: "600",
-      color: Colors.textSecondary,
+      fontSize: 14,
+      fontWeight: "500",
+      color: Colors.text,
+      marginBottom: 2,
     },
     modalRightDate: {
-      fontSize: 12,
+      fontSize: 14,
       color: Colors.textSecondary,
+      marginBottom: 8,
     },
-    modalRightTime: {
-      fontSize: 12,
+    modalRightTime: { fontSize: 12, fontWeight: "600", color: Colors.text },
+    emptySpace: {
+      width: 80,
+      height: 45,
+    },
+
+    // 하이라이트
+    highlightThumb: {
+      width: 80,
+      height: 45,
+      borderRadius: 6,
+      backgroundColor: "#1a1a1a",
+      overflow: "hidden",
+    },
+    highlightThumbImg: {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+    },
+    highlightOverlay: {
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "rgba(0,0,0,0.7)",
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+      borderTopLeftRadius: 4,
+    },
+    highlightTime: {
+      fontSize: 10,
       fontWeight: "600",
-      color: Colors.text,
+      color: "#fff",
+      marginLeft: 2,
     },
   });

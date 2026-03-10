@@ -19,7 +19,7 @@ import { ENDPOINTS } from "../../../constants/api";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 import { useError } from "../../../contexts/ErrorContext";
-import { SEASON } from "../../../constants/leauges";
+import { STANDING_SEASON } from "../../../constants/leauges";
 import { useLiveMatches } from "../../../hooks/useMatches";
 
 interface Props {
@@ -71,7 +71,9 @@ export default function StandingsTab({ match }: Props) {
   const { data: standing, isError } = useQuery<any>({
     queryKey: ["standings", match.league.id],
     queryFn: () =>
-      api.get(ENDPOINTS.leagueStandingsAndSeason(match.league.id, SEASON)),
+      api.get(
+        ENDPOINTS.leagueStandingsAndSeason(match.league.id, STANDING_SEASON),
+      ),
     staleTime: 1000 * 60 * 30,
     retry: false,
   });

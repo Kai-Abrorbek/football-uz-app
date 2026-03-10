@@ -86,3 +86,5 @@ export const CONTINENTS = [
 ];
 
 export const SEASON = 2024;
+export const MATCH_SEASON = 2025;
+export const STANDING_SEASON = 2024;

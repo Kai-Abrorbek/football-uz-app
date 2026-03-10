@@ -1,5 +1,5 @@
-// export const API_URL = "http://localhost:4000/api/v1";
-export const API_URL = "https://03b2-95-214-211-23.ngrok-free.app/api/v1";
+export const API_URL = "http://localhost:4000/api/v1";
+// export const API_URL = "https://03b2-95-214-211-23.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.111.148.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
@@ -93,4 +93,13 @@ export const ENDPOINTS = {
   // matchVote
   matchVote: (id: string) => `/matches/${id}/vote`,
   matchVoteSubmit: (id: string) => `/matches/${id}/vote`,
+
+  // YOUTUBE
+  matchHighlight: (
+    matchId: string,
+    homeTeam: string,
+    awayTeam: string,
+    date: string,
+  ) =>
+    `/highlights/${matchId}?homeTeam=${encodeURIComponent(homeTeam)}&awayTeam=${encodeURIComponent(awayTeam)}&date=${date}`,
 };
