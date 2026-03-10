@@ -1,25 +1,42 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import { WebView } from "react-native-webview";
+import YoutubeIframe from "react-native-youtube-iframe";
 import { Ionicons } from "@expo/vector-icons";
 import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
+import { Dimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
 
 export default function HighlightScreen() {
   const { videoId } = useLocalSearchParams<{ videoId: string }>();
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000" }}>
-      <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={[styles.backBtn, { top: insets.top + 8 }]}
+        onPress={() => router.back()}
+      >
         <Ionicons name="close" size={28} color="#fff" />
       </TouchableOpacity>
-      <WebView
-        style={{ flex: 1 }}
-        source={{ uri: `https://www.youtube.com/embed/${videoId}?autoplay=1` }}
-        allowsFullscreenVideo
-        mediaPlaybackRequiresUserAction={false}
+
+      <YoutubeIframe
+        height={SCREEN_W * (9 / 16)}
+        width={SCREEN_W}
+        videoId={videoId}
+        play={true}
+        webViewProps={{
+          androidLayerType: "hardware",
+          mediaPlaybackRequiresUserAction: false,
+        }}
+        initialPlayerParams={{
+          autoplay: 1,
+          controls: 1,
+        }}
       />
     </View>
   );
@@ -27,9 +44,13 @@ export default function HighlightScreen() {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: "#000",
+      justifyContent: "center",
+    },
     backBtn: {
       position: "absolute",
-      top: 50,
       left: 16,
       zIndex: 10,
       backgroundColor: "rgba(0,0,0,0.5)",

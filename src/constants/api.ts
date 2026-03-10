@@ -1,5 +1,7 @@
-export const API_URL = "http://localhost:4000/api/v1";
-// export const API_URL = "https://03b2-95-214-211-23.ngrok-free.app/api/v1";
+import { MATCH_SEASON } from "./leauges";
+
+// export const API_URL = "http://localhost:4000/api/v1";
+export const API_URL = "https://c3ac-213-230-80-151.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.111.148.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
@@ -12,7 +14,8 @@ export const ENDPOINTS = {
   leagueMatches: "/matches/league-matches",
   matchDetail: (id: string) => `/matches/${id}`,
   teamMatchDetail: (id: number) => `/matches/team-allmatches/${id}`,
-  getTeamDetail: (id: number) => `/matches/team/${id}?limit=999`,
+  getTeamDetail: (id: number) =>
+    `/matches/team/${id}?limit=999&season=${MATCH_SEASON}`,
   teamMatchRecent: (id: number) => `/matches/team-recent/${id}`,
   teamsRecentMatches: (id1: number, id2: number) =>
     `/matches/recent-matches/${id1}/${id2}?limit=5`,
@@ -102,4 +105,7 @@ export const ENDPOINTS = {
     date: string,
   ) =>
     `/highlights/${matchId}?homeTeam=${encodeURIComponent(homeTeam)}&awayTeam=${encodeURIComponent(awayTeam)}&date=${date}`,
+
+  highlights: (page: number, limit: number) =>
+    `/highlights?page=${page}&limit=${limit}`,
 };

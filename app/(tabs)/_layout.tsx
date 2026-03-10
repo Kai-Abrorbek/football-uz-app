@@ -59,6 +59,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="feed"
+        options={{
+          title: t("tabs.feed"),
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="play-circle-outline" size={size} color={color} />
+          ),
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
         name="chat"
         options={{
           title: t("tabs.chat"),
