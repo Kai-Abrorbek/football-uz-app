@@ -570,6 +570,12 @@
       "passAccuracy": "Точность передач",
       "goalsPrevented": "Предотвращённые голы"
     }
+  },
+  "chat": {
+    "liveChat": "Живой чат",
+    "messages": " сообщений",
+    "placeholder": "Введите сообщение...",
+    "loginRequired": "Войдите для участия",
+    "firstMessage": "💬 Будьте первым!"
   }
-  
 }

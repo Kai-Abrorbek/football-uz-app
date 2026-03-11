@@ -577,5 +577,12 @@
       "passAccuracy": "Pas aniqligi",
       "goalsPrevented": "Oldini olingan gol"
     }
+  },
+  "chat": {
+    "liveChat": "Jonli chat",
+    "messages": " ta xabar",
+    "placeholder": "Xabar yozing...",
+    "loginRequired": "Chat uchun tizimga kiring",
+    "firstMessage": "💬 Birinchi xabar yuboring!"
   }
 }

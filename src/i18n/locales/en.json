@@ -583,5 +583,12 @@
       "passAccuracy": "Pass Accuracy",
       "goalsPrevented": "Goals Prevented"
     }
+  },
+  "chat": {
+    "liveChat": "Live Chat",
+    "messages": " messages",
+    "placeholder": "Type a message...",
+    "loginRequired": "Login to chat",
+    "firstMessage": "💬 Be the first to send a message!"
   }
 }

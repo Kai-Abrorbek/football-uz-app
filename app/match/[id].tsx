@@ -20,7 +20,7 @@ import StatsTab from "../../src/components/match-detail/tabs/StatsTab";
 import H2HTab from "../../src/components/match-detail/tabs/H2HTab";
 import LiveTab from "../../src/components/match-detail/tabs/HighlightsTab";
 import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
-import StreamTab from "../../src/components/match-detail/tabs/StreamTab.web";
+import StreamTab from "../../src/components/match-detail/tabs/StreamTab.native";
 
 const COMPACT_HEADER_HEIGHT = 80;
 const TAB_HEIGHT = 50;
@@ -104,7 +104,7 @@ export default function MatchDetailScreen() {
       <Animated.View
         style={[
           styles.headerContainer,
-          { transform: [{ translateY: headerTranslateY }] },
+          activeTab === "stream" && { display: "none" }, // ← stream일 때 숨김
         ]}
       >
         <MatchHeader
@@ -121,21 +121,25 @@ export default function MatchDetailScreen() {
         />
       </Animated.View>
 
-      {/* 2. ScrollView: 헤더 아래부터 시작 */}
-      <Animated.ScrollView
-        style={[styles.scrollView, { marginTop: -totalHeaderHeight }]}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
-        )}
-        contentContainerStyle={{
-          paddingTop: totalHeaderHeight,
-        }}
-      >
-        <View style={styles.content}>{renderTab()}</View>
-      </Animated.ScrollView>
+      {/* 2. ScrollView 대신 stream 탭은 남은 공간 꽉 채우기 */}
+      {activeTab === "stream" ? (
+        <View style={{ flex: 1 }}>{renderTab()}</View>
+      ) : (
+        <Animated.ScrollView
+          style={[styles.scrollView, { marginTop: -totalHeaderHeight }]}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true },
+          )}
+          contentContainerStyle={{
+            paddingTop: totalHeaderHeight,
+          }}
+        >
+          <View style={styles.content}>{renderTab()}</View>
+        </Animated.ScrollView>
+      )}
     </SafeAreaView>
   );
 }
