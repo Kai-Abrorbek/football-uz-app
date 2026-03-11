@@ -40,7 +40,8 @@
           "icon": "./assets/notification-icon.png"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "react-native-video"
     ],
     "extra": {
       "router": {},

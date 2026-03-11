@@ -1,7 +1,7 @@
 import { MATCH_SEASON } from "./leauges";
 
-// export const API_URL = "http://localhost:4000/api/v1";
-export const API_URL = "https://c3ac-213-230-80-151.ngrok-free.app/api/v1";
+export const API_URL = "http://localhost:4000/api/v1";
+// export const API_URL = "https://c3ac-213-230-80-151.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.111.148.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
@@ -108,4 +108,8 @@ export const ENDPOINTS = {
 
   highlights: (page: number, limit: number) =>
     `/highlights?page=${page}&limit=${limit}`,
+
+  // Streaming
+  streamingLive: "/matches/streaming/live",
+  setStreaming: (id: string) => `/matches/${id}/streaming`,
 };

@@ -52,6 +52,9 @@ export interface Match {
   statistics: MatchStatistic[];
   isWorldCup2026: boolean;
   statisticsRaw: any;
+  isStreaming?: boolean;
+  streamUrl?: string;
+  streamKey?: string;
 }
 
 export interface MatchEvent {

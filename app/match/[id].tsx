@@ -20,6 +20,7 @@ import StatsTab from "../../src/components/match-detail/tabs/StatsTab";
 import H2HTab from "../../src/components/match-detail/tabs/H2HTab";
 import LiveTab from "../../src/components/match-detail/tabs/HighlightsTab";
 import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
+import StreamTab from "../../src/components/match-detail/tabs/StreamTab.web";
 
 const COMPACT_HEADER_HEIGHT = 80;
 const TAB_HEIGHT = 50;
@@ -50,9 +51,15 @@ export default function MatchDetailScreen() {
   const isFinished = match.status.short === "FT";
 
   const getTabs = () => {
-    if (isLive) return LIVE_TABS;
-    if (isFinished) return FINISHED_TABS;
-    return UPCOMING_TABS;
+    const baseTabs = isLive
+      ? LIVE_TABS
+      : isFinished
+        ? FINISHED_TABS
+        : UPCOMING_TABS;
+    if (match.isStreaming) {
+      return [{ key: "stream" }, ...baseTabs];
+    }
+    return baseTabs;
   };
 
   const getDefaultTab = () => (isLive ? "live" : "overview");
@@ -71,6 +78,8 @@ export default function MatchDetailScreen() {
         return <H2HTab match={match} />;
       case "highlights":
         return <LiveTab match={match} />;
+      case "stream":
+        return <StreamTab match={match} />;
       default:
         return <OverviewTab match={match} onTabChange={setActiveTab} />;
     }

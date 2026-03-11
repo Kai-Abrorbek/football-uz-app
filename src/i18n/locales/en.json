@@ -274,7 +274,8 @@
     "stats": "Stats",
     "standings": "Standings",
     "h2h": "More matches",
-    "highlights": "Highlights"
+    "highlights": "Highlights",
+    "stream": "Live"
   },
   "h2h": {
     "empty": "No head-to-head matches",
