@@ -379,7 +379,7 @@ function PlayerCircle({
   const events = eventsMap[playerId] ?? null;
   const playerInfo = playerMap[playerId] ?? null;
   const flagUrl = nationalityToFlagUrl(playerInfo?.nationality ?? "");
-
+  const statistics = playerInfo?.statistics?.[0]?.goals;
   const ratingColor = rating
     ? rating >= 8.0
       ? "#10B981"
@@ -391,12 +391,44 @@ function PlayerCircle({
     : "rgba(0,0,0,0.6)";
 
   const renderTabBadge = () => {
-    if (activeTab === "stats" && rating) {
+    if (activeTab === "stats") {
       return (
-        <View style={[styles.ratingBadge, { backgroundColor: ratingColor }]}>
-          <Text style={styles.ratingBadgeText}>
-            {Number(rating).toFixed(1)}
-          </Text>
+        <View style={styles.statsBadgeArea}>
+          {rating && (
+            <View
+              style={[styles.ratingBadge, { backgroundColor: ratingColor }]}
+            >
+              <Text style={styles.ratingBadgeText}>
+                {Number(rating).toFixed(1)}
+              </Text>
+            </View>
+          )}
+          {statistics && (statistics.total > 0 || statistics.assists > 0) && (
+            <View style={styles.eventGoalArea}>
+              <View style={{ flexDirection: "row", gap: 2 }}>
+                {statistics.total > 0 && (
+                  <View style={styles.eventIconRow}>
+                    <Ionicons name="football" size={11} color="#fff" />
+                    {statistics.total > 1 && (
+                      <Text style={styles.eventCountText}>
+                        {statistics.total}
+                      </Text>
+                    )}
+                  </View>
+                )}
+                {statistics.assists > 0 && (
+                  <View style={styles.eventIconRow}>
+                    <Ionicons name="footsteps" size={11} color="#fff" />
+                    {statistics.assists > 1 && (
+                      <Text style={styles.eventCountText}>
+                        {statistics.assists}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
         </View>
       );
     }
@@ -1101,4 +1133,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     subEventTime: { fontSize: 10, color: "#fff", fontWeight: "700" },
     subCard: { width: 8, height: 12, borderRadius: 2 },
+    statsBadgeArea: {
+      position: "absolute",
+      bottom: 2,
+      right: 40,
+      alignItems: "center",
+      gap: 2,
+    },
   });

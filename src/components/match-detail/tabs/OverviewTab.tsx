@@ -377,7 +377,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
               })()}
 
               {/* 경기 목록 */}
-              {h2hMatches.slice(0, 5).map((m) => {
+              {h2hMatches.map((m) => {
                 const homeGoals = m.goals.home ?? 0;
                 const awayGoals = m.goals.away ?? 0;
                 const homeWon = homeGoals > awayGoals;

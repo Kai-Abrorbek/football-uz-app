@@ -88,3 +88,25 @@ export const CONTINENTS = [
 export const SEASON = 2024;
 export const MATCH_SEASON = 2025;
 export const STANDING_SEASON = 2024;
+
+export const FEATURED_LEAGUES = [
+  { id: 39, name: "Premier League", totalRounds: 38, color: "#3D195B" },
+  { id: 140, name: "La Liga", totalRounds: 38, color: "#FF4B44" },
+  { id: 61, name: "Ligue 1", totalRounds: 34, color: "#1B3D6E" },
+  { id: 78, name: "Bundesliga", totalRounds: 34, color: "#D3010C" },
+  { id: 135, name: "Serie A", totalRounds: 38, color: "#1A56A6" },
+  {
+    id: 369,
+    name: "Uzbekistan Super League",
+    totalRounds: 26,
+    color: "#1E8449",
+  },
+  { id: 802, name: "Uzbekistan Cup", totalRounds: null, color: "#1E8449" },
+  { id: 2, name: "UEFA Champions League", totalRounds: 8, color: "#1B3A6B" },
+  { id: 3, name: "UEFA Europa League", totalRounds: 8, color: "#F47A30" },
+  { id: 203, name: "Süper Lig", totalRounds: 38, color: "#E30A17" },
+  { id: 1, name: "World Cup", totalRounds: null, color: "#8B0000" },
+  { id: 4, name: "Euro Championship", totalRounds: null, color: "#003399" },
+  { id: 9, name: "Copa America", totalRounds: null, color: "#0A3161" },
+  { id: 31, name: "AFC Asian Cup", totalRounds: null, color: "#C8102E" },
+];

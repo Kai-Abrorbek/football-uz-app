@@ -80,6 +80,7 @@ function FeedItem({
           webViewProps={{
             androidLayerType: "hardware",
             mediaPlaybackRequiresUserAction: false,
+            scrollEnabled: false,
           }}
           initialPlayerParams={{
             autoplay: 1,
@@ -125,19 +126,16 @@ export default function FeedScreen() {
 
   const items = data?.pages.flatMap((p: any) => p.items) ?? [];
 
-  const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: any) => {
-      if (viewableItems.length > 0) {
-        const idx = viewableItems[0].index ?? 0;
-        setCurrentIndex(idx);
-        // 마지막 3개 남으면 다음 페이지 로드
-        if (idx >= items.length - 3 && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 });
+  const onViewableItemsChangedRef = useRef(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      const idx = viewableItems[0].index ?? 0;
+      setCurrentIndex(idx);
+      if (idx >= items.length - 3 && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
       }
-    },
-    [items.length, hasNextPage, isFetchingNextPage, fetchNextPage],
-  );
+    }
+  });
 
   const renderItem = ({ item, index }: { item: any; index: number }) => (
     <FeedItem item={item} isActive={index === currentIndex} insets={insets} />
@@ -164,8 +162,8 @@ export default function FeedScreen() {
         snapToInterval={SCREEN_H}
         snapToAlignment="start"
         decelerationRate="fast"
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
+        onViewableItemsChanged={onViewableItemsChangedRef.current}
+        viewabilityConfig={viewabilityConfig.current}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator
@@ -209,6 +207,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     videoWrapper: {
       width: SCREEN_W,
       height: SCREEN_W * (9 / 16),
+      overflow: "hidden",
     },
     infoBox: {
       padding: 16,

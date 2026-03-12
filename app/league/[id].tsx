@@ -16,7 +16,7 @@ import LeagueMatchesTab from "../../src/components/league-detail/tabs/LeagueMatc
 import LeagueStandingsTab from "../../src/components/league-detail/tabs/LeagueStandingsTab";
 import { useColors } from "../../src/hooks/useColors";
 import { useTranslation } from "react-i18next";
-import { SEASON } from "../../src/constants/leauges";
+import { SEASON, FEATURED_LEAGUES } from "../../src/constants/leauges";
 
 const TABS = [
   { key: "overview" },
@@ -35,14 +35,15 @@ export default function LeagueDetailScreen() {
   const styles = getStyles(Colors);
   const { t } = useTranslation();
 
-  // matchData가 string이면 파싱
   const match = matchData ? JSON.parse(matchData) : null;
-  // 리그 정보 조회
+
+  const leagueColor =
+    FEATURED_LEAGUES.find((l) => l.id === Number(id))?.color ?? "#1B3A6B";
+
   const {
     data: league,
     isLoading,
     isError,
-    error,
   } = useQuery<any>({
     queryKey: ["league", id],
     queryFn: async () => {
@@ -60,20 +61,23 @@ export default function LeagueDetailScreen() {
         <Text style={{ color: "red", fontSize: 16, fontWeight: "600" }}>
           {t("leagueDetail.error404")}
         </Text>
-
         <TouchableOpacity
           style={styles.homeButton}
           onPress={() => router.replace("/")}
           activeOpacity={0.7}
         >
-          <Text style={styles.homeButtonText}> {t("leagueDetail.goHome")}</Text>
+          <Text style={styles.homeButtonText}>{t("leagueDetail.goHome")}</Text>
         </TouchableOpacity>
       </View>
     );
   }
+
   if (isLoading || !league) {
     return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: leagueColor }]}
+        edges={["top"]}
+      >
         <View style={styles.loadingContainer} />
       </SafeAreaView>
     );
@@ -97,62 +101,73 @@ export default function LeagueDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: leagueColor }]}
+      edges={["top"]}
+    >
       {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            if (router.canGoBack()) router.back();
-            else router.replace("/");
-          }}
-        ></TouchableOpacity>
+      <View style={[styles.header, { backgroundColor: leagueColor }]}>
+        {/* 상단 네비게이션 */}
+        <View style={styles.headerNav}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace("/");
+            }}
+          ></TouchableOpacity>
 
-        <View style={styles.headerCenter}>
-          <Image
-            source={league.logo}
-            style={styles.leagueLogo}
-            contentFit="contain"
-          />
-          <Text style={styles.leagueName} numberOfLines={1}>
-            {league.name}
-          </Text>
+          <View style={styles.headerNavRight}>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Ionicons name="notifications-outline" size={22} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.followButton,
+                isFollowing && styles.followButtonActive,
+              ]}
+              onPress={() => setIsFollowing(!isFollowing)}
+            >
+              <Text style={styles.followButtonText}>
+                {isFollowing
+                  ? t("leagueDetail.following")
+                  : t("leagueDetail.follow")}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.moreButton}>
-            <Ionicons name="ellipsis-vertical" size={20} color={Colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.followButton,
-              isFollowing && styles.followButtonActive,
-            ]}
-            onPress={() => setIsFollowing(!isFollowing)}
-          >
-            <Text
-              style={[
-                styles.followButtonText,
-                isFollowing && styles.followButtonTextActive,
-              ]}
-            >
-              {isFollowing
-                ? t("leagueDetail.following")
-                : t("leagueDetail.follow")}
+        {/* 리그 정보 */}
+        <View style={styles.leagueInfo}>
+          <View style={styles.logoWrapper}>
+            <Image
+              source={league.logo}
+              style={styles.leagueLogo}
+              contentFit="contain"
+            />
+          </View>
+          <View style={styles.leagueTexts}>
+            <Text style={styles.leagueName} numberOfLines={1}>
+              {league.name}
             </Text>
-          </TouchableOpacity>
+            <Text style={styles.leagueCountry}>{league.country}</Text>
+          </View>
         </View>
       </View>
 
       {/* 탭 */}
-      <LeagueTabs
-        tabs={TABS}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+      <View style={styles.tabsWrapper}>
+        <LeagueTabs
+          tabs={TABS}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      </View>
 
       {/* 탭 컨텐츠 */}
-      <View style={styles.content}>{renderTab()}</View>
+      <View style={[styles.content, { backgroundColor: Colors.background }]}>
+        {renderTab()}
+      </View>
     </SafeAreaView>
   );
 }
@@ -172,28 +187,26 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 24,
       borderRadius: 8,
     },
-
     homeButtonText: {
       color: "#fff",
       fontWeight: "700",
       fontSize: 14,
     },
-
     container: {
       flex: 1,
-      backgroundColor: Colors.background,
     },
     loadingContainer: {
       flex: 1,
     },
     header: {
+      paddingHorizontal: 16,
+      paddingBottom: 20,
+    },
+    headerNav: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      backgroundColor: Colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      justifyContent: "space-between",
+      paddingVertical: 8,
     },
     backButton: {
       width: 40,
@@ -201,33 +214,19 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       justifyContent: "center",
     },
-    headerCenter: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-      paddingHorizontal: 8,
+    seasonText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: "#fff",
     },
-    leagueLogo: {
-      width: 30,
-      height: 30,
-      backgroundColor: Colors.background2,
-      borderRadius: 50,
-    },
-    leagueName: {
-      fontSize: 18,
-      fontWeight: "700",
-      color: Colors.text,
-      flex: 1,
-    },
-    headerRight: {
+    headerNavRight: {
       flexDirection: "row",
       alignItems: "center",
       gap: 8,
     },
-    moreButton: {
-      width: 36,
-      height: 36,
+    iconBtn: {
+      width: 40,
+      height: 40,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -235,20 +234,55 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 20,
+      backgroundColor: "rgba(255,255,255,0.2)",
       borderWidth: 1,
-      borderColor: Colors.primary,
-      backgroundColor: Colors.surface,
+      borderColor: "#fff",
     },
     followButtonActive: {
-      backgroundColor: Colors.primary,
+      backgroundColor: "#10eb5d",
     },
     followButtonText: {
       fontSize: 13,
       fontWeight: "600",
-      color: Colors.primary,
+      color: Colors.text,
     },
     followButtonTextActive: {
-      color: "#ffffff",
+      color: "#000",
+    },
+    leagueInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+      paddingTop: 16,
+    },
+    logoWrapper: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      backgroundColor: "rgba(255,255,255,1)",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 8,
+    },
+    leagueLogo: {
+      width: 56,
+      height: 56,
+    },
+    leagueTexts: {
+      flex: 1,
+      gap: 4,
+    },
+    leagueName: {
+      fontSize: 24,
+      fontWeight: "800",
+      color: "#fff",
+    },
+    leagueCountry: {
+      fontSize: 14,
+      color: "rgba(255,255,255,0.8)",
+    },
+    tabsWrapper: {
+      backgroundColor: Colors.background,
     },
     content: {
       flex: 1,

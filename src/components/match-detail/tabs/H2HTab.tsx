@@ -36,6 +36,16 @@ export default function H2HTab({ match }: Props) {
     );
   }
 
+  const getContrastColor = (hexColor: string): string => {
+    const hex = hexColor.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    // 밝기 계산
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? "#000000" : "#ffffff";
+  };
+
   // 통계 계산
   const homeWins = h2hMatches.filter((m) =>
     m.homeTeam.id === match.homeTeam.id ? m.homeTeam.winner : m.awayTeam.winner,
@@ -317,7 +327,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     statBubbleText: {
       fontSize: 24,
       fontWeight: "800",
-      color: Colors.text,
+      color: "white",
+      textShadowColor: "rgba(0,0,0,0.8)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 1,
     },
     statLabel: {
       fontSize: 13,

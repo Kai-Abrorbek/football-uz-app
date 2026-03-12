@@ -104,7 +104,7 @@ export default function MatchDetailScreen() {
       <Animated.View
         style={[
           styles.headerContainer,
-          activeTab === "stream" && { display: "none" }, // ← stream일 때 숨김
+          { transform: [{ translateY: headerTranslateY }] },
         ]}
       >
         <MatchHeader
@@ -121,9 +121,16 @@ export default function MatchDetailScreen() {
         />
       </Animated.View>
 
-      {/* 2. ScrollView 대신 stream 탭은 남은 공간 꽉 채우기 */}
+      {/* 2. ScrollView: stream 탭일 때는 에러 방지를 위해 View로 렌더링 */}
       {activeTab === "stream" ? (
-        <View style={{ flex: 1 }}>{renderTab()}</View>
+        <View
+          style={[
+            styles.scrollView,
+            { marginTop: -totalHeaderHeight, paddingTop: totalHeaderHeight },
+          ]}
+        >
+          <View style={styles.content}>{renderTab()}</View>
+        </View>
       ) : (
         <Animated.ScrollView
           style={[styles.scrollView, { marginTop: -totalHeaderHeight }]}
