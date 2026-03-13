@@ -214,7 +214,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     card: {
       padding: 16,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderRadius: 16,
       marginHorizontal: 16,
       marginVertical: 8,
@@ -240,7 +240,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       backgroundColor: Colors.background2,
     },
     teamLogo: { width: 32, height: 32 },
-    voteDrawText: { fontSize: 15, fontWeight: "600", color: Colors.text2 },
+    voteDrawText: { fontSize: 15, fontWeight: "600", color: Colors.text },
 
     resultRow: {
       flexDirection: "row",

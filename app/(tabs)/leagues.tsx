@@ -153,7 +153,11 @@ export default function LeaguesScreen() {
 
         {/* 월드컵 배너 */}
         {!searchQuery && activeContinent === "all" && (
-          <TouchableOpacity style={styles.worldCupBanner} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={styles.worldCupBanner}
+            activeOpacity={0.8}
+            onPress={() => router.push("/worldcup")}
+          >
             <View style={styles.worldCupContent}>
               <Text style={styles.worldCupYear}>2026</Text>
               <Text style={styles.worldCupTitle}>
@@ -258,7 +262,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface2,
     },
     backButton: {
       width: 40,
@@ -271,9 +275,9 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       gap: 60,
       paddingHorizontal: 16,
       paddingVertical: 16,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
     },
     headerTitle: {
       fontSize: 24,
@@ -329,7 +333,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     featuredCard: {
       width: 140,
-      backgroundColor: Colors.background2,
+      backgroundColor: Colors.text,
       borderRadius: 16,
       padding: 16,
       alignItems: "center",
@@ -394,18 +398,18 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 20,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderWidth: 1,
-      borderColor: Colors.border,
+      borderColor: Colors.border2,
     },
     continentTabActive: {
-      backgroundColor: Colors.background2,
+      backgroundColor: Colors.primary,
       borderColor: Colors.text,
     },
     continentTabText: {
       fontSize: 14,
       fontWeight: "500",
-      color: Colors.textSecondary,
+      color: Colors.text,
     },
     continentTabTextActive: {
       color: Colors.text2,
@@ -422,7 +426,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     leagueCard: {
       flex: 1,
       aspectRatio: 0.85,
-      backgroundColor: Colors.background2,
+      backgroundColor: Colors.text,
       borderRadius: 12,
       padding: 12,
       alignItems: "center",

@@ -152,12 +152,12 @@ export default function MatchDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background, marginBottom: 40 },
-  loadingContainer: { flex: 1, backgroundColor: Colors.background },
+  container: { flex: 1, backgroundColor: Colors.surface2, marginBottom: 40 },
+  loadingContainer: { flex: 1, backgroundColor: Colors.surface2 },
   scrollView: { flex: 1 },
   content: { flex: 1 },
   headerContainer: {
     zIndex: 10,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface2,
   },
 });

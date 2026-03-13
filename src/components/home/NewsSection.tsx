@@ -130,7 +130,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     categoryText: {
       fontSize: 10,
-      color: Colors.primary,
+      color: Colors.textSecondary,
       fontWeight: "600",
       textTransform: "uppercase",
     },

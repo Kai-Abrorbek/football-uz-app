@@ -155,7 +155,7 @@ export default function OverviewTab({ match, onTabChange }: Props) {
                   </Text>
                 </View>
                 <View style={styles.probDraw}>
-                  <Text style={[styles.probPercent, { color: "#9e9e9e" }]}>
+                  <Text style={[styles.probPercent, { color: Colors.text }]}>
                     {drawProb}%
                   </Text>
                   <Text style={styles.probTeamName}>
@@ -431,9 +431,9 @@ export default function OverviewTab({ match, onTabChange }: Props) {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+    container: { flex: 1, backgroundColor: Colors.surface2 },
     venueContainer: {
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       paddingHorizontal: 16,
       paddingVertical: 12,
       marginBottom: 8,
@@ -474,14 +474,14 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
 
 const sectionStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { backgroundColor: Colors.surface, marginBottom: 8 },
+    container: { backgroundColor: Colors.surface2, marginBottom: 8 },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
       padding: 16,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
     },
     title: { fontSize: 16, fontWeight: "700", color: Colors.text },
     subtitle: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
@@ -504,7 +504,7 @@ const miniStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingVertical: 6,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
       justifyContent: "space-between",
     },
     headerRank: {
@@ -566,7 +566,7 @@ const formStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingVertical: 8,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
       gap: 10,
     },
     rank: {
@@ -585,7 +585,7 @@ const formStyles = (Colors: ReturnType<typeof getColors>) =>
       borderRadius: 12,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: Colors.border,
+      backgroundColor: Colors.border2,
     },
     formW: { backgroundColor: "#34a853" },
     formL: { backgroundColor: "#ea4335" },

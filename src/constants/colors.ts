@@ -6,7 +6,7 @@ export const getColors = (isDark: boolean) => ({
 
   // ── Background ─────────────────────────────────────
   background: isDark ? "#080A0F" : "#f8f8f8", // --bg
-  background2: isDark ? "#0F1117" : "#f0f0f0", // --surface
+  background2: isDark ? "#2a2b2f" : "#f0f0f0", // --surface
   backgroundDeep: isDark ? "#0B0D12" : "#e8e8e8", // --sidebar (더 깊은 배경)
 
   // ── Surface / Card ─────────────────────────────────

@@ -414,6 +414,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       justifyContent: "center",
       padding: 40,
+      backgroundColor: Colors.surface2,
     },
     emptyText: { fontSize: 14, color: Colors.textSecondary },
 

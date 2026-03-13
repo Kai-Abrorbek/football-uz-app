@@ -149,7 +149,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     positionText: {
       fontSize: 10,
-      color: Colors.primary,
+      color: Colors.text2,
       fontWeight: "600",
     },
   });

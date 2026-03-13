@@ -214,11 +214,13 @@ export default function HomeScreen() {
                 )
               }
             >
-              <Image
-                source={{ uri: league.logo }}
-                style={styles.chipLogo}
-                resizeMode="contain"
-              />
+              <View style={styles.logoBox}>
+                <Image
+                  source={{ uri: league.logo }}
+                  style={styles.chipLogo}
+                  resizeMode="contain"
+                />
+              </View>
               <Text
                 style={[
                   styles.chipText,
@@ -314,9 +316,9 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 12,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
     },
     headerTitle: {
       fontSize: 20,
@@ -324,9 +326,9 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       color: Colors.text,
     },
     leagueChipContainer: {
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
       paddingVertical: 10,
     },
     leagueChipContent: {
@@ -340,14 +342,23 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 12,
       paddingVertical: 6,
       borderRadius: 20,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.background_compat,
       borderWidth: 1,
-      borderColor: Colors.border,
+      borderColor: Colors.border2,
       gap: 5,
     },
     chipActive: {
-      backgroundColor: Colors.primary,
+      backgroundColor: Colors.tabBarActive,
       borderColor: Colors.primary,
+    },
+
+    logoBox: {
+      width: 20,
+      height: 20,
+      borderRadius: 50,
+      backgroundColor: Colors.text,
+      alignItems: "center",
+      justifyContent: "center",
     },
     chipLogo: {
       width: 16,
@@ -359,7 +370,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontWeight: "500",
     },
     chipTextActive: {
-      color: "#fff",
+      color: Colors.text2,
     },
     allLeaguesBtn: {
       flexDirection: "row",

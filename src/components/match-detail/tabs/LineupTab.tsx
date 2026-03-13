@@ -792,12 +792,13 @@ function HalfPlaceholder({ label }: { label: string }) {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+    container: { flex: 1, backgroundColor: Colors.surface2 },
     emptyContainer: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
       padding: 40,
+      backgroundColor: Colors.surface2,
     },
     emptyText: { color: Colors.textSecondary, fontSize: 14 },
 
@@ -807,7 +808,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 12,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
@@ -878,10 +879,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       justifyContent: "center",
       borderWidth: 2,
-      borderColor: "#fff",
+      borderColor: Colors.border2,
     },
     gkPhotoPlaceholder: { borderColor: "#FBBF24" },
-    playerPhotoText: { fontSize: 16, fontWeight: "700", color: "#fff" },
+    playerPhotoText: { fontSize: 16, fontWeight: "700", color: Colors.text },
 
     playerNameRow: {
       flexDirection: "row",
@@ -906,7 +907,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 2,
     },
-
     ratingBadge: {
       position: "absolute",
       top: -4,
@@ -915,9 +915,9 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 5,
       paddingVertical: 2,
       borderWidth: 1,
-      borderColor: "#fff",
+      borderColor: Colors.border2,
     },
-    ratingBadgeText: { fontSize: 10, fontWeight: "800", color: "#fff" },
+    ratingBadgeText: { fontSize: 10, fontWeight: "800", color: Colors.text },
     ageBadge: {
       position: "absolute",
       top: -2,

@@ -438,11 +438,11 @@ export default function MatchHeader({
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     wrapper: {
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       paddingTop: 30,
     },
     container: {
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       paddingBottom: 12,
     },
     compactHeader: {
@@ -455,9 +455,9 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       justifyContent: "space-between",
       paddingHorizontal: 16,
       paddingVertical: 12,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
     },
     compactCenter: {
       flexDirection: "row",
@@ -506,7 +506,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     leagueLogo: {
       width: 30,
       height: 30,
-      backgroundColor: Colors.background2,
+      backgroundColor: Colors.text,
       borderRadius: 50,
     },
     leagueName: { fontSize: 14, fontWeight: "600", color: Colors.text },

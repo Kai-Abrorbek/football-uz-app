@@ -60,9 +60,9 @@ export default function MatchTabs({ tabs, activeTab, onTabChange }: Props) {
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
+      borderBottomColor: Colors.border2,
     },
     content: {
       paddingHorizontal: 12,
@@ -75,11 +75,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderRadius: 20,
       backgroundColor: Colors.background,
       borderWidth: 1,
-      borderColor: Colors.border,
+      borderColor: Colors.border2,
     },
     tabActive: {
-      backgroundColor: Colors.text,
-      borderColor: Colors.text,
+      backgroundColor: Colors.primary,
+      borderColor: Colors.textSecondary,
     },
     tabText: {
       fontSize: 13,

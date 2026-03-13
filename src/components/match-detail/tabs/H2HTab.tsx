@@ -288,7 +288,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface2,
     },
     emptyContainer: {
       flex: 1,

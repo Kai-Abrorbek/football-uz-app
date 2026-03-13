@@ -37,11 +37,6 @@ type Props = {
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 
-// 프로젝트 설정에 따라 수정 필요
-// import { api, ENDPOINTS } from "@/api";
-// import { useColors } from "@/hooks/useColors";
-// import { getStyles } from "./styles";
-
 export default function FixtureAbsenceSectionMock({
   fixtureId,
   defaultOpen = true,
@@ -290,7 +285,7 @@ function AbsenceRow({ p, t, router }: any) {
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
     },
 
     headerRow: {
@@ -321,7 +316,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       width: 42,
       height: 42,
       borderRadius: 21,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.background2,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -350,7 +345,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       width: 26,
       height: 26,
       borderRadius: 13,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.background2,
     },
     teamName: {
       fontSize: 15,
