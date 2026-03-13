@@ -1,0 +1,594 @@
+{
+  "auth": {
+    "brandTitle": "Football UZ",
+    "loginSubtitle": "로그인하여 계속하세요",
+    "registerSubtitle": "계정을 만들어 시작하세요",
+    "nameLabel": "이름",
+    "namePlaceholder": "홍길동",
+    "emailLabel": "이메일",
+    "emailPlaceholder": "example@email.com",
+    "passwordLabel": "비밀번호",
+    "passwordPlaceholder": "••••••••",
+    "login": "로그인",
+    "register": "회원가입",
+    "noAccount": "계정이 없으신가요? ",
+    "haveAccount": "이미 계정이 있으신가요? ",
+    "or": "또는",
+    "continueWithGoogle": "Google로 계속하기",
+    "validation": {
+      "emailPasswordRequired": "이메일과 비밀번호를 입력해주세요",
+      "allFieldsRequired": "모든 필드를 입력해주세요",
+      "nameMinLength": "이름은 3자 이상이어야 합니다",
+      "passwordMinLength": "비밀번호는 6자 이상이어야 합니다"
+    },
+    "errors": {
+      "loginFailed": "로그인에 실패했습니다",
+      "registerFailed": "회원가입에 실패했습니다",
+      "telegramLoginFailed": "Telegram 로그인에 실패했습니다",
+      "googleLoginFailed": "Google 로그인에 실패했습니다"
+    },
+    "logout": {
+      "confirm": "정말 로그아웃 하시겠습니까?",
+      "title": "로그아웃",
+      "cancel": "취소",
+      "action": "로그아웃",
+      "resendFailed": "인증 이메일 재발송에 실패했습니다."
+    },
+
+    "emailVerification": {
+      "title": "이메일 인증",
+      "message": "인증 링크가 이메일로 발송되었습니다. 24시간 내에 인증해주세요.",
+      "notVerified": "이메일 인증을 완료해주세요.",
+      "resend": "재발송",
+      "resendSuccess": "인증 이메일이 재발송되었습니다.",
+      "verifying": "이메일 인증 중...",
+      "successTitle": "이메일 인증 완료!",
+      "successMessage": "이메일이 성공적으로 인증되었습니다.",
+      "errorTitle": "인증 실패",
+      "errorMessage": "링크가 유효하지 않거나 만료되었습니다. 다시 요청해주세요.",
+      "goToProfile": "프로필로 이동",
+      "menuItem": "이메일 인증",
+      "alreadyVerifiedTitle": "인증 완료",
+      "alreadyVerifiedMessage": "이미 이메일 인증이 완료된 계정입니다.",
+      "resendConfirm": "{{email}} 으로 인증 링크를 재발송할까요?"
+    },
+    "telegram": {
+      "login": "텔레그램으로 로그인",
+      "waiting": "텔레그램 인증 대기 중...",
+      "successTitle": "로그인 성공!",
+      "successMessage": "반가워, {{name}}!"
+    }
+  },
+  "profile": {
+    "stats": {
+      "followingTeams": "팔로잉 팀",
+      "savedMatches": "저장된 경기",
+      "readNews": "읽은 뉴스"
+    },
+    "sections": {
+      "settings": "설정",
+      "support": "지원"
+    },
+    "menu": {
+      "editProfile": "프로필 수정",
+      "notifications": "알림 설정",
+      "language": "언어 설정",
+      "theme": "테마 설정",
+      "help": "도움말",
+      "privacy": "개인정보 처리방침",
+      "terms": "이용약관"
+    },
+    "version": "버전 {{version}}"
+  },
+
+  "news": {
+    "category": {
+      "all": "전체",
+      "premier": "EPL",
+      "laliga": "라리가",
+      "ligue1": "리그1",
+      "bundesliga": "분데스",
+      "seriea": "세리에",
+      "saudi": "사우디",
+      "ucl": "UCL",
+      "uel": "UEL",
+      "turkey": "터키",
+      "worldcup": "월드컵",
+      "euro": "유로",
+      "copa": "코파",
+      "afcon": "아프컵"
+    },
+    "heroBadge": "주요 뉴스",
+    "adLabel": "광고",
+    "adText": "Advertisement",
+    "timeAgo": {
+      "minutes": "{{count}}분 전",
+      "hours": "{{count}}시간 전",
+      "days": "{{count}}일 전",
+      "justNow": "방금 전"
+    }
+  },
+
+  "leagues": {
+    "title": "전 세계 축구 리그",
+    "searchPlaceholder": "리그 검색...",
+    "sections": {
+      "featured": "인기 리그",
+      "all": "모든 리그 ({{count}})",
+      "todayMatches": "오늘의 주요 경기"
+    },
+    "more": "더보기 →",
+    "comingSoon": "곧 업데이트 예정",
+    "worldCup": {
+      "title": "FIFA World Cup",
+      "location": "USA · Canada · Mexico"
+    }
+  },
+
+  "continent": {
+    "all": "전체",
+    "europe": "유럽",
+    "asia": "아시아",
+    "southAmerica": "남미",
+    "northAmerica": "북미",
+    "africa": "아프리카"
+  },
+
+  "home": {
+    "dates": {
+      "today": "오늘",
+      "tomorrow": "내일",
+      "dayAfterTomorrow": "모레",
+      "yesterday": "어제",
+      "beforeYesterday": "그저께"
+    },
+    "leagueFilter": {
+      "all": "전체",
+      "allLeagues": "전체 리그"
+    },
+    "empty": {
+      "noMatches": "경기가 없습니다"
+    },
+    "ad": {
+      "label": "광고"
+    }
+  },
+  "players": {
+    "uzbekAbroad": "해외에서 뛰는 우즈베키스탄 선수",
+    "seeAll": "전체 보기"
+  },
+  "newsSection": {
+    "title": "최신 뉴스",
+    "seeAll": "전체 보기"
+  },
+  "predictionsSection": {
+    "title": "AI 예측",
+    "seeAll": "전체 보기",
+    "confidence": "신뢰도: {{value}}%"
+  },
+  "hero": {
+    "banners": {
+      "premierLeague": { "title": "프리미어리그", "subtitle": "세계 최고의 리그" },
+      "worldCup2026": { "title": "FIFA 월드컵 2026", "subtitle": "우즈베키스탄 준비 완료!" },
+      "laLiga": { "title": "라리가", "subtitle": "레알 마드리드 vs 바르셀로나" },
+      "championsLeague": { "title": "챔피언스리그", "subtitle": "유럽 최고 무대" },
+      "serieA": { "title": "세리에 A", "subtitle": "이탈리아 축구의 열기" },
+      "bundesliga": { "title": "분데스리가", "subtitle": "빠르고 거침없이" },
+      "ligue1": { "title": "리그 1", "subtitle": "떠오르는 젊은 스타들" },
+      "saudiPro": { "title": "사우디 프로리그", "subtitle": "축구의 새로운 시대" },
+      "europaLeague": { "title": "유로파리그", "subtitle": "영광을 향한 여정" }
+    }
+  },
+  "leagueMatches": {
+    "matchday": "경기일({{current}}/{{total}})",
+    "today": "오늘",
+    "scheduled": "예정",
+    "fulltime": "풀타임",
+    "tomorrow": "내일",
+    "seeMore": "경기 더보기"
+  },
+  "leaguePlayers": {
+    "empty": "선수 정보가 없습니다",
+    "defaultPosition": "공격수",
+    "defaultTeamName": "팀명"
+  },
+  "standings": {
+    "season": "시즌",
+    "club": "클럽",
+    "empty": "순위 정보가 없습니다",
+    "columns": {
+      "played": "경기",
+      "win": "승",
+      "draw": "무",
+      "lose": "패",
+      "points": "승점",
+      "goalsFor": "득점",
+      "goalsAgainst": "실점",
+      "goalDiff": "득실",
+      "form5": "최근 5경기"
+    },
+    "notFound": "순위표를 찾을 수 없습니다",
+    "notFoundSub": "순위 데이터가 아직 준비되지 않았습니다"
+  },
+  "leagueStats": {
+    "tabs": {
+      "goals": "골",
+      "assists": "어시스트",
+      "yellowCards": "옐로우 카드",
+      "redCards": "레드 카드"
+    },
+    "empty": "데이터가 없습니다",
+    "headers": {
+      "player": "선수",
+      "value": "기록"
+    }
+  },
+
+  "allMatchesModal": {
+    "title": "{{league}} 경기",
+    "matchday": "경기일 ({{current}}/{{total}})",
+    "fulltime": "풀타임"
+  },
+
+  "leagueTabs": {
+    "overview": "개요",
+    "stats": "통계",
+    "players": "선수",
+    "matches": "경기",
+    "standings": "순위",
+    "bracket": "대진표"
+  },
+
+  "leagueDetail": {
+    "error404": "순위 정보가 없습니다 (404)",
+    "goHome": "홈으로 이동",
+    "follow": "팔로우",
+    "following": "팔로잉"
+  },
+
+  "matchCard": {
+    "halfTime": "하프타임",
+    "finished": "종료"
+  },
+
+  "matchHeader": {
+    "halfTime": "하프타임",
+    "finished": "종료",
+    "today": "오늘",
+    "tomorrow": "내일",
+    "follow": "팔로우",
+    "following": "팔로잉"
+  },
+
+  "matchTabs": {
+    "overview": "개요",
+    "lineup": "라인업",
+    "stats": "통계",
+    "standings": "순위",
+    "h2h": "경기 더보기",
+    "highlights": "경기 하이라이트",
+    "stream": "라이브"
+  },
+  "h2h": {
+    "fulltime": "풀타임",
+    "empty": "맞대결 기록이 없습니다",
+    "wins": "승리",
+    "draws": "무승부",
+    "home": "홈",
+    "thisTournament": "이 토너먼트",
+    "showAll": "모두 보기",
+    "showLess": "접기"
+  },
+
+  "highlights": {
+    "goal": "골",
+    "yellowCard": "옐로 카드",
+    "redCard": "레드 카드",
+    "substitution": "선수 교체",
+    "subIn": "교체 투입",
+    "subOut": "교체됨",
+    "empty": "아직 이벤트가 없습니다"
+  },
+
+  "lineup": {
+    "notAvailable": "라인업은 경기 시작 1시간 전에 공개됩니다",
+    "awayMissing": "원정 라인업 없음",
+    "homeMissing": "홈 라인업 없음",
+    "substitutes": "후보 선수",
+    "unknown": "Unknown",
+    "tab": {
+      "stats": "시즌 통계",
+      "age": "나이",
+      "country": "국가"
+    }
+  },
+
+  "matchOverview": {
+    "winProbability": "승리 확률",
+    "winProbabilitySubtitle": "팀별 우승 확률",
+    "draw": "무승부",
+    "standings": "순위",
+    "versus": "{{home}} 대 {{away}}",
+    "table": {
+      "team": "팀",
+      "played": "경기",
+      "goalDiff": "득실",
+      "points": "승점"
+    },
+    "allStandings": "전체 순위 →",
+    "injuriesSuspensions": "부상 및 출장 정지",
+    "injuriesSubtitle": "플레이어별 상황 소식",
+    "recentForm": "최근 성적",
+    "recentFormSubtitle": "팀별 최근 경기 결과",
+    "last5": "최근 5경기",
+    "noData": "데이터 없음",
+    "h2h": "상대 전적",
+    "h2hSubtitle": "이전 경기 결과",
+    "h2hEmpty": "상대 전적이 없습니다",
+    "wins": "{{count}}승",
+    "ranking": "순위"
+  },
+  "injuries": {
+    "empty": "부상/출장정지 선수 없음",
+    "injury": "부상",
+    "suspension": "출장 정지",
+    "midfielder": "미드필더",
+    "forward": "공격수"
+  },
+
+  "standingsTab": {
+    "empty": "순위 정보가 없습니다",
+    "club": "클럽",
+    "played": "경기",
+    "win": "승",
+    "draw": "무",
+    "lose": "패",
+    "points": "승점",
+    "goalsFor": "득점",
+    "goalsAgainst": "실점",
+    "goalDiff": "득실",
+    "last5": "최근 5경기",
+    "legend": {
+      "champions": "챔피언스리그",
+      "europa": "유로파리그",
+      "conference": "유로파 컨퍼런스 리그",
+      "relegation": "강등"
+    }
+  },
+
+  "leagueOverview": {
+    "fulltime": "풀타임",
+    "liveWithMinute": "라이브 {{minute}}'",
+    "vs": "대",
+    "buyTickets": "티켓 구매",
+    "sectionTitle": "경기",
+    "seeMore": "경기 더보기",
+    "modalTitle": "{{league}} 경기"
+  },
+
+  "common": {
+    "loading": "로딩 중...",
+    "share": "공유",
+    "save": "저장",
+    "comments": "댓글",
+    "confirm": "확인"
+  },
+  "time": {
+    "minutesAgo": "{{count}}분 전",
+    "hoursAgo": "{{count}}시간 전",
+    "daysAgo": "{{count}}일 전"
+  },
+  "newsDetail": {
+    "openSource": "원문 보기",
+    "shareSectionTitle": "이 기사 공유하기",
+    "shareFail": "공유 실패:"
+  },
+
+  "player": {
+    "age": "나이",
+    "years": "세",
+    "currentTeam": "현 소속팀",
+    "stats": "통계",
+    "games": "경기",
+    "goals": "골",
+    "assists": "어시스트",
+    "yellowCards": "옐로카드",
+    "year": "연도",
+    "recentMatch": "최근 경기",
+    "fulltime": "경기 종료",
+    "noMatches": "경기 없음",
+    "noEvents": "이벤트 없음",
+    "notFound": "선수를 찾을 수 없습니다",
+    "notFoundSub": "해당 선수 정보가 아직 준비되지 않았습니다"
+  },
+  "absence": {
+    "title": "부상 및 출장 정지",
+    "noAbsentees": "결장자가 없습니다.",
+    "more": "더보기",
+    "refresh": "새로고침",
+    "info": "정보",
+    "position": "포지션"
+  },
+  "matches": {
+    "showMore": "경기 더보기",
+    "fullTime": "풀타임",
+    "live": "라이브",
+    "scheduled": "예정",
+    "tomorrow": "내일"
+  },
+  "overview": {
+    "matches": "경기",
+    "showMore": "경기 더보기",
+    "fullTime": "풀타임"
+  },
+  "teamPlayers": {
+    "noInfo": "선수 정보가 없습니다",
+    "defaultPosition": "공격수",
+    "defaultTeam": "팀명"
+  },
+  "teamStandings": {
+    "league": "리그",
+    "season": "시즌",
+    "select": "선택",
+    "noInfo": "순위 정보가 없습니다",
+    "club": "클럽",
+    "played": "경기",
+    "win": "승",
+    "draw": "무",
+    "lose": "패",
+    "points": "승점",
+    "goalsFor": "득점",
+    "goalsAgainst": "실점",
+    "goalsDiff": "득실",
+    "recentForm": "최근 5경기"
+  },
+  "stats": {
+    "goals": "득점",
+    "assists": "어시스트",
+    "yellowCards": "옐로우 카드",
+    "redCards": "레드 카드",
+    "player": "선수",
+    "noData": "데이터가 없습니다"
+  },
+  "allMatches": {
+    "title": "전체 경기",
+    "fullTime": "풀타임",
+    "live": "라이브"
+  },
+  "tabs": {
+    "home": "홈",
+    "leagues": "전체 리그",
+    "news": "뉴스",
+    "chat": "AI 챗봇",
+    "profile": "프로필"
+  },
+  "worldcup": {
+    "qualifier": "예선",
+    "playoff": "플레이오프",
+    "title": "FIFA 월드컵 2026",
+    "subtitle": "2026. 6. 11. – 2026. 7. 19.",
+    "matches": "경기",
+    "moreMatches": "경기 더 보기",
+    "groupStage": "조별 리그",
+    "tournament": "토너먼트",
+    "group": "조",
+    "fulltime": "종료",
+    "matchesModal": {
+      "title": "월드컵 경기"
+    },
+    "bracket": {
+      "roundOf32": "32강",
+      "roundOf16": "16강",
+      "quarterFinals": "8강",
+      "semiFinals": "4강",
+      "final": "결승",
+      "thirdPlace": "3위 결정전",
+      "undecided": "미정"
+    },
+    "standings": {
+      "team": "팀",
+      "played": "경기",
+      "win": "승",
+      "draw": "무",
+      "lose": "패",
+      "points": "승점",
+      "gf": "득점",
+      "ga": "실점",
+      "gd": "득실"
+    },
+    "banner": {
+      "title": "FIFA World Cup",
+      "location": "USA · Canada · Mexico",
+      "teamBadge": "🇺🇿 우즈베키스탄"
+    },
+    "tabs": { "bracket": "대진표" }
+  },
+
+  "notification": {
+    "title": "알림",
+    "markAllRead": "모두 읽음",
+    "loginRequired": "알림을 보려면 로그인하세요.",
+    "empty": "알림이 없습니다.",
+    "minutesAgo": "분 전",
+    "hoursAgo": "시간 전",
+    "daysAgo": "일 전"
+  },
+  "date": {
+    "today": "오늘",
+    "yesterday": "어제",
+    "tomorrow": "내일"
+  },
+
+  "matchVote": {
+    "title": "누가 이길까요?",
+    "total": "총 득표: {{count}}",
+    "draw": "비김",
+    "loginHint": "투표하려면 로그인이 필요합니다.",
+    "predict": "AI 승부 예측"
+  },
+  "venue": {
+    "weather": "날씨"
+  },
+  "matchAlert": {
+    "title": "경기 알람",
+    "receiveAlert": "알람 받기",
+    "matchStart": "경기 시작",
+    "goals": "골",
+    "matchEnd": "경기 종료",
+    "globalOff": "전체 알람이 꺼져 있어 알람을 받을 수 없습니다. 설정에서 알람을 켜주세요.",
+    "loginRequired": "알람을 설정하려면 로그인하세요."
+  },
+
+  "matchStats": {
+    "empty": "통계 정보가 없습니다",
+    "sections": {
+      "main": "주요 통계",
+      "shots": "슛",
+      "passes": "패스",
+      "defense": "수비",
+      "duels": "볼 경합",
+      "fouls": "반칙"
+    },
+    "stats": {
+      "ballPossession": "공 점유율",
+      "totalShots": "전체 슛",
+      "shotsOnTarget": "유효 슈팅",
+      "shotsOffGoal": "빗나간 슈팅",
+      "blockedShots": "막힌 슛",
+      "shotsInsidebox": "박스 내 슛",
+      "shotsOutsidebox": "박스 밖 슛",
+      "keyPasses": "정확한 패스",
+      "totalPasses": "총 패스",
+      "accuratePasses": "정확한 패스",
+      "forwardPasses": "상대 팀 진영",
+      "backwardPasses": "내 팀 진영",
+      "longBalls": "정확한 긴 패스",
+      "accurateCrosses": "정확한 크로스",
+      "throwins": "스로인",
+      "tackles": "태클",
+      "interceptions": "가로채기",
+      "clearances": "걷어내기",
+      "goalkeeperSaves": "골키퍼 선방",
+      "duels": "볼 경합 성공",
+      "duelsWon": "볼 경합 성공",
+      "groundDuels": "지상 볼 경합 성공",
+      "aerialDuels": "공중 볼 경합 성공",
+      "dribbles": "드리블 성공",
+      "fouls": "반칙",
+      "offsides": "오프사이드",
+      "corners": "코너킥",
+      "yellowCards": "경고",
+      "redCards": "퇴장",
+      "expectedGoals": "예상 골 (xG)",      
+      "passAccuracy": "패스 정확도",
+      "goalsPrevented": "막아낸 골"
+    }
+  },
+  "chat": {
+    "liveChat": "실시간 채팅",
+    "messages": "개의 메시지",
+    "placeholder": "메시지 입력...",
+    "loginRequired": "로그인 후 채팅 참여",
+    "firstMessage": "💬 첫 번째 메시지를 남겨보세요!"
+  }
+}
