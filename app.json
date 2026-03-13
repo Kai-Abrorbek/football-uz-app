@@ -19,6 +19,7 @@
       "bundleIdentifier": "com.footballuz.app"
     },
     "android": {
+      "usesCleartextTraffic": true,
       "package": "com.footballuz.app",
       "softwareKeyboardLayoutMode": "resize", 
       "googleServicesFile": "./google-services.json",
