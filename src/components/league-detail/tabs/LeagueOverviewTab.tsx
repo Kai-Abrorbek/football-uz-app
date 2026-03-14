@@ -18,6 +18,7 @@ import { Match } from "../../../types";
 import { useTranslation } from "react-i18next";
 import AllMatchesModal from "../AllMatchesModal";
 import { useColors } from "../../../hooks/useColors";
+import { MATCH_SEASON, SEASON } from "../../../constants/leauges";
 
 interface Props {
   leagueId: string;
@@ -152,7 +153,9 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
   const { data: matches } = useQuery<Match[]>({
     queryKey: ["league-matches", leagueId],
     queryFn: () =>
-      api.get(`${ENDPOINTS.matches}?leagueId=${leagueId}&limit=20`),
+      api.get(
+        `${ENDPOINTS.matches}?leagueId=${leagueId}&limit=20&season=${MATCH_SEASON}`,
+      ),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -488,16 +491,17 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: Colors.background2,
+      backgroundColor: Colors.surface2,
       marginHorizontal: 16,
       paddingVertical: 16,
       borderRadius: 12,
       gap: 6,
       marginTop: 4,
+      marginBottom: 40,
     },
     moreButtonText: {
       fontSize: 15,
       fontWeight: "700",
-      color: Colors.text2,
+      color: Colors.text,
     },
   });

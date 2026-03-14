@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   Switch,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,9 +17,15 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
-import { Colors } from "../../src/constants/colors";
+import { useColors } from "../../src/hooks/useColors";
+import { getColors } from "../../src/constants/colors";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationsScreen() {
+  const Colors = useColors();
+  const styles = getStyles(Colors);
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(true);
   const [matchStart, setMatchStart] = useState(false);
   const [goals, setGoals] = useState(false);
@@ -35,7 +41,6 @@ export default function NotificationsScreen() {
   const loadSettings = async () => {
     try {
       const settings: any = await api.get(ENDPOINTS.notificationSettings);
-
       setMatchStart(settings.matchStart ?? false);
       setGoals(settings.goals ?? false);
       setMatchEnd(settings.matchEnd ?? false);
@@ -49,16 +54,9 @@ export default function NotificationsScreen() {
   };
 
   const registerForPushNotifications = async () => {
-    // 웹이면 스킵
-    if (Platform.OS === "web") {
-      console.log("웹에서는 푸시 알림을 지원하지 않습니다");
-      return;
-    }
+    if (Platform.OS === "web") return;
+    if (!Device.isDevice) return;
 
-    if (!Device.isDevice) {
-      console.log("물리적 기기가 아닙니다");
-      return;
-    }
     try {
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
@@ -69,10 +67,7 @@ export default function NotificationsScreen() {
         finalStatus = status;
       }
 
-      if (finalStatus !== "granted") {
-        console.log("푸시 알림 권한이 거부되었습니다");
-        return;
-      }
+      if (finalStatus !== "granted") return;
 
       const token = (
         await Notifications.getExpoPushTokenAsync({
@@ -80,7 +75,6 @@ export default function NotificationsScreen() {
         })
       ).data;
 
-      // 서버에 토큰 등록
       await api.post(ENDPOINTS.fcmToken, { token });
     } catch (error) {
       console.error("FCM 토큰 등록 실패:", error);
@@ -92,18 +86,13 @@ export default function NotificationsScreen() {
     setter: (val: boolean) => void,
     value: boolean,
   ) => {
-    // UI 즉시 업데이트
     setter(value);
-
     try {
-      await api.post(ENDPOINTS.notificationSettings, {
-        [key]: value,
-      });
+      await api.post(ENDPOINTS.notificationSettings, { [key]: value });
     } catch (error) {
       console.error("설정 저장 실패:", error);
-      // 실패 시 되돌리기
       setter(!value);
-      alert("설정 저장에 실패했습니다");
+      alert(t("notifications.saveFailed"));
     }
   };
 
@@ -119,7 +108,6 @@ export default function NotificationsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -130,12 +118,11 @@ export default function NotificationsScreen() {
         >
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>알림 설정</Text>
+        <Text style={styles.headerTitle}>{t("notifications.title")}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView>
-        {/* 설명 */}
         <View style={styles.description}>
           <Ionicons
             name="information-circle"
@@ -143,107 +130,81 @@ export default function NotificationsScreen() {
             color={Colors.primary}
           />
           <Text style={styles.descriptionText}>
-            팔로우한 팀의 경기와 관련된 알림을 받아보세요
+            {t("notifications.description")}
           </Text>
         </View>
 
-        {/* 알림 설정 */}
         <View style={styles.section}>
-          <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-              <Ionicons name="play-circle" size={22} color={Colors.text} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingTitle}>경기 시작</Text>
-                <Text style={styles.settingDescription}>
-                  팔로우한 팀의 경기 시작 15분 전
-                </Text>
+          {[
+            {
+              key: "matchStart",
+              icon: "play-circle",
+              title: t("notifications.matchStart"),
+              desc: t("notifications.matchStartDesc"),
+              value: matchStart,
+              setter: setMatchStart,
+            },
+            {
+              key: "goals",
+              icon: "football",
+              title: t("notifications.goals"),
+              desc: t("notifications.goalsDesc"),
+              value: goals,
+              setter: setGoals,
+            },
+            {
+              key: "matchEnd",
+              icon: "stopwatch",
+              title: t("notifications.matchEnd"),
+              desc: t("notifications.matchEndDesc"),
+              value: matchEnd,
+              setter: setMatchEnd,
+            },
+            {
+              key: "news",
+              icon: "newspaper",
+              title: t("notifications.news"),
+              desc: t("notifications.newsDesc"),
+              value: news,
+              setter: setNews,
+            },
+            {
+              key: "predictions",
+              icon: "analytics",
+              title: t("notifications.predictions"),
+              desc: t("notifications.predictionsDesc"),
+              value: predictions,
+              setter: setPredictions,
+            },
+          ].map((item, index, arr) => (
+            <View
+              key={item.key}
+              style={[
+                styles.settingRow,
+                index === arr.length - 1 && styles.settingRowLast,
+              ]}
+            >
+              <View style={styles.settingLeft}>
+                <Ionicons
+                  name={item.icon as any}
+                  size={22}
+                  color={Colors.text}
+                />
+                <View style={styles.settingText}>
+                  <Text style={styles.settingTitle}>{item.title}</Text>
+                  <Text style={styles.settingDescription}>{item.desc}</Text>
+                </View>
               </View>
+              <Switch
+                value={item.value}
+                onValueChange={(val) =>
+                  handleToggle(item.key, item.setter, val)
+                }
+                trackColor={{ false: Colors.border, true: Colors.primary }}
+                thumbColor="#ffffff"
+              />
             </View>
-            <Switch
-              value={matchStart}
-              onValueChange={(val) =>
-                handleToggle("matchStart", setMatchStart, val)
-              }
-              trackColor={{ false: "#e0e0e0", true: Colors.primary }}
-              thumbColor="#ffffff"
-            />
-          </View>
-
-          <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-              <Ionicons name="football" size={22} color={Colors.text} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingTitle}>골 알림</Text>
-                <Text style={styles.settingDescription}>
-                  팔로우한 팀의 골 실시간 알림
-                </Text>
-              </View>
-            </View>
-            <Switch
-              value={goals}
-              onValueChange={(val) => handleToggle("goals", setGoals, val)}
-              trackColor={{ false: "#e0e0e0", true: Colors.primary }}
-              thumbColor="#ffffff"
-            />
-          </View>
-
-          <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-              <Ionicons name="stopwatch" size={22} color={Colors.text} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingTitle}>경기 종료</Text>
-                <Text style={styles.settingDescription}>
-                  팔로우한 팀의 경기 결과
-                </Text>
-              </View>
-            </View>
-            <Switch
-              value={matchEnd}
-              onValueChange={(val) =>
-                handleToggle("matchEnd", setMatchEnd, val)
-              }
-              trackColor={{ false: "#e0e0e0", true: Colors.primary }}
-              thumbColor="#ffffff"
-            />
-          </View>
-
-          <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-              <Ionicons name="newspaper" size={22} color={Colors.text} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingTitle}>뉴스</Text>
-                <Text style={styles.settingDescription}>
-                  새로운 축구 뉴스 알림
-                </Text>
-              </View>
-            </View>
-            <Switch
-              value={news}
-              onValueChange={(val) => handleToggle("news", setNews, val)}
-              trackColor={{ false: "#e0e0e0", true: Colors.primary }}
-              thumbColor="#ffffff"
-            />
-          </View>
-
-          <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-              <Ionicons name="analytics" size={22} color={Colors.text} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingTitle}>AI 예측</Text>
-                <Text style={styles.settingDescription}>
-                  경기 예측 및 분석 알림
-                </Text>
-              </View>
-            </View>
-            <Switch
-              value={predictions}
-              onValueChange={(val) =>
-                handleToggle("predictions", setPredictions, val)
-              }
-              trackColor={{ false: "#e0e0e0", true: Colors.primary }}
-              thumbColor="#ffffff"
-            />
-          </View>
+          ))}
         </View>
 
         <View style={{ height: 40 }} />
@@ -252,83 +213,90 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.text,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  description: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f0e6ff",
-    marginHorizontal: 16,
-    marginTop: 16,
-    padding: 12,
-    borderRadius: 12,
-    gap: 8,
-  },
-  descriptionText: {
-    flex: 1,
-    fontSize: 13,
-    color: Colors.text,
-    lineHeight: 18,
-  },
-  section: {
-    backgroundColor: Colors.surface,
-    marginTop: 16,
-  },
-  settingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  settingLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-  },
-  settingText: {
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: Colors.text,
-    marginBottom: 2,
-  },
-  settingDescription: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-});
+const getStyles = (Colors: ReturnType<typeof getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      backgroundColor: Colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: Colors.text,
+    },
+    loadingContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    description: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: Colors.primary + "18",
+      marginHorizontal: 16,
+      marginTop: 16,
+      padding: 12,
+      borderRadius: 12,
+      gap: 8,
+    },
+    descriptionText: {
+      flex: 1,
+      fontSize: 13,
+      color: Colors.text,
+      lineHeight: 18,
+    },
+    section: {
+      backgroundColor: Colors.surface,
+      marginTop: 16,
+      marginHorizontal: 16,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    settingRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+    settingRowLast: {
+      borderBottomWidth: 0,
+    },
+    settingLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      flex: 1,
+    },
+    settingText: {
+      flex: 1,
+    },
+    settingTitle: {
+      fontSize: 15,
+      fontWeight: "600",
+      color: Colors.text,
+      marginBottom: 2,
+    },
+    settingDescription: {
+      fontSize: 12,
+      color: Colors.textSecondary,
+    },
+  });

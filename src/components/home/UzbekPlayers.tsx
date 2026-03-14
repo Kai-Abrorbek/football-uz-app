@@ -78,6 +78,14 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
       marginVertical: 8,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
+      paddingVertical: 10,
     },
     header: {
       flexDirection: "row",

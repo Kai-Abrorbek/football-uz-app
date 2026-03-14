@@ -355,7 +355,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface2,
     },
     contentContainer: {
       padding: 12,
@@ -366,11 +366,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       justifyContent: "center",
       padding: 40,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface2,
     },
     emptyText: {
       fontSize: 14,
-      color: Colors.textSecondary,
+      color: Colors.text,
     },
     card: {
       backgroundColor: Colors.surface,

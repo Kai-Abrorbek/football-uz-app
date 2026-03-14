@@ -1,7 +1,7 @@
 import { Redirect, Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
-import { Colors } from "../src/constants/colors";
+import { useColors } from "../src/hooks/useColors";
 import { LanguageProvider } from "../src/contexts/LanguageContext";
 import { AuthProvider, useAuth } from "../src/contexts/AuthContext";
 import "../src/i18n";
@@ -10,10 +10,39 @@ import { ErrorProvider } from "../src/contexts/ErrorContext";
 
 const queryClient = new QueryClient();
 
-function AuthGate({ children }: { children: React.ReactNode }) {
-  const { userData } = useAuth();
-  if (!userData?.user) return <Redirect href="/profile" />;
-  return <>{children}</>;
+function StackLayout() {
+  const Colors = useColors();
+  return (
+    <>
+      <StatusBar style="dark" />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: Colors.surface2 },
+        }}
+      >
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="match/[id]"
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: "",
+            headerTintColor: Colors.tabBarActive,
+          }}
+        />
+        <Stack.Screen
+          name="league/[id]"
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: "",
+            headerTintColor: Colors.tabBarActive,
+          }}
+        />
+      </Stack>
+    </>
+  );
 }
 
 export default function RootLayout() {
@@ -23,33 +52,7 @@ export default function RootLayout() {
         <AuthProvider>
           <ErrorProvider>
             <LanguageProvider>
-              <StatusBar style="dark" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: Colors.background },
-                }}
-              >
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen
-                  name="match/[id]"
-                  options={{
-                    headerShown: true,
-                    headerTransparent: true,
-                    headerTitle: "",
-                    headerTintColor: Colors.tabBarActive,
-                  }}
-                />
-                <Stack.Screen
-                  name="league/[id]"
-                  options={{
-                    headerShown: true,
-                    headerTransparent: true,
-                    headerTitle: "",
-                    headerTintColor: Colors.tabBarActive,
-                  }}
-                />
-              </Stack>
+              <StackLayout />
             </LanguageProvider>
           </ErrorProvider>
         </AuthProvider>

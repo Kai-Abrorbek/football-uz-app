@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
-  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -340,23 +339,37 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 12,
-      paddingVertical: 6,
+      paddingVertical: 7,
       borderRadius: 20,
       backgroundColor: Colors.background_compat,
       borderWidth: 1,
       borderColor: Colors.border2,
       gap: 5,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     chipActive: {
       backgroundColor: Colors.tabBarActive,
       borderColor: Colors.primary,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
 
     logoBox: {
       width: 20,
       height: 20,
       borderRadius: 50,
-      backgroundColor: Colors.text,
+      backgroundColor: Colors.logoBox,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -440,6 +453,13 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       marginBottom: 8,
       borderRadius: 12,
       overflow: "hidden",
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     leagueHeader: {
       flexDirection: "row",

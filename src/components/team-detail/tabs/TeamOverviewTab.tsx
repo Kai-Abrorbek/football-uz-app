@@ -400,7 +400,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#f0e6ff",
+      backgroundColor: Colors.surface2,
       marginHorizontal: 16,
       paddingVertical: 16,
       borderRadius: 12,

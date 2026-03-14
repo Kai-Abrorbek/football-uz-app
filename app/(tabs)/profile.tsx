@@ -674,6 +674,13 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       marginTop: 16,
       borderRadius: 16,
       padding: 20,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     statBox: { flex: 1, alignItems: "center" },
     statValue: {
@@ -705,6 +712,13 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingVertical: 16,
       borderRadius: 12,
       marginBottom: 8,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     menuItemLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
     menuItemText: { fontSize: 15, fontWeight: "500", color: Colors.text },
@@ -721,6 +735,13 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       gap: 8,
       borderWidth: 1,
       borderColor: "#ff3b30",
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     logoutButtonText: { fontSize: 15, fontWeight: "600", color: "#ff3b30" },
     version: {

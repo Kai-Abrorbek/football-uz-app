@@ -15,6 +15,7 @@ import TeamStandingsTab from "../../src/components/team-detail/tabs/TeamStanding
 import { Image } from "expo-image";
 import { useColors } from "../../src/hooks/useColors";
 import MatchAlertModal from "../../src/components/match-detail/MatchAlertModal";
+import { AuthGate } from "../../src/contexts/AuthGate";
 
 const TABS = [
   { key: "overview", label: "개요" },
@@ -91,71 +92,73 @@ export default function TeamDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 헤더 */}
-      {/* 헤더 */}
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: teamData.color ?? Colors.primary },
-        ]}
-      >
-        {/* 상단 바 */}
-        <View style={styles.headerTop}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {
-              if (router.canGoBack()) router.back();
-              else router.replace("/");
-            }}
-          >
-            <Ionicons name="arrow-back" size={24} color="#ffffff" />
-          </TouchableOpacity>
-
-          <View style={styles.headerRight}>
+    <AuthGate>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        {/* 헤더 */}
+        {/* 헤더 */}
+        <View
+          style={[
+            styles.header,
+            { backgroundColor: teamData.color ?? Colors.primary },
+          ]}
+        >
+          {/* 상단 바 */}
+          <View style={styles.headerTop}>
             <TouchableOpacity
-              style={[
-                styles.followButton,
-                isFollowing && styles.followButtonActive,
-              ]}
-              onPress={() => setIsFollowing(!isFollowing)}
+              style={styles.backButton}
+              onPress={() => {
+                if (router.canGoBack()) router.back();
+                else router.replace("/");
+              }}
             >
-              <Text
-                style={[
-                  styles.followButtonText,
-                  isFollowing && { color: teamData.color ?? Colors.primary },
-                ]}
-              >
-                {isFollowing ? "팔로잉" : "팔로우"}
-              </Text>
+              <Ionicons name="arrow-back" size={24} color="#ffffff" />
             </TouchableOpacity>
+
+            <View style={styles.headerRight}>
+              <TouchableOpacity
+                style={[
+                  styles.followButton,
+                  isFollowing && styles.followButtonActive,
+                ]}
+                onPress={() => setIsFollowing(!isFollowing)}
+              >
+                <Text
+                  style={[
+                    styles.followButtonText,
+                    isFollowing && { color: teamData.color ?? Colors.primary },
+                  ]}
+                >
+                  {isFollowing ? "팔로잉" : "팔로우"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 팀 정보 */}
+          <View style={styles.headerInfo}>
+            <Image
+              source={teamData.logo}
+              style={styles.teamLogo}
+              contentFit="contain"
+            />
+            <View style={styles.teamTextWrap}>
+              <Text style={styles.teamName}>{teamData.name}</Text>
+              <Text style={styles.teamCountry}>{teamData.country ?? ""}</Text>
+            </View>
           </View>
         </View>
 
-        {/* 팀 정보 */}
-        <View style={styles.headerInfo}>
-          <Image
-            source={teamData.logo}
-            style={styles.teamLogo}
-            contentFit="contain"
-          />
-          <View style={styles.teamTextWrap}>
-            <Text style={styles.teamName}>{teamData.name}</Text>
-            <Text style={styles.teamCountry}>{teamData.country ?? ""}</Text>
-          </View>
-        </View>
-      </View>
+        {/* 탭 */}
+        <LeagueTabs
+          tabs={TABS}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-      {/* 탭 */}
-      <LeagueTabs
-        tabs={TABS}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
-
-      {/* 탭 컨텐츠 */}
-      <View style={styles.content}>{renderTab()}</View>
-    </SafeAreaView>
+        {/* 탭 컨텐츠 */}
+        <View style={styles.content}>{renderTab()}</View>
+      </SafeAreaView>
+    </AuthGate>
   );
 }
 

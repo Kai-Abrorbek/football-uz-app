@@ -462,6 +462,7 @@
     "leagues": "Leagues",
     "news": "News",
     "chat": "AI Chat",
+    "feed": "Shorts",
     "profile": "Profile"
   },
   "worldcup": {
@@ -590,5 +591,47 @@
     "placeholder": "Type a message...",
     "loginRequired": "Login to chat",
     "firstMessage": "💬 Be the first to send a message!"
+  },
+  "editProfile": {
+    "title": "Edit Profile",
+    "name": "Name",
+    "email": "Email",
+    "emailHint": "Email cannot be changed",
+    "namePlaceholder": "Enter your name",
+    "avatarHint": "Tap photo to change",
+    "save": "Save",
+    "success": "Profile updated",
+    "error": "Failed to update profile",
+    "nameRequired": "Please enter your name",
+    "photoPermission": "Photo access permission required"
+  },
+  "language": {
+    "title": "Language Settings",
+    "description": "Select the language to use in the app"
+  },
+  "notifications": {
+    "title": "Notification Settings",
+    "description": "Receive notifications for matches of teams you follow",
+    "matchStart": "Match Start",
+    "matchStartDesc": "15 minutes before the match starts",
+    "goals": "Goal Alert",
+    "goalsDesc": "Real-time goal notifications for followed teams",
+    "matchEnd": "Match End",
+    "matchEndDesc": "Match results for followed teams",
+    "news": "News",
+    "newsDesc": "New football news notifications",
+    "predictions": "AI Predictions",
+    "predictionsDesc": "Match predictions and analysis alerts",
+    "saveFailed": "Failed to save settings"
+  },
+  "theme": {
+    "title": "Theme Settings",
+    "description": "Change the color theme of the app",
+    "light": "Light Mode",
+    "lightDesc": "Bright theme",
+    "dark": "Dark Mode",
+    "darkDesc": "Dark theme",
+    "system": "System Settings",
+    "systemDesc": "Follow device settings"
   }
 }

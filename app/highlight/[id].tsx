@@ -6,6 +6,7 @@ import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
 import { Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AuthGate } from "../../src/contexts/AuthGate";
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
 
@@ -16,29 +17,31 @@ export default function HighlightScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={[styles.backBtn, { top: insets.top + 8 }]}
-        onPress={() => router.back()}
-      >
-        <Ionicons name="close" size={28} color="#fff" />
-      </TouchableOpacity>
+    <AuthGate>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={[styles.backBtn, { top: insets.top + 8 }]}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="close" size={28} color="#fff" />
+        </TouchableOpacity>
 
-      <YoutubeIframe
-        height={SCREEN_W * (9 / 16)}
-        width={SCREEN_W}
-        videoId={videoId}
-        play={true}
-        webViewProps={{
-          androidLayerType: "hardware",
-          mediaPlaybackRequiresUserAction: false,
-        }}
-        initialPlayerParams={{
-          autoplay: 1,
-          controls: 1,
-        }}
-      />
-    </View>
+        <YoutubeIframe
+          height={SCREEN_W * (9 / 16)}
+          width={SCREEN_W}
+          videoId={videoId}
+          play={true}
+          webViewProps={{
+            androidLayerType: "hardware",
+            mediaPlaybackRequiresUserAction: false,
+          }}
+          initialPlayerParams={{
+            autoplay: 1,
+            controls: 1,
+          }}
+        />
+      </View>
+    </AuthGate>
   );
 }
 

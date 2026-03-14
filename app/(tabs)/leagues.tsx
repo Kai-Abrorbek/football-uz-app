@@ -330,14 +330,22 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     featuredContainer: {
       paddingHorizontal: 16,
       gap: 12,
+      paddingVertical: 10,
     },
     featuredCard: {
       width: 140,
-      backgroundColor: Colors.text,
+      backgroundColor: Colors.logoBox,
       borderRadius: 16,
       padding: 16,
       alignItems: "center",
       gap: 8,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     featuredLogo: {
       width: 60,
@@ -398,9 +406,16 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 20,
-      backgroundColor: Colors.surface2,
+      backgroundColor: Colors.logoBox,
       borderWidth: 1,
       borderColor: Colors.border2,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     continentTabActive: {
       backgroundColor: Colors.primary,
@@ -419,19 +434,27 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     // 리그 그리드
     leagueRow: {
       flexDirection: "row",
-      paddingHorizontal: 12,
+      paddingHorizontal: 15,
       gap: 8,
       marginBottom: 8,
     },
     leagueCard: {
       flex: 1,
       aspectRatio: 0.85,
-      backgroundColor: Colors.text,
+      backgroundColor: Colors.logoBox,
       borderRadius: 12,
-      padding: 12,
+      padding: 14,
       alignItems: "center",
       justifyContent: "center",
       gap: 8,
+
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     leagueLogo: {
       width: 48,

@@ -168,6 +168,13 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     container: {
       marginTop: 24,
       paddingHorizontal: 16,
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      // Android
+      elevation: 5,
     },
     header: {
       flexDirection: "row",

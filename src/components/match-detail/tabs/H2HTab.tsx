@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { Image } from "expo-image";
 import { getColors } from "../../../constants/colors";
 import { Match } from "../../../types";
@@ -35,16 +41,6 @@ export default function H2HTab({ match }: Props) {
       </View>
     );
   }
-
-  const getContrastColor = (hexColor: string): string => {
-    const hex = hexColor.replace("#", "");
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    // 밝기 계산
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.5 ? "#000000" : "#ffffff";
-  };
 
   // 통계 계산
   const homeWins = h2hMatches.filter((m) =>
@@ -95,7 +91,12 @@ export default function H2HTab({ match }: Props) {
   };
 
   return (
-    <View style={styles.container}>
+    // View 대신 ScrollView 사용하고 contentContainerStyle 적용
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
       {/* 상단 통계 */}
       <View style={styles.statsCard}>
         <View style={styles.statsRow}>
@@ -278,9 +279,7 @@ export default function H2HTab({ match }: Props) {
           </TouchableOpacity>
         )}
       </View>
-
-      <View style={{ height: 20 }} />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -290,6 +289,9 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flex: 1,
       backgroundColor: Colors.surface2,
     },
+    contentContainer: {
+      paddingBottom: 20, // 하단 여백 추가
+    },
     emptyContainer: {
       flex: 1,
       alignItems: "center",
@@ -298,7 +300,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     emptyText: {
       fontSize: 14,
-      color: Colors.textSecondary,
+      color: Colors.text,
     },
 
     // 상단 통계

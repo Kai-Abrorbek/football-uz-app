@@ -14,6 +14,7 @@ import PlayerOverviewTab from "../../src/components/player-detail/tabs/PlayerOve
 import PlayerStatsTab from "../../src/components/player-detail/tabs/PlayerStatsTab";
 import PlayerMatchesTab from "../../src/components/player-detail/tabs/PlayerMatchesTab";
 import LeagueTabs from "../../src/components/league-detail/LeagueTabs";
+import { AuthGate } from "../../src/contexts/AuthGate";
 
 const TABS = [{ key: "overview" }, { key: "stats" }, { key: "matches" }];
 
@@ -94,50 +95,56 @@ export default function PlayerDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            if (router.canGoBack()) router.back();
-            else router.replace("/");
-          }}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
+    <AuthGate>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        {/* 헤더 */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace("/");
+            }}
+          >
+            <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          </TouchableOpacity>
 
-        <View style={styles.headerCenter}>
-          <Image
-            source={player.photo}
-            style={styles.playerPhoto}
-            contentFit="cover"
-          />
-          <View>
-            <Text style={styles.playerName} numberOfLines={1}>
-              {player.name}
-            </Text>
-            <Text style={styles.playerPosition}>{player.position}</Text>
+          <View style={styles.headerCenter}>
+            <Image
+              source={player.photo}
+              style={styles.playerPhoto}
+              contentFit="cover"
+            />
+            <View>
+              <Text style={styles.playerName} numberOfLines={1}>
+                {player.name}
+              </Text>
+              <Text style={styles.playerPosition}>{player.position}</Text>
+            </View>
+          </View>
+
+          <View style={styles.headerRight}>
+            <TouchableOpacity style={styles.moreButton}>
+              <Ionicons
+                name="ellipsis-vertical"
+                size={20}
+                color={Colors.text}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.moreButton}>
-            <Ionicons name="ellipsis-vertical" size={20} color={Colors.text} />
-          </TouchableOpacity>
-        </View>
-      </View>
+        {/* 탭 */}
+        <LeagueTabs
+          tabs={TABS}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-      {/* 탭 */}
-      <LeagueTabs
-        tabs={TABS}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
-
-      {/* 탭 컨텐츠 */}
-      <View style={styles.content}>{renderTab()}</View>
-    </SafeAreaView>
+        {/* 탭 컨텐츠 */}
+        <View style={styles.content}>{renderTab()}</View>
+      </SafeAreaView>
+    </AuthGate>
   );
 }
 

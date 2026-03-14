@@ -800,7 +800,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       padding: 40,
       backgroundColor: Colors.surface2,
     },
-    emptyText: { color: Colors.textSecondary, fontSize: 14 },
+    emptyText: { color: Colors.text, fontSize: 14 },
 
     formationHeader: {
       flexDirection: "row",

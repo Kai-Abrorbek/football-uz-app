@@ -19,6 +19,7 @@ import { ENDPOINTS } from "../../src/constants/api";
 import { News } from "../../src/types"; // 너 타입 위치에 맞게
 import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
+import { AuthGate } from "../../src/contexts/AuthGate";
 
 export default function NewsDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -78,146 +79,152 @@ export default function NewsDetailScreen() {
   const lang = i18n.language as "en" | "kr" | "uz" | "ru";
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
+    <AuthGate>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        {/* 헤더 */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          </TouchableOpacity>
 
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
-            <Ionicons name="share-outline" size={22} color={Colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="bookmark-outline" size={22} color={Colors.text} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
+              <Ionicons name="share-outline" size={22} color={Colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="bookmark-outline" size={22} color={Colors.text} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* 히어로 이미지 */}
-        {news.imageUrl && (
-          <View style={styles.heroContainer}>
-            <Image
-              source={news.imageUrl}
-              style={styles.heroImage}
-              contentFit="cover"
-            />
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.6)"]}
-              style={styles.heroGradient}
-            />
-          </View>
-        )}
-
-        {/* 컨텐츠 */}
-        <View style={styles.contentContainer}>
-          {/* 카테고리 뱃지 */}
-          <View style={styles.categoryBadge}>
-            <Text style={styles.categoryText}>
-              {(news.category ?? "").toUpperCase()}
-            </Text>
-          </View>
-
-          {/* 제목 */}
-          <Text style={styles.title}>
-            {news.title?.[lang] ?? news.title?.en}
-          </Text>
-
-          {/* 메타 정보 */}
-          <View style={styles.metaContainer}>
-            <View style={styles.metaRow}>
-              <View style={styles.sourceContainer}>
-                <Ionicons
-                  name="newspaper-outline"
-                  size={16}
-                  color={Colors.primary}
-                />
-                <Text style={styles.source}>{news.source}</Text>
-              </View>
-              <View style={styles.timeContainer}>
-                <Ionicons
-                  name="time-outline"
-                  size={16}
-                  color={Colors.textSecondary}
-                />
-                <Text style={styles.time}>{getTimeAgo(news.publishedAt)}</Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.divider} />
-
-          {/* 요약 */}
-          {news.summary && (
-            <View style={styles.summaryContainer}>
-              <Text style={styles.summaryText}>
-                {news?.summary?.[lang] ?? news.summary?.en}
-              </Text>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* 히어로 이미지 */}
+          {news.imageUrl && (
+            <View style={styles.heroContainer}>
+              <Image
+                source={news.imageUrl}
+                style={styles.heroImage}
+                contentFit="cover"
+              />
+              <LinearGradient
+                colors={["transparent", "rgba(0,0,0,0.6)"]}
+                style={styles.heroGradient}
+              />
             </View>
           )}
 
-          {/* 본문 */}
-          <Text style={styles.content}>
-            {news.content?.[lang] ?? news.content?.en}
-          </Text>
+          {/* 컨텐츠 */}
+          <View style={styles.contentContainer}>
+            {/* 카테고리 뱃지 */}
+            <View style={styles.categoryBadge}>
+              <Text style={styles.categoryText}>
+                {(news.category ?? "").toUpperCase()}
+              </Text>
+            </View>
 
-          {/* 원문 보기 */}
-          <TouchableOpacity
-            style={styles.sourceButton}
-            onPress={handleOpenSource}
-          >
-            <Text style={styles.sourceButtonText}>
-              {t("newsDetail.openSource")}
-            </Text>
-            <Ionicons name="open-outline" size={18} color={Colors.primary} />
-          </TouchableOpacity>
-
-          {/* 공유 섹션 */}
-          <View style={styles.shareSection}>
-            <Text style={styles.shareSectionTitle}>
-              {t("newsDetail.shareSectionTitle")}
+            {/* 제목 */}
+            <Text style={styles.title}>
+              {news.title?.[lang] ?? news.title?.en}
             </Text>
 
-            <View style={styles.shareButtons}>
-              <TouchableOpacity
-                style={styles.shareButton}
-                onPress={handleShare}
-              >
-                <Ionicons
-                  name="share-social"
-                  size={24}
-                  color={Colors.primary}
-                />
-                <Text style={styles.shareButtonText}>{t("common.share")}</Text>
-              </TouchableOpacity>
+            {/* 메타 정보 */}
+            <View style={styles.metaContainer}>
+              <View style={styles.metaRow}>
+                <View style={styles.sourceContainer}>
+                  <Ionicons
+                    name="newspaper-outline"
+                    size={16}
+                    color={Colors.primary}
+                  />
+                  <Text style={styles.source}>{news.source}</Text>
+                </View>
+                <View style={styles.timeContainer}>
+                  <Ionicons
+                    name="time-outline"
+                    size={16}
+                    color={Colors.textSecondary}
+                  />
+                  <Text style={styles.time}>
+                    {getTimeAgo(news.publishedAt)}
+                  </Text>
+                </View>
+              </View>
+            </View>
 
-              <TouchableOpacity style={styles.shareButton}>
-                <Ionicons name="bookmark" size={24} color={Colors.primary} />
-                <Text style={styles.shareButtonText}>{t("common.save")}</Text>
-              </TouchableOpacity>
+            <View style={styles.divider} />
 
-              <TouchableOpacity style={styles.shareButton}>
-                <Ionicons
-                  name="chatbubble-outline"
-                  size={24}
-                  color={Colors.primary}
-                />
-                <Text style={styles.shareButtonText}>
-                  {t("common.comments")}
+            {/* 요약 */}
+            {news.summary && (
+              <View style={styles.summaryContainer}>
+                <Text style={styles.summaryText}>
+                  {news?.summary?.[lang] ?? news.summary?.en}
                 </Text>
-              </TouchableOpacity>
+              </View>
+            )}
+
+            {/* 본문 */}
+            <Text style={styles.content}>
+              {news.content?.[lang] ?? news.content?.en}
+            </Text>
+
+            {/* 원문 보기 */}
+            <TouchableOpacity
+              style={styles.sourceButton}
+              onPress={handleOpenSource}
+            >
+              <Text style={styles.sourceButtonText}>
+                {t("newsDetail.openSource")}
+              </Text>
+              <Ionicons name="open-outline" size={18} color={Colors.primary} />
+            </TouchableOpacity>
+
+            {/* 공유 섹션 */}
+            <View style={styles.shareSection}>
+              <Text style={styles.shareSectionTitle}>
+                {t("newsDetail.shareSectionTitle")}
+              </Text>
+
+              <View style={styles.shareButtons}>
+                <TouchableOpacity
+                  style={styles.shareButton}
+                  onPress={handleShare}
+                >
+                  <Ionicons
+                    name="share-social"
+                    size={24}
+                    color={Colors.primary}
+                  />
+                  <Text style={styles.shareButtonText}>
+                    {t("common.share")}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.shareButton}>
+                  <Ionicons name="bookmark" size={24} color={Colors.primary} />
+                  <Text style={styles.shareButtonText}>{t("common.save")}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.shareButton}>
+                  <Ionicons
+                    name="chatbubble-outline"
+                    size={24}
+                    color={Colors.primary}
+                  />
+                  <Text style={styles.shareButtonText}>
+                    {t("common.comments")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={{ height: 40 }} />
-      </ScrollView>
-    </SafeAreaView>
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </SafeAreaView>
+    </AuthGate>
   );
 }
 

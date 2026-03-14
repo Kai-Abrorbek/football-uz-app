@@ -8,12 +8,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
-import { Linking } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "../../src/services/api";
 import { ENDPOINTS } from "../../src/constants/api";
-import { Colors, getColors } from "../../src/constants/colors";
+import { getColors } from "../../src/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLanguage } from "../../src/contexts/LanguageContext";
 import { router } from "expo-router";
@@ -38,12 +37,17 @@ const CATEGORIES = [
   { id: "afcon", i18nKey: "news.category.afcon", leagueId: 31 },
 ] as const;
 
+type NewsLanguage = "en" | "uz" | "ru" | "kr";
+
 export default function NewsScreen() {
   const Colors = useColors();
   const styles = getStyles(Colors);
   const [activeCategory, setActiveCategory] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
-  const { language, setLanguage } = useLanguage();
+  const { language: appLanguage } = useLanguage();
+  const [newsLanguage, setNewsLanguage] = useState<NewsLanguage>(
+    appLanguage as NewsLanguage,
+  );
   const { t } = useTranslation();
 
   const selectedLeague = CATEGORIES.find(
@@ -118,14 +122,14 @@ export default function NewsScreen() {
                   key={lang}
                   style={[
                     styles.langButton,
-                    language === lang && styles.langButtonActive,
+                    newsLanguage === lang && styles.langButtonActive,
                   ]}
-                  onPress={() => setLanguage(lang)}
+                  onPress={() => setNewsLanguage(lang)}
                 >
                   <Text
                     style={[
                       styles.langButtonText,
-                      language === lang && styles.langButtonTextActive,
+                      newsLanguage === lang && styles.langButtonTextActive,
                     ]}
                   >
                     {lang.toUpperCase()}
@@ -135,7 +139,7 @@ export default function NewsScreen() {
             </View>
 
             <Text style={styles.heroTitle} numberOfLines={3}>
-              {hero.title[language as "en" | "uz" | "ru" | "kr"]}
+              {hero.title[newsLanguage]}
             </Text>
 
             <View style={styles.heroMeta}>
@@ -168,10 +172,10 @@ export default function NewsScreen() {
         )}
         <View style={styles.newsContent}>
           <Text style={styles.newsTitle} numberOfLines={2}>
-            {news.title[language]}
+            {news.title[newsLanguage]}
           </Text>
           <Text style={styles.newsDescription} numberOfLines={2}>
-            {news.content[language]}
+            {news.content[newsLanguage]}
           </Text>
           <View style={styles.newsMeta}>
             <Text style={styles.newsSource}>{news.source}</Text>
@@ -272,12 +276,24 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       backgroundColor: Colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
+      alignItems: "center",
+      height: 64,
     },
     categoryTab: {
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 20,
       backgroundColor: Colors.background,
+      alignSelf: "center",
+      height: 36,
+      justifyContent: "center",
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 6,
+      // Android
+      elevation: 3,
     },
     categoryTabActive: {
       backgroundColor: Colors.text,
@@ -291,8 +307,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       color: "#ffffff",
       fontWeight: "700",
     },
-
-    // 히어로 뉴스
     heroCard: {
       marginHorizontal: 16,
       marginTop: 16,
@@ -300,6 +314,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       overflow: "hidden",
       backgroundColor: Colors.surface,
       height: 280,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 5,
     },
     heroImage: {
       width: "100%",
@@ -336,9 +355,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     languageSelector: {
       flexDirection: "row",
       gap: 4,
-      backgroundColor: Colors.background,
+      backgroundColor: "rgba(0,0,0,0.4)",
       borderRadius: 8,
       padding: 2,
+      marginBottom: 8,
+      alignSelf: "flex-start",
     },
     langButton: {
       paddingHorizontal: 10,
@@ -351,7 +372,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     langButtonText: {
       fontSize: 12,
       fontWeight: "600",
-      color: Colors.textSecondary,
+      color: "rgba(255,255,255,0.7)",
     },
     langButtonTextActive: {
       color: "#ffffff",
@@ -375,8 +396,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontSize: 12,
       color: "rgba(255,255,255,0.7)",
     },
-
-    // 뉴스 카드
     newsCard: {
       flexDirection: "row",
       backgroundColor: Colors.surface,
@@ -385,6 +404,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderRadius: 12,
       overflow: "hidden",
       gap: 12,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 5,
     },
     newsImage: {
       width: 120,
@@ -426,12 +450,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontSize: 11,
       color: Colors.textSecondary,
     },
-
-    // 광고 배너
     adBanner: {
       marginHorizontal: 16,
       marginTop: 12,
-      backgroundColor: "#f0f0f0",
+      backgroundColor: Colors.surface,
       borderRadius: 12,
       padding: 40,
       alignItems: "center",

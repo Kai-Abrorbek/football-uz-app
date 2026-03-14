@@ -224,7 +224,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: Colors.background2,
+      backgroundColor: Colors.surface2,
       marginHorizontal: 16,
       marginTop: 16,
       paddingVertical: 14,
@@ -236,7 +236,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     moreButtonText: {
       fontSize: 14,
       fontWeight: "600",
-      color: Colors.text2,
+      color: Colors.text,
     },
     dateSection: { marginTop: 16 },
     dateTitle: {

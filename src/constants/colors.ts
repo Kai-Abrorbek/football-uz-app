@@ -21,6 +21,7 @@ export const getColors = (isDark: boolean) => ({
 
   // ── Text ───────────────────────────────────────────
   text: isDark ? "#E2E8F4" : "#1a1a1a", // --text
+  logoBox: "#f8f8f8",
   text2: isDark ? "#1A1F2B" : "#1a1a1a",
   textSecondary: isDark ? "#6B7A99" : "#666666", // --muted2
   textMuted: isDark ? "#4A5568" : "#9e9e9e", // --muted

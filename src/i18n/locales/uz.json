@@ -453,7 +453,8 @@
     "leagues": "Ligalar",
     "news": "Yangiliklar",
     "chat": "AI Chat",
-    "profile": "Profil"
+    "profile": "Profil",
+    "feed": "Shorts"
   },
 
   "worldcup": {
@@ -584,5 +585,48 @@
     "placeholder": "Xabar yozing...",
     "loginRequired": "Chat uchun tizimga kiring",
     "firstMessage": "💬 Birinchi xabar yuboring!"
+  },
+
+  "editProfile": {
+    "title": "Profilni tahrirlash",
+    "name": "Ism",
+    "email": "Elektron pochta",
+    "emailHint": "Elektron pochtani o'zgartirish mumkin emas",
+    "namePlaceholder": "Ismingizni kiriting",
+    "avatarHint": "O'zgartirish uchun rasmga bosing",
+    "save": "Saqlash",
+    "success": "Profil yangilandi",
+    "error": "Profilni yangilashda xatolik",
+    "nameRequired": "Iltimos, ismingizni kiriting",
+    "photoPermission": "Rasm kiritish uchun ruxsat kerak"
+  },
+  "language": {
+    "title": "Til sozlamalari",
+    "description": "Ilovada foydalanish uchun tilni tanlang"
+  },
+  "notifications": {
+    "title": "Bildirishnoma sozlamalari",
+    "description": "Kuzatayotgan jamoalaringiz o'yinlari haqida xabar oling",
+    "matchStart": "O'yin boshlanishi",
+    "matchStartDesc": "O'yin boshlanishidan 15 daqiqa oldin",
+    "goals": "Gol xabari",
+    "goalsDesc": "Kuzatilayotgan jamoaning gollari haqida",
+    "matchEnd": "O'yin tugashi",
+    "matchEndDesc": "Kuzatilayotgan jamoaning o'yin natijalari",
+    "news": "Yangiliklar",
+    "newsDesc": "Yangi futbol yangiliklari",
+    "predictions": "AI bashoratlar",
+    "predictionsDesc": "O'yin bashoratlari va tahlillari",
+    "saveFailed": "Sozlamalarni saqlashda xatolik"
+  },
+  "theme": {
+    "title": "Mavzu sozlamalari",
+    "description": "Ilovaning rang mavzusini o'zgartiring",
+    "light": "Yorug' rejim",
+    "lightDesc": "Yorqin mavzu",
+    "dark": "Qorong'u rejim",
+    "darkDesc": "Qorong'u mavzu",
+    "system": "Tizim sozlamalari",
+    "systemDesc": "Qurilma sozlamalariga amal qiling"
   }
 }

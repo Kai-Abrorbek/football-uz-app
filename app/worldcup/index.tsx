@@ -20,6 +20,7 @@ import WorldcupMatchesTab from "../../src/components/worldcup/tabs/WorldcupMatch
 import WorldcupPlayersTab from "../../src/components/worldcup/tabs/WorldcupPlayersTab";
 import WorldcupBracketTab from "../../src/components/worldcup/tabs/WorldcupBracketTab";
 import WorldcupStandingsTab from "../../src/components/worldcup/tabs/WorldcupStandingsTab";
+import { AuthGate } from "../../src/contexts/AuthGate";
 
 const TABS = [
   { key: "overview" },
@@ -92,59 +93,65 @@ export default function WorldcupScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            if (router.canGoBack()) router.back();
-            else router.replace("/");
-          }}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
-        </TouchableOpacity>
-
-        <View style={styles.headerCenter}>
-          <Text style={styles.title}>{t("worldcup.title")}</Text>
-          <Text style={styles.subtitle}>{t("worldcup.subtitle")}</Text>
-        </View>
-
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.moreButton}>
-            <Ionicons name="ellipsis-vertical" size={20} color={Colors.text} />
-          </TouchableOpacity>
+    <AuthGate>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        {/* 헤더 */}
+        <View style={styles.header}>
           <TouchableOpacity
-            style={[
-              styles.followButton,
-              isFollowing && styles.followButtonActive,
-            ]}
-            onPress={() => setIsFollowing(!isFollowing)}
+            style={styles.backButton}
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace("/");
+            }}
           >
-            <Text
-              style={[
-                styles.followButtonText,
-                isFollowing && styles.followButtonTextActive,
-              ]}
-            >
-              {isFollowing
-                ? t("leagueDetail.following")
-                : t("leagueDetail.follow")}
-            </Text>
+            <Ionicons name="arrow-back" size={24} color={Colors.text} />
           </TouchableOpacity>
+
+          <View style={styles.headerCenter}>
+            <Text style={styles.title}>{t("worldcup.title")}</Text>
+            <Text style={styles.subtitle}>{t("worldcup.subtitle")}</Text>
+          </View>
+
+          <View style={styles.headerRight}>
+            <TouchableOpacity style={styles.moreButton}>
+              <Ionicons
+                name="ellipsis-vertical"
+                size={20}
+                color={Colors.text}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.followButton,
+                isFollowing && styles.followButtonActive,
+              ]}
+              onPress={() => setIsFollowing(!isFollowing)}
+            >
+              <Text
+                style={[
+                  styles.followButtonText,
+                  isFollowing && styles.followButtonTextActive,
+                ]}
+              >
+                {isFollowing
+                  ? t("leagueDetail.following")
+                  : t("leagueDetail.follow")}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      {/* 탭 */}
-      <LeagueTabs
-        tabs={TABS}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+        {/* 탭 */}
+        <LeagueTabs
+          tabs={TABS}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-      {/* 탭 컨텐츠 */}
-      <View style={styles.content}>{renderTab()}</View>
-    </SafeAreaView>
+        {/* 탭 컨텐츠 */}
+        <View style={styles.content}>{renderTab()}</View>
+      </SafeAreaView>
+    </AuthGate>
   );
 }
 

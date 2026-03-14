@@ -17,6 +17,7 @@ import LeagueStandingsTab from "../../src/components/league-detail/tabs/LeagueSt
 import { useColors } from "../../src/hooks/useColors";
 import { useTranslation } from "react-i18next";
 import { SEASON, FEATURED_LEAGUES } from "../../src/constants/leauges";
+import { AuthGate } from "../../src/contexts/AuthGate";
 
 const TABS = [
   { key: "overview" },
@@ -101,74 +102,76 @@ export default function LeagueDetailScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: leagueColor }]}
-      edges={["top"]}
-    >
-      {/* 헤더 */}
-      <View style={[styles.header, { backgroundColor: leagueColor }]}>
-        {/* 상단 네비게이션 */}
-        <View style={styles.headerNav}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {
-              if (router.canGoBack()) router.back();
-              else router.replace("/");
-            }}
-          ></TouchableOpacity>
-
-          <View style={styles.headerNavRight}>
-            <TouchableOpacity style={styles.iconBtn}>
-              <Ionicons name="notifications-outline" size={22} color="#fff" />
-            </TouchableOpacity>
+    <AuthGate>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: leagueColor }]}
+        edges={["top"]}
+      >
+        {/* 헤더 */}
+        <View style={[styles.header, { backgroundColor: leagueColor }]}>
+          {/* 상단 네비게이션 */}
+          <View style={styles.headerNav}>
             <TouchableOpacity
-              style={[
-                styles.followButton,
-                isFollowing && styles.followButtonActive,
-              ]}
-              onPress={() => setIsFollowing(!isFollowing)}
-            >
-              <Text style={styles.followButtonText}>
-                {isFollowing
-                  ? t("leagueDetail.following")
-                  : t("leagueDetail.follow")}
+              style={styles.backButton}
+              onPress={() => {
+                if (router.canGoBack()) router.back();
+                else router.replace("/");
+              }}
+            ></TouchableOpacity>
+
+            <View style={styles.headerNavRight}>
+              <TouchableOpacity style={styles.iconBtn}>
+                <Ionicons name="notifications-outline" size={22} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.followButton,
+                  isFollowing && styles.followButtonActive,
+                ]}
+                onPress={() => setIsFollowing(!isFollowing)}
+              >
+                <Text style={styles.followButtonText}>
+                  {isFollowing
+                    ? t("leagueDetail.following")
+                    : t("leagueDetail.follow")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 리그 정보 */}
+          <View style={styles.leagueInfo}>
+            <View style={styles.logoWrapper}>
+              <Image
+                source={league.logo}
+                style={styles.leagueLogo}
+                contentFit="contain"
+              />
+            </View>
+            <View style={styles.leagueTexts}>
+              <Text style={styles.leagueName} numberOfLines={1}>
+                {league.name}
               </Text>
-            </TouchableOpacity>
+              <Text style={styles.leagueCountry}>{league.country}</Text>
+            </View>
           </View>
         </View>
 
-        {/* 리그 정보 */}
-        <View style={styles.leagueInfo}>
-          <View style={styles.logoWrapper}>
-            <Image
-              source={league.logo}
-              style={styles.leagueLogo}
-              contentFit="contain"
-            />
-          </View>
-          <View style={styles.leagueTexts}>
-            <Text style={styles.leagueName} numberOfLines={1}>
-              {league.name}
-            </Text>
-            <Text style={styles.leagueCountry}>{league.country}</Text>
-          </View>
+        {/* 탭 */}
+        <View style={styles.tabsWrapper}>
+          <LeagueTabs
+            tabs={TABS}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </View>
-      </View>
 
-      {/* 탭 */}
-      <View style={styles.tabsWrapper}>
-        <LeagueTabs
-          tabs={TABS}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-      </View>
-
-      {/* 탭 컨텐츠 */}
-      <View style={[styles.content, { backgroundColor: Colors.background }]}>
-        {renderTab()}
-      </View>
-    </SafeAreaView>
+        {/* 탭 컨텐츠 */}
+        <View style={[styles.content, { backgroundColor: Colors.background }]}>
+          {renderTab()}
+        </View>
+      </SafeAreaView>
+    </AuthGate>
   );
 }
 
