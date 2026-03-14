@@ -21,7 +21,7 @@
     "android": {
       "usesCleartextTraffic": true,
       "package": "com.footballuz.app",
-      "softwareKeyboardLayoutMode": "resize", 
+      "softwareKeyboardLayoutMode": "resize",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -43,7 +43,15 @@
         }
       ],
       "expo-localization",
-      "react-native-video"
+      "react-native-video",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {},

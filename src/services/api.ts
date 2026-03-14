@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_URL } from "../constants/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -9,6 +10,14 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    Alert.alert("서버 연결 실패", `이유: ${error.message}`);
+    return Promise.reject(error);
+  },
+);
 
 // 요청 인터셉터 (토큰 자동 추가)
 api.interceptors.request.use(
