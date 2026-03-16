@@ -16,10 +16,11 @@ import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
 import api from "../../src/services/api";
-import { Colors, getColors } from "../../src/constants/colors";
+import { getColors } from "../../src/constants/colors";
 import { useLanguage } from "../../src/contexts/LanguageContext";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useColors } from "../../src/hooks/useColors";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -28,7 +29,6 @@ interface Message {
 }
 
 export default function ChatScreen() {
-  // const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
@@ -38,17 +38,16 @@ export default function ChatScreen() {
   const { userData, setUser, logout } = useAuth();
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const { t } = useTranslation();
 
   useEffect(() => {
     checkAuth();
   }, []);
 
-  // 유저 변경 시 세션 로드
   useEffect(() => {
     if (userData?.user) {
       loadUserSession();
     } else {
-      // 로그아웃 시 초기화
       setMessages([]);
       setSessionId(null);
     }
@@ -69,19 +68,14 @@ export default function ChatScreen() {
 
   const loadUserSession = async () => {
     if (!userData?.user.id) return;
-    console.log(12312);
     try {
-      // 로컬 세션 ID 확인
       const userSessionKey = `chat_session_${userData.user.id}`;
       const savedSessionId = await AsyncStorage.getItem(userSessionKey);
 
-      console.log("savedSessionId => ", savedSessionId);
       if (savedSessionId) {
-        // 서버에서 세션 불러오기
         const sessionData: any = await api.get(
           `/chat/session/${savedSessionId}`,
         );
-
         setSessionId(savedSessionId);
         setMessages(
           sessionData.messages.map((m: any) => ({
@@ -93,7 +87,6 @@ export default function ChatScreen() {
       }
     } catch (error) {
       console.error("세션 로드 실패:", error);
-      // 실패 시 로컬에서만 로드
       const userMessagesKey = `chat_messages_${userData.user.id}`;
       const savedMessages = await AsyncStorage.getItem(userMessagesKey);
       setMessages(savedMessages ? JSON.parse(savedMessages) : []);
@@ -102,11 +95,9 @@ export default function ChatScreen() {
 
   const saveSession = async (newMessages: Message[], newSessionId: string) => {
     if (!userData?.user.id) return;
-
     try {
       const userSessionKey = `chat_session_${userData.user.id}`;
       const userMessagesKey = `chat_messages_${userData.user.id}`;
-
       await AsyncStorage.setItem(userSessionKey, newSessionId);
       await AsyncStorage.setItem(userMessagesKey, JSON.stringify(newMessages));
     } catch (error) {
@@ -161,20 +152,16 @@ export default function ChatScreen() {
 
   const handleNewChat = async () => {
     if (!userData?.user.id) return;
-
     setMessages([]);
     setSessionId(null);
-
     const userSessionKey = `chat_session_${userData.user.id}`;
     const userMessagesKey = `chat_messages_${userData.user.id}`;
-
     await AsyncStorage.removeItem(userSessionKey);
     await AsyncStorage.removeItem(userMessagesKey);
   };
 
   const renderMessage = (message: Message, index: number) => {
     const isUser = message.role === "user";
-
     return (
       <View
         key={index}
@@ -206,15 +193,15 @@ export default function ChatScreen() {
 
   const renderSuggestions = () => {
     const suggestions = [
-      "프리미어리그 순위 알려줘",
-      "맨유 최근 경기는?",
-      "손흥민 정보 알려줘",
-      "챔피언스리그 일정은?",
+      t("chat.suggestions.one"),
+      t("chat.suggestions.two"),
+      t("chat.suggestions.three"),
+      t("chat.suggestions.four"),
     ];
 
     return (
       <View style={styles.suggestionsContainer}>
-        <Text style={styles.suggestionsTitle}>무엇을 도와드릴까요?</Text>
+        <Text style={styles.suggestionsTitle}>{t("chat.helpTitle")}</Text>
         <View style={styles.suggestionsGrid}>
           {suggestions.map((suggestion, index) => (
             <TouchableOpacity
@@ -247,15 +234,13 @@ export default function ChatScreen() {
           <View style={styles.emptyIconLarge}>
             <Ionicons name="lock-closed" size={60} color={Colors.primary} />
           </View>
-          <Text style={styles.emptyTitle}>로그인이 필요합니다</Text>
-          <Text style={styles.emptySubtitle}>
-            AI 챗봇을 사용하려면{"\n"}로그인해주세요
-          </Text>
+          <Text style={styles.emptyTitle}>{t("chat.loginRequired")}</Text>
+          <Text style={styles.emptySubtitle}>{t("chat.loginSubtitle")}</Text>
           <TouchableOpacity
             style={styles.loginButton}
             onPress={() => router.push("/profile")}
           >
-            <Text style={styles.loginButtonText}>로그인하러 가기</Text>
+            <Text style={styles.loginButtonText}>{t("chat.loginButton")}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -270,8 +255,8 @@ export default function ChatScreen() {
             <Ionicons name="football" size={24} color={Colors.primary} />
           </View>
           <View>
-            <Text style={styles.headerTitle}>AI 축구 어시스턴트</Text>
-            <Text style={styles.headerSubtitle}>무엇이든 물어보세요</Text>
+            <Text style={styles.headerTitle}>{t("chat.title")}</Text>
+            <Text style={styles.headerSubtitle}>{t("chat.subtitle")}</Text>
           </View>
         </View>
         <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
@@ -307,11 +292,9 @@ export default function ChatScreen() {
                     color={Colors.primary}
                   />
                 </View>
-                <Text style={styles.emptyTitle}>
-                  AI와 축구 이야기를 나눠보세요
-                </Text>
+                <Text style={styles.emptyTitle}>{t("chat.emptyTitle")}</Text>
                 <Text style={styles.emptySubtitle}>
-                  경기 예측, 선수 정보, 리그 순위 등{"\n"}무엇이든 물어보세요!
+                  {t("chat.emptySubtitle")}
                 </Text>
               </View>
               {renderSuggestions()}
@@ -336,7 +319,7 @@ export default function ChatScreen() {
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder="메시지를 입력하세요..."
+              placeholder={t("chat.placeholder")}
               placeholderTextColor={Colors.textSecondary}
               value={inputText}
               onChangeText={setInputText}
@@ -395,7 +378,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       width: 44,
       height: 44,
       borderRadius: 22,
-      backgroundColor: "#f0e6ff",
+      backgroundColor: Colors.primary + "18",
       alignItems: "center",
       justifyContent: "center",
     },
@@ -439,7 +422,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       width: 100,
       height: 100,
       borderRadius: 50,
-      backgroundColor: "#f0e6ff",
+      backgroundColor: Colors.primary + "18",
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 24,
@@ -448,7 +431,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       width: 120,
       height: 120,
       borderRadius: 60,
-      backgroundColor: "#f0e6ff",
+      backgroundColor: Colors.primary + "18",
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 24,

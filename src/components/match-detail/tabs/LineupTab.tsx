@@ -108,39 +108,6 @@ export default function LineupTab({ match }: Props) {
 
   return (
     <View style={styles.container}>
-      {/* 포메이션 헤더 */}
-      <View style={styles.formationHeader}>
-        <View style={styles.teamHeader}>
-          <Image
-            source={match.homeTeam.logo}
-            style={styles.headerLogo}
-            contentFit="contain"
-          />
-          <Text style={styles.headerTeamName} numberOfLines={1}>
-            {match.homeTeam.name}
-          </Text>
-          <Text style={styles.headerFormation}>
-            {homeLineup?.formation || "4-3-3"}
-          </Text>
-        </View>
-        <View style={[styles.teamHeader, { justifyContent: "flex-end" }]}>
-          <Text style={styles.headerFormation}>
-            {awayLineup?.formation || "4-3-3"}
-          </Text>
-          <Text
-            style={[styles.headerTeamName, { textAlign: "right" }]}
-            numberOfLines={1}
-          >
-            {match.awayTeam.name}
-          </Text>
-          <Image
-            source={match.awayTeam.logo}
-            style={styles.headerLogo}
-            contentFit="contain"
-          />
-        </View>
-      </View>
-
       {/* 탭 버튼들 */}
       <View style={styles.tabRow}>
         {tabs.map((tab) => (
@@ -169,6 +136,25 @@ export default function LineupTab({ match }: Props) {
       <View style={styles.pitch}>
         <PitchBackground />
 
+        {/* 원정팀 헤더 (위쪽) */}
+        <View style={styles.teamPitchHeader}>
+          <View style={styles.teamPitchHeaderLeft}>
+            <View style={styles.pitchHeaderLogoWrapper}>
+              <Image
+                source={match.awayTeam.logo}
+                style={styles.pitchHeaderLogo}
+                contentFit="contain"
+              />
+            </View>
+            <Text style={styles.pitchHeaderTeamName}>
+              {match.awayTeam.name}
+            </Text>
+          </View>
+          <Text style={styles.pitchHeaderFormation}>
+            {awayLineup?.formation || "4-3-3"}
+          </Text>
+        </View>
+
         {awayLineup ? (
           <FieldHalf
             teamLineup={awayLineup}
@@ -192,6 +178,25 @@ export default function LineupTab({ match }: Props) {
         ) : (
           <HalfPlaceholder label={t("lineup.homeMissing")} />
         )}
+
+        {/* 홈팀 헤더 (아래쪽) */}
+        <View style={styles.teamPitchHeader}>
+          <View style={styles.teamPitchHeaderLeft}>
+            <View style={styles.pitchHeaderLogoWrapper}>
+              <Image
+                source={match.homeTeam.logo}
+                style={styles.pitchHeaderLogo}
+                contentFit="contain"
+              />
+            </View>
+            <Text style={styles.pitchHeaderTeamName}>
+              {match.homeTeam.name}
+            </Text>
+          </View>
+          <Text style={styles.pitchHeaderFormation}>
+            {homeLineup?.formation || "4-3-3"}
+          </Text>
+        </View>
       </View>
 
       {/* 후보 선수 영역 */}
@@ -296,6 +301,7 @@ function FieldHalf({
   activeTab,
   eventsMap,
   playerMap,
+  team,
 }: any) {
   const Colors = useColors();
   const styles = getStyles(Colors);
@@ -512,6 +518,15 @@ function PlayerCircle({
   return (
     <Pressable onPress={() => router.push(`player/${playerId}`)}>
       <View style={styles.playerSpot}>
+        {rating && activeTab === null && (
+          <View
+            style={[styles.ratingBadgeOrg, { backgroundColor: ratingColor }]}
+          >
+            <Text style={styles.ratingBadgeText}>
+              {Number(rating).toFixed(1)}
+            </Text>
+          </View>
+        )}
         <View style={styles.photoWrapper}>
           {renderEvents()}
 
@@ -650,7 +665,6 @@ function SubPlayerCard({
       onPress={() => router.push(`player/${playerId}`)}
       style={[styles.subPlayerCard, isRight && styles.subPlayerCardRight]}
     >
-      {/* 후보 사진 & 배지 영역 */}
       <View style={styles.subPhotoContainer}>
         {player?.photo ? (
           <Image
@@ -666,7 +680,6 @@ function SubPlayerCard({
           </View>
         )}
 
-        {/* 탭 뱃지 (사진 우측 하단 겹치게) */}
         {activeTab === "stats" && rating && (
           <View
             style={[styles.subRatingBadge, { backgroundColor: ratingColor }]}
@@ -690,7 +703,6 @@ function SubPlayerCard({
         )}
       </View>
 
-      {/* 이름, 포지션, 그리고 이벤트 정보 */}
       <View style={[styles.subInfo, isRight && { alignItems: "flex-end" }]}>
         <Text style={styles.subName} numberOfLines={1}>
           {displayName}
@@ -700,7 +712,6 @@ function SubPlayerCard({
           {playerNumber ? `#${playerNumber}` : ""}
         </Text>
 
-        {/* 기본 뷰일 때 하단에 이벤트 표시 */}
         {activeTab === null && events && (
           <View
             style={[
@@ -802,26 +813,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     emptyText: { color: Colors.text, fontSize: 14 },
 
-    formationHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      backgroundColor: Colors.surface2,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
-    },
-    teamHeader: { flex: 1, flexDirection: "row", alignItems: "center", gap: 6 },
-    headerLogo: { width: 24, height: 24 },
-    headerTeamName: {
-      flex: 1,
-      fontSize: 13,
-      fontWeight: "600",
-      color: Colors.text,
-    },
-    headerFormation: { fontSize: 12, color: Colors.primary, fontWeight: "700" },
-
     tabRow: {
       flexDirection: "row",
       gap: 8,
@@ -852,6 +843,48 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       overflow: "hidden",
       position: "relative",
     },
+
+    // 추가된 피치 안쪽 팀 헤더 스타일
+    teamPitchHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      zIndex: 1,
+      // opacity: 0.5,
+      backgroundColor: "#999999",
+    },
+    teamPitchHeaderLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    pitchHeaderLogoWrapper: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: "#fff",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    pitchHeaderLogo: {
+      width: 20,
+      height: 20,
+    },
+    pitchHeaderTeamName: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: "#fff",
+    },
+    pitchHeaderFormation: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: "#fff",
+      letterSpacing: 1,
+    },
+
     fieldHalf: { paddingVertical: 12 },
     fieldRow: {
       flexDirection: "row",
@@ -908,6 +941,16 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       textShadowRadius: 2,
     },
     ratingBadge: {
+      position: "absolute",
+      top: -50,
+      left: 30,
+      borderRadius: 6,
+      paddingHorizontal: 5,
+      paddingVertical: 2,
+      borderWidth: 1,
+      borderColor: Colors.border2,
+    },
+    ratingBadgeOrg: {
       position: "absolute",
       top: -4,
       right: -6,
@@ -1022,7 +1065,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       marginLeft: 2,
     },
 
-    // 하단 서브
     subsContainer: {
       backgroundColor: Colors.surface,
       marginTop: 16,
@@ -1070,7 +1112,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       color: Colors.text,
     },
 
-    // 서브 탭 뱃지들
     subRatingBadge: {
       position: "absolute",
       bottom: -4,
@@ -1116,7 +1157,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     subDetail: { fontSize: 11, color: Colors.textSecondary },
 
-    // 서브 이벤트
     subEventsRow: {
       flexDirection: "row",
       alignItems: "center",
@@ -1131,7 +1171,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderRadius: 4,
       gap: 2,
     },
-    subEventTime: { fontSize: 10, color: "#fff", fontWeight: "700" },
+    subEventTime: { fontSize: 10, color: Colors.text, fontWeight: "700" },
     subCard: { width: 8, height: 12, borderRadius: 2 },
     statsBadgeArea: {
       position: "absolute",

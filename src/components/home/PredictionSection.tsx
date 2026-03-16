@@ -14,39 +14,30 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Match } from "../../types";
+import { useTranslation } from "react-i18next";
 
-function getDateString(offset: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
-  return date.toISOString().split("T")[0];
+interface PredictionSectionProps {
+  matches: Match[] | [];
 }
 
-export default function PredictionSection() {
+export default function PredictionSection(props: PredictionSectionProps) {
+  const { matches } = props;
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const { t } = useTranslation();
 
-  // 오늘 경기 중 인기 경기 3개 가져오기
-  const { data: matches } = useQuery<Match[]>({
-    queryKey: ["matches", getDateString(0)],
-    queryFn: async () => {
-      const params: any = {};
-      params.date = getDateString(1); // 테스트용 날짜
-      return api.get(ENDPOINTS.matches, { params });
-    },
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // 각 경기의 예측 가져오기
   const { data: predictions } = useQuery<any>({
     queryKey: ["predictions", matches?.map((m: any) => m.apiFootballId)],
     queryFn: async () => {
       if (!matches || matches.length === 0) return [];
 
-      const predictionPromises = matches.map((match: any) =>
-        api
-          .get(`${ENDPOINTS.prediction(match.apiFootballId)}`)
-          .catch(() => null),
-      );
+      const predictionPromises = matches
+        .slice(0, 7)
+        .map((match: any) =>
+          api
+            .get(`${ENDPOINTS.prediction(match.apiFootballId)}`)
+            .catch(() => null),
+        );
 
       return Promise.all(predictionPromises);
     },
@@ -61,17 +52,17 @@ export default function PredictionSection() {
         <View style={styles.headerLeft}>
           <Ionicons name="analytics" size={24} color={Colors.primary} />
           <Text style={[styles.title, { color: Colors.text }]}>
-            AI 경기 예측
+            {t("prediction.title")}
           </Text>
         </View>
         <TouchableOpacity>
           <Text style={[styles.viewAll, { color: Colors.primary }]}>
-            전체보기
+            {t("prediction.viewAll")}
           </Text>
         </TouchableOpacity>
       </View>
 
-      {matches.map((match: any, index: number) => {
+      {matches.slice(0, 7).map((match: any, index: number) => {
         const prediction = predictions?.[index];
         return (
           <TouchableOpacity
@@ -119,7 +110,7 @@ export default function PredictionSection() {
                   <Text
                     style={[styles.probLabel, { color: Colors.textSecondary }]}
                   >
-                    홈
+                    {t("prediction.home")}
                   </Text>
                   <Text style={[styles.probValue, { color: Colors.text }]}>
                     {prediction?.prediction?.homeWinProb}%
@@ -129,7 +120,7 @@ export default function PredictionSection() {
                   <Text
                     style={[styles.probLabel, { color: Colors.textSecondary }]}
                   >
-                    무
+                    {t("prediction.draw")}
                   </Text>
                   <Text style={[styles.probValue, { color: Colors.text }]}>
                     {prediction?.prediction?.drawProb}%
@@ -139,7 +130,7 @@ export default function PredictionSection() {
                   <Text
                     style={[styles.probLabel, { color: Colors.textSecondary }]}
                   >
-                    원정
+                    {t("prediction.away")}
                   </Text>
                   <Text style={[styles.probValue, { color: Colors.text }]}>
                     {prediction?.prediction?.awayWinProb}%
@@ -152,7 +143,7 @@ export default function PredictionSection() {
                 <Text
                   style={[styles.loadingText, { color: Colors.textSecondary }]}
                 >
-                  AI 분석 중...
+                  {t("prediction.analyzing")}
                 </Text>
               </View>
             )}
@@ -168,12 +159,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     container: {
       marginTop: 24,
       paddingHorizontal: 16,
-      // iOS
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.12,
       shadowRadius: 8,
-      // Android
       elevation: 5,
     },
     header: {

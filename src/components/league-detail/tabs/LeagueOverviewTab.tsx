@@ -164,7 +164,14 @@ export default function LeagueOverviewTab({ leagueId, highlightMatch }: Props) {
 
   // 다음 경기 4개 (하이라이트 제외)
   const upcomingMatches =
-    matches?.filter((m) => m._id !== featuredMatch?._id).slice(0, 4) || [];
+    matches
+      ?.filter((m) => {
+        const matchDate = new Date(m.date);
+        const now = new Date();
+        return m._id !== featuredMatch?._id && matchDate >= now;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 4) || [];
 
   const renderFeaturedMatch = () => {
     if (!featuredMatch) return null;

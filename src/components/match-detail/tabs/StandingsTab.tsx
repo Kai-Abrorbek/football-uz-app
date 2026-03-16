@@ -324,7 +324,8 @@ export default function StandingsTab({ match }: Props) {
                 const formArr = (entry.form || "")
                   .split("")
                   .filter(Boolean)
-                  .slice(-5);
+                  .slice(-5)
+                  .reverse();
                 const rowKey = `${entry.rank}-${entry.team.id}`;
 
                 return (

@@ -115,7 +115,6 @@ export default function WorldcupBracketTab() {
     const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
     const homeWon = (match.goals.home ?? 0) > (match.goals.away ?? 0);
     const awayWon = (match.goals.away ?? 0) > (match.goals.home ?? 0);
-
     return (
       <TouchableOpacity
         key={match._id}
@@ -329,26 +328,26 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     matchCard: {
       width: CARD_WIDTH,
       height: CARD_HEIGHT, // 높이 고정 필수
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderRadius: 10,
       padding: 10,
       borderWidth: 1,
-      borderColor: Colors.border,
+      borderColor: Colors.text,
       justifyContent: "center", // 내부 수직 정렬
     },
     emptyCard: { opacity: 0.4 },
-    dateText: { fontSize: 11, color: Colors.textSecondary, marginBottom: 6 },
+    dateText: { fontSize: 11, color: Colors.text, marginBottom: 6 },
     teamRow: { flexDirection: "row", alignItems: "center", gap: 6 },
     logo: { width: 18, height: 18 },
     emptyLogo: {
       width: 18,
       height: 18,
       borderRadius: 9,
-      backgroundColor: Colors.border,
+      backgroundColor: Colors.text,
     },
-    teamName: { flex: 1, fontSize: 12, color: Colors.textSecondary },
+    teamName: { flex: 1, fontSize: 12, color: Colors.text },
     winner: { color: Colors.text, fontWeight: "700" },
-    score: { fontSize: 13, fontWeight: "700", color: Colors.textSecondary },
+    score: { fontSize: 13, fontWeight: "700", color: Colors.text },
     divider: { height: 1, backgroundColor: Colors.border, marginVertical: 6 },
-    undecided: { fontSize: 12, color: Colors.textSecondary },
+    undecided: { fontSize: 12, color: Colors.text },
   });

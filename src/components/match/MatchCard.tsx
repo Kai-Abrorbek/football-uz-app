@@ -21,6 +21,7 @@ export default function MatchCard({ match }: Props) {
   const isHalfTime = match.status.short === "HT";
   const isFinished = match.status.short === "FT";
   const isUpcoming = match.status.short === "NS";
+  const isPostponed = match.status.short === "PST";
 
   const getTimeDisplay = () => {
     if (isHalfTime) return t("matchCard.halfTime");
@@ -30,6 +31,13 @@ export default function MatchCard({ match }: Props) {
       return extra > 0 ? `${elapsed}+${extra}'` : `${elapsed}'`;
     }
     if (isFinished) return t("matchCard.finished");
+    if (isPostponed) {
+      const date = new Date(match.date);
+      return date.toLocaleDateString(i18n.language, {
+        month: "short",
+        day: "numeric",
+      });
+    }
     const date = new Date(match.date);
     return date.toLocaleTimeString(i18n.language, {
       hour: "2-digit",
@@ -66,6 +74,11 @@ export default function MatchCard({ match }: Props) {
       <View style={styles.scoreContainer}>
         {isUpcoming ? (
           <Text style={styles.upcomingText}>{getTimeDisplay()}</Text>
+        ) : isPostponed ? (
+          <View style={{ alignItems: "center", gap: 2 }}>
+            <Text style={styles.postponedText}>{t("matchCard.postponed")}</Text>
+            <Text style={styles.finishedText}>{getTimeDisplay()}</Text>
+          </View>
         ) : (
           <>
             <View style={styles.scoreBox}>
@@ -181,5 +194,10 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontSize: 13,
       fontWeight: "600",
       color: Colors.text,
+    },
+    postponedText: {
+      fontSize: 11,
+      color: Colors.textSecondary,
+      fontWeight: "600",
     },
   });

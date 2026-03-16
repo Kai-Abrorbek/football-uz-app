@@ -248,7 +248,8 @@
 
   "matchCard": {
     "halfTime": "하프타임",
-    "finished": "종료"
+    "finished": "종료",
+    "postponed": "연기"
   },
 
   "matchHeader": {
@@ -585,14 +586,6 @@
       "goalsPrevented": "막아낸 골"
     }
   },
-  "chat": {
-    "liveChat": "실시간 채팅",
-    "messages": "개의 메시지",
-    "placeholder": "메시지 입력...",
-    "loginRequired": "로그인 후 채팅 참여",
-    "firstMessage": "💬 첫 번째 메시지를 남겨보세요!"
-  },
-
   "editProfile": {
     "title": "프로필 수정",
     "name": "이름",
@@ -634,5 +627,34 @@
     "darkDesc": "어두운 테마",
     "system": "시스템 설정",
     "systemDesc": "기기 설정 따르기"
+  },
+
+  "chat": {
+    "liveChat": "실시간 채팅",
+    "messages": "개의 메시지",
+    "firstMessage": "💬 첫 번째 메시지를 남겨보세요!",
+    "title": "AI 축구 어시스턴트",
+    "subtitle": "무엇이든 물어보세요",
+    "loginRequired": "로그인이 필요합니다",
+    "loginSubtitle": "AI 챗봇을 사용하려면\n로그인해주세요",
+    "loginButton": "로그인하러 가기",
+    "placeholder": "메시지를 입력하세요...",
+    "emptyTitle": "AI와 축구 이야기를 나눠보세요",
+    "emptySubtitle": "경기 예측, 선수 정보, 리그 순위 등\n무엇이든 물어보세요!",
+    "helpTitle": "무엇을 도와드릴까요?",
+    "suggestions": {
+      "one": "프리미어리그 순위 알려줘",
+      "two": "맨유 최근 경기는?",
+      "three": "손흥민 정보 알려줘",
+      "four": "챔피언스리그 일정은?"
+    }
+  },
+  "prediction": {
+    "title": "AI 경기 예측",
+    "viewAll": "전체보기",
+    "home": "홈",
+    "draw": "무",
+    "away": "원정",
+    "analyzing": "AI 분석 중..."
   }
 }

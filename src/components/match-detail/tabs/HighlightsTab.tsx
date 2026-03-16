@@ -245,15 +245,10 @@ export default function HighlightsTab({ match }: Props) {
   };
 
   return (
-    <View
-      style={styles.container}
-      // refreshControl={
-      //   <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-      // }
-    >
+    <View style={styles.container}>
       {highlights.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Ionicons name="time-outline" size={48} color={Colors.border} />
+          <Ionicons name="time-outline" size={48} color={Colors.text} />
           <Text style={styles.emptyText}>{t("highlights.empty")}</Text>
         </View>
       ) : (
@@ -273,17 +268,18 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface2,
     },
     emptyContainer: {
       alignItems: "center",
       justifyContent: "center",
       paddingVertical: 60,
       gap: 12,
+      backgroundColor: Colors.surface2,
     },
     emptyText: {
       fontSize: 14,
-      color: Colors.textSecondary,
+      color: Colors.text,
     },
     highlightsContainer: {
       gap: 12,

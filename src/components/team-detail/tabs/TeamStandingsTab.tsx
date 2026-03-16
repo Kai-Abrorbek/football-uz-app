@@ -63,7 +63,7 @@ const getZoneColor = (rank: number, total: number): string | null => {
 
 export default function TeamStandingsTab({ teamId, leagueId }: Props) {
   const { t } = useTranslation();
-  const [selectedSeason, setSelectedSeason] = useState("2024");
+  const [selectedSeason, setSelectedSeason] = useState("2025");
   const [selectedLeague, setSelectedLeague] = useState<League>();
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
   const [showLeaguePicker, setShowLeaguePicker] = useState(false);

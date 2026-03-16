@@ -248,7 +248,8 @@
 
   "matchCard": {
     "halfTime": "Tanaffus",
-    "finished": "Tugadi"
+    "finished": "Tugadi",
+    "postponed": "Kechiktirildi"
   },
 
   "matchHeader": {
@@ -579,14 +580,6 @@
       "goalsPrevented": "Oldini olingan gol"
     }
   },
-  "chat": {
-    "liveChat": "Jonli chat",
-    "messages": " ta xabar",
-    "placeholder": "Xabar yozing...",
-    "loginRequired": "Chat uchun tizimga kiring",
-    "firstMessage": "💬 Birinchi xabar yuboring!"
-  },
-
   "editProfile": {
     "title": "Profilni tahrirlash",
     "name": "Ism",
@@ -628,5 +621,34 @@
     "darkDesc": "Qorong'u mavzu",
     "system": "Tizim sozlamalari",
     "systemDesc": "Qurilma sozlamalariga amal qiling"
+  },
+
+  "chat": {
+    "liveChat": "Jonli chat",
+    "messages": " ta xabar",
+    "firstMessage": "💬 Birinchi xabar yuboring!",
+    "title": "AI Futbol Assistenti",
+    "subtitle": "Istalgan narsani so'rang",
+    "loginRequired": "Kirish talab qilinadi",
+    "loginSubtitle": "AI chatbotdan foydalanish uchun\nkiring",
+    "loginButton": "Kirishga o'tish",
+    "placeholder": "Xabar kiriting...",
+    "emptyTitle": "AI bilan futbol haqida suhbatlashing",
+    "emptySubtitle": "O'yin bashoratlari, o'yinchi ma'lumotlari\nIstalgan narsani so'rang!",
+    "helpTitle": "Qanday yordam bera olaman?",
+    "suggestions": {
+      "one": "Premer-liga reytingi",
+      "two": "Man Yunayted so'nggi o'yinlari?",
+      "three": "Son Xyn-min haqida",
+      "four": "Chempionlar ligasi jadvali?"
+    }
+  },
+  "prediction": {
+    "title": "AI O'yin Bashoratlari",
+    "viewAll": "Hammasini ko'rish",
+    "home": "Uy",
+    "draw": "Durrang",
+    "away": "Mehmon",
+    "analyzing": "AI tahlil qilmoqda..."
   }
 }

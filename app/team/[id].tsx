@@ -14,7 +14,6 @@ import TeamMatchesTab from "../../src/components/team-detail/tabs/TeamMatchesTab
 import TeamStandingsTab from "../../src/components/team-detail/tabs/TeamStandingsTab";
 import { Image } from "expo-image";
 import { useColors } from "../../src/hooks/useColors";
-import MatchAlertModal from "../../src/components/match-detail/MatchAlertModal";
 import { AuthGate } from "../../src/contexts/AuthGate";
 
 const TABS = [
@@ -26,7 +25,6 @@ const TABS = [
 
 export default function TeamDetailScreen() {
   const params = useLocalSearchParams<{ team: string; leagueId: string }>();
-  const [alertModalVisible, setAlertModalVisible] = useState(false);
   const Colors = useColors();
   const styles = getStyles(Colors);
   const { team, leagueId } = params;
@@ -79,7 +77,12 @@ export default function TeamDetailScreen() {
   const renderTab = () => {
     switch (activeTab) {
       case "overview":
-        return <TeamOverviewTab teamId={teamData.id} teamMatches={matches} />;
+        return (
+          <TeamOverviewTab
+            teamId={teamData.id}
+            teamMatches={matches.reverse()}
+          />
+        );
       case "players":
         return <TeamPlayersTab teamId={teamData.id} />;
       case "matches":

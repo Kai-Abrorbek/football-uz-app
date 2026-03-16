@@ -4,28 +4,21 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Modal,
 } from "react-native";
 import { useState } from "react";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../constants/api";
-import { Colors, getColors } from "../../../constants/colors";
-import { Match } from "../../../types";
+import { getColors } from "../../../constants/colors";
 import AllMatchesModal from "../AllMatchesModal";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 
-interface Props {
-  teamId: number;
-  teamMatches: Match[] | [];
-}
-
 // 영상 썸네일을 불러오기 위해 별도 컴포넌트로 분리
-function SmallMatchCard({ match, styles, Colors, t, i18n, getLocale }: any) {
+function SmallMatchCard({ match, styles, t }: any) {
   const router = useRouter();
   const isFinished = match.status.short === "FT";
   const isLive = ["1H", "HT", "2H", "ET"].includes(match.status.short);
@@ -144,7 +137,6 @@ function SmallMatchCard({ match, styles, Colors, t, i18n, getLocale }: any) {
 
 export default function TeamOverviewTab({ teamId, teamMatches }: any) {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
   const [showAllMatches, setShowAllMatches] = useState(false);
   const Colors = useColors();
   const styles = getStyles(Colors);

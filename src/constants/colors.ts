@@ -17,7 +17,7 @@ export const getColors = (isDark: boolean) => ({
 
   // ── Border ─────────────────────────────────────────
   border: isDark ? "#1E2535" : "#e5e5e5", // --border
-  border2: isDark ? "#252D3D" : "#d0d0d0", // --border2
+  border2: isDark ? "#4e5d7a" : "#d0d0d0", // --border2
 
   // ── Text ───────────────────────────────────────────
   text: isDark ? "#E2E8F4" : "#1a1a1a", // --text

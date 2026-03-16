@@ -85,9 +85,9 @@ export const CONTINENTS = [
   },
 ];
 
-export const SEASON = 2024;
+export const SEASON = 2025;
 export const MATCH_SEASON = 2025;
-export const STANDING_SEASON = 2024;
+export const STANDING_SEASON = 2025;
 
 export const FEATURED_LEAGUES = [
   { id: 39, name: "Premier League", totalRounds: 38, color: "#3D195B" },

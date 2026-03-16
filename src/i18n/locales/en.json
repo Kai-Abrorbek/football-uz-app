@@ -256,7 +256,8 @@
 
   "matchCard": {
     "halfTime": "Half-time",
-    "finished": "FT"
+    "finished": "FT",
+    "postponed": "Postponed"
   },
 
   "matchHeader": {
@@ -585,13 +586,6 @@
       "goalsPrevented": "Goals Prevented"
     }
   },
-  "chat": {
-    "liveChat": "Live Chat",
-    "messages": " messages",
-    "placeholder": "Type a message...",
-    "loginRequired": "Login to chat",
-    "firstMessage": "💬 Be the first to send a message!"
-  },
   "editProfile": {
     "title": "Edit Profile",
     "name": "Name",
@@ -633,5 +627,33 @@
     "darkDesc": "Dark theme",
     "system": "System Settings",
     "systemDesc": "Follow device settings"
+  },
+  "chat": {
+    "liveChat": "Live Chat",
+    "messages": " messages",
+    "loginRequired": "Login to chat",
+    "firstMessage": "💬 Be the first to send a message!",
+    "title": "AI Football Assistant",
+    "subtitle": "Ask me anything",
+    "loginSubtitle": "Please login to use the AI chatbot",
+    "loginButton": "Go to Login",
+    "placeholder": "Type a message...",
+    "emptyTitle": "Chat with AI about football",
+    "emptySubtitle": "Match predictions, player info, league standings\nAsk me anything!",
+    "helpTitle": "How can I help you?",
+    "suggestions": {
+      "one": "Premier League standings",
+      "two": "Man United recent matches?",
+      "three": "Tell me about Son Heung-min",
+      "four": "Champions League schedule?"
+    }
+  },
+  "prediction": {
+    "title": "AI Match Predictions",
+    "viewAll": "View All",
+    "home": "Home",
+    "draw": "Draw",
+    "away": "Away",
+    "analyzing": "AI Analyzing..."
   }
 }

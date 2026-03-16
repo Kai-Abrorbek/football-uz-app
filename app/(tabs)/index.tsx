@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  codegenNativeCommands,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -72,18 +73,24 @@ export default function HomeScreen() {
 
   const groupByLeague = (matches: any[]) => {
     if (!matches) return {};
-    return matches.reduce((acc: any, match) => {
+    const grouped = matches.reduce((acc: any, match) => {
       const leagueId = match.league.id;
       if (!acc[leagueId]) {
         acc[leagueId] = { league: match.league, matches: [] };
       }
       acc[leagueId].matches.push(match);
-
-      // if (acc[leagueId].matches.length < 4) {
-      //   acc[leagueId].matches.push(match);
-      // }
       return acc;
     }, {});
+
+    // 각 리그 내 경기를 시간순 정렬
+    Object.values(grouped).forEach((group: any) => {
+      group.matches.sort(
+        (a: any, b: any) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+    });
+
+    return grouped;
   };
 
   const renderDateSection = (
@@ -110,7 +117,7 @@ export default function HomeScreen() {
           <Text style={styles.dateHeaderText}>{label}</Text>
         </View>
 
-        {groupList.reverse().map((group: any, index: number) => (
+        {groupList.map((group: any, index: number) => (
           <View key={group.league.id}>
             <View style={styles.leagueGroup}>
               <TouchableOpacity style={styles.leagueHeader}>
@@ -294,7 +301,7 @@ export default function HomeScreen() {
         <NewsSection />
 
         {/* AI 예측 */}
-        <PredictionSection />
+        <PredictionSection matches={matches ?? []} />
 
         <View style={{ height: 20 }} />
       </ScrollView>

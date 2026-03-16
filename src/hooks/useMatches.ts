@@ -5,14 +5,15 @@ import { Match } from "../types";
 
 // 테스트용 - 2024년 데이터로 고정
 export const useMatches = (date?: string, leagueId?: number) => {
+  const startUTC = new Date(`${date}T00:00:00`).toISOString();
+  const endUTC = new Date(`${date}T23:59:59`).toISOString();
+
   return useQuery<Match[]>({
     queryKey: ["matches", date, leagueId],
-    queryFn: async () => {
-      const params: any = {};
-      if (date) params.date = date; // 테스트용 날짜
-      if (leagueId) params.leagueId = leagueId;
-      return api.get(ENDPOINTS.matches, { params });
-    },
+    queryFn: () =>
+      api.get(ENDPOINTS.matches, {
+        params: { startUTC, endUTC, leagueId },
+      }),
     staleTime: 1000 * 60 * 5,
   });
 };

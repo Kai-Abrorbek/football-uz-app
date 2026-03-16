@@ -1,13 +1,13 @@
 import { MATCH_SEASON } from "./leauges";
 
-export const API_URL = "http://72.62.75.97:4000/api/v1";
-// export const API_URL = "http://localhost:4000/api/v1";
+// export const API_URL = "http://72.62.75.97:4000/api/v1";
+export const API_URL = "http://localhost:4000/api/v1";
 // export const API_URL = "https://f206-213-230-80-223.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.84.175.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
 export const WORLDCUP_LEAGUE_ID = 1;
-export const WORLDCUP_SEASON = 2022; // 나중에 2026으로 교체
+export const WORLDCUP_SEASON = 2026; // 나중에 2026으로 교체
 
 export const ENDPOINTS = {
   // Matches
@@ -16,7 +16,7 @@ export const ENDPOINTS = {
   matchDetail: (id: string) => `/matches/${id}`,
   teamMatchDetail: (id: number) => `/matches/team-allmatches/${id}`,
   getTeamDetail: (id: number) =>
-    `/matches/team/${id}?limit=999&season=${MATCH_SEASON}`,
+    `/matches/team/${id}?limit=999&season=${MATCH_SEASON}&date=${new Date()}`,
   teamMatchRecent: (id: number) => `/matches/team-recent/${id}`,
   teamsRecentMatches: (id1: number, id2: number) =>
     `/matches/recent-matches/${id1}/${id2}?limit=5`,

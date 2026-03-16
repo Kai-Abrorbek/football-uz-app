@@ -151,8 +151,8 @@ export default function WorldcupStandingsTab() {
       <View
         style={{
           flex: 1,
-          backgroundColor: "#eceaea",
-          borderColor: "#d2d1d1",
+          backgroundColor: Colors.surface2,
+          borderColor: Colors.border2,
           borderWidth: 1,
           padding: 10,
           margin: 15,
@@ -160,14 +160,16 @@ export default function WorldcupStandingsTab() {
           gap: 15,
         }}
       >
-        <Text style={{ color: Colors.text2, fontWeight: "600" }}>
+        <Text style={{ color: Colors.text, fontWeight: "600" }}>
           {t("worldcup.qualifier")}
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <Text
             style={{ width: 15, height: 15, backgroundColor: "blue" }}
           ></Text>
-          <Text>{t("worldcup.playoff")}</Text>
+          <Text style={{ color: Colors.text, fontWeight: "600" }}>
+            {t("worldcup.playoff")}
+          </Text>
         </View>
       </View>
     </ScrollView>
@@ -179,7 +181,7 @@ const ROW_HEIGHT = 44;
 const HEADER_HEIGHT = 32;
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+    container: { flex: 1, backgroundColor: Colors.surface2 },
     groupSection: { marginTop: 16 },
     groupTitle: {
       fontSize: 16,
@@ -192,7 +194,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       paddingHorizontal: 16,
       paddingVertical: 6,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
@@ -206,7 +208,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     headerCell: {
       width: STAT_CELL_WIDTH,
       fontSize: 11,
-      color: Colors.textSecondary,
+      color: Colors.text,
       textAlign: "center",
     },
     teamRow: {
@@ -221,7 +223,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     rank: {
       width: 24,
       fontSize: 13,
-      color: Colors.textSecondary,
+      color: Colors.text,
       textAlign: "center",
     },
     logo: { width: 24, height: 24 },
@@ -233,7 +235,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       textAlign: "center",
     },
     points: { fontWeight: "700" },
-    groupDivider: { height: 8, backgroundColor: Colors.background },
+    groupDivider: { height: 8, backgroundColor: Colors.surface2 },
     tableContainer: { flexDirection: "row" },
     leftColumn: { width: 160 },
     leftColumnBorder: {
@@ -251,7 +253,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       alignItems: "center",
       paddingVertical: 6,
       paddingHorizontal: 8,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
@@ -270,7 +272,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flexDirection: "row",
       alignItems: "center",
       paddingVertical: 6,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
     },
