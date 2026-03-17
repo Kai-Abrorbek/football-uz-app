@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,25 +15,54 @@ import TeamStandingsTab from "../../src/components/team-detail/tabs/TeamStanding
 import { Image } from "expo-image";
 import { useColors } from "../../src/hooks/useColors";
 import { AuthGate } from "../../src/contexts/AuthGate";
-
-const TABS = [
-  { key: "overview", label: "개요" },
-  { key: "players", label: "선수" },
-  { key: "matches", label: "경기" },
-  { key: "standings", label: "순위" },
-];
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../../src/contexts/AuthContext";
+import {
+  getFollowing,
+  toggleFollowTeam,
+} from "../../src/constants/followService";
 
 export default function TeamDetailScreen() {
   const params = useLocalSearchParams<{ team: string; leagueId: string }>();
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const { t } = useTranslation();
+  const { userData } = useAuth();
   const { team, leagueId } = params;
   const [activeTab, setActiveTab] = useState("overview");
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // matchData가 string이면 파싱
+  const TABS = [
+    { key: "overview", label: t("teamDetail.tabs.overview") },
+    { key: "players", label: t("teamDetail.tabs.players") },
+    { key: "matches", label: t("teamDetail.tabs.matches") },
+    { key: "standings", label: t("teamDetail.tabs.standings") },
+  ];
+
   const teamData = team ? JSON.parse(team) : null;
-  // 리그 정보 조회
+
+  useEffect(() => {
+    const checkFollowing = async () => {
+      if (!userData) return;
+      const following = await getFollowing();
+      setIsFollowing(following.teams.includes(teamData.id));
+    };
+    checkFollowing();
+  }, [teamData.id, userData]);
+
+  const handleFollow = async () => {
+    if (!userData) {
+      router.push("/profile");
+      return;
+    }
+    try {
+      const result = await toggleFollowTeam(teamData.id);
+      setIsFollowing(result.following);
+    } catch (error) {
+      console.error("팔로우 실패:", error);
+    }
+  };
+
   const {
     data: matches,
     isLoading,
@@ -42,7 +71,6 @@ export default function TeamDetailScreen() {
     queryKey: ["team-detail", teamData.id],
     queryFn: async () => {
       const res: any = await api.get(ENDPOINTS.getTeamDetail(teamData.id));
-
       return res ?? [];
     },
     staleTime: 1000 * 60 * 30,
@@ -52,15 +80,14 @@ export default function TeamDetailScreen() {
     return (
       <View style={styles.center}>
         <Text style={{ color: "red", fontSize: 16, fontWeight: "600" }}>
-          팀 경기 정보가 없습니다 (404)
+          {t("teamDetail.error")}
         </Text>
-
         <TouchableOpacity
           style={styles.homeButton}
           onPress={() => router.replace("/")}
           activeOpacity={0.7}
         >
-          <Text style={styles.homeButtonText}>홈으로 이동</Text>
+          <Text style={styles.homeButtonText}>{t("teamDetail.goHome")}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -97,15 +124,12 @@ export default function TeamDetailScreen() {
   return (
     <AuthGate>
       <SafeAreaView style={styles.container} edges={["top"]}>
-        {/* 헤더 */}
-        {/* 헤더 */}
         <View
           style={[
             styles.header,
             { backgroundColor: teamData.color ?? Colors.primary },
           ]}
         >
-          {/* 상단 바 */}
           <View style={styles.headerTop}>
             <TouchableOpacity
               style={styles.backButton}
@@ -123,7 +147,7 @@ export default function TeamDetailScreen() {
                   styles.followButton,
                   isFollowing && styles.followButtonActive,
                 ]}
-                onPress={() => setIsFollowing(!isFollowing)}
+                onPress={handleFollow}
               >
                 <Text
                   style={[
@@ -131,13 +155,14 @@ export default function TeamDetailScreen() {
                     isFollowing && { color: teamData.color ?? Colors.primary },
                   ]}
                 >
-                  {isFollowing ? "팔로잉" : "팔로우"}
+                  {isFollowing
+                    ? t("teamDetail.following")
+                    : t("teamDetail.follow")}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* 팀 정보 */}
           <View style={styles.headerInfo}>
             <Image
               source={teamData.logo}
@@ -151,14 +176,12 @@ export default function TeamDetailScreen() {
           </View>
         </View>
 
-        {/* 탭 */}
         <LeagueTabs
           tabs={TABS}
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
 
-        {/* 탭 컨텐츠 */}
         <View style={styles.content}>{renderTab()}</View>
       </SafeAreaView>
     </AuthGate>
@@ -180,13 +203,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingHorizontal: 24,
       borderRadius: 8,
     },
-
     homeButtonText: {
       color: Colors.text,
       fontWeight: "700",
       fontSize: 14,
     },
-
     container: {
       flex: 1,
       backgroundColor: Colors.background,
@@ -234,16 +255,16 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingVertical: 8,
       borderRadius: 20,
       borderWidth: 1,
-      borderColor: Colors.primary,
-      backgroundColor: Colors.surface,
+      borderColor: "#ffffff",
+      backgroundColor: "transparent",
     },
     followButtonActive: {
-      backgroundColor: Colors.primary,
+      backgroundColor: "#ffffff",
     },
     followButtonText: {
       fontSize: 14,
       fontWeight: "700",
-      color: Colors.primary,
+      color: "#ffffff",
     },
     content: {
       flex: 1,
@@ -280,7 +301,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     teamName: {
       fontSize: 26,
       fontWeight: "800",
-      color: Colors.text,
+      color: "#ffffff",
     },
     teamCountry: {
       fontSize: 14,

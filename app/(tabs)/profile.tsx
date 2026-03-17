@@ -45,7 +45,7 @@ export default function ProfileScreen() {
         emailOrUsername: email,
         password,
       });
-
+      console.log(response);
       await AsyncStorage.setItem("auth_token", response.accessToken);
       await AsyncStorage.setItem("user_data", JSON.stringify(response));
       setUser(response);
@@ -96,25 +96,6 @@ export default function ProfileScreen() {
       const message =
         error.response?.data?.message || t("auth.errors.registerFailed");
       alert(message);
-    }
-  };
-
-  const handleTelegramLogin = async (telegramUser: any) => {
-    try {
-      console.log("Telegram user:", telegramUser);
-
-      const response: AuthResponseDto = await api.post(ENDPOINTS.authSocial, {
-        provider: "telegram",
-        token: telegramUser.hash,
-        data: telegramUser,
-      });
-
-      await AsyncStorage.setItem("auth_token", response.accessToken);
-      await AsyncStorage.setItem("user_data", JSON.stringify(response));
-      setUser(response);
-    } catch (error: any) {
-      console.error("Telegram login failed:", error);
-      alert(t("auth.errors.telegramLoginFailed"));
     }
   };
 
@@ -456,6 +437,20 @@ export default function ProfileScreen() {
               size={20}
               color={Colors.textSecondary}
             />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => {
+              router.push("/following");
+            }}
+          >
+            <View style={styles.menuItemLeft}>
+              <Ionicons name="star-outline" size={22} color={Colors.text} />
+              <Text style={styles.menuItemText}>
+                {t("auth.emailVerification.following")}
+              </Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity

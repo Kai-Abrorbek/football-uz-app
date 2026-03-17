@@ -49,7 +49,8 @@
       "menuItem": "Подтверждение email",
       "alreadyVerifiedTitle": "Уже подтверждён",
       "alreadyVerifiedMessage": "Ваш email уже подтверждён.",
-      "resendConfirm": "Отправить ссылку на {{email}}?"
+      "resendConfirm": "Отправить ссылку на {{email}}?",
+      "following": "Вы подписаны"
     },
     "telegram": {
       "login": "Войти через Telegram",
@@ -643,5 +644,39 @@
     "draw": "Ничья",
     "away": "Гости",
     "analyzing": "AI анализирует..."
+  },
+  "teamDetail": {
+    "following": "Слежу",
+    "follow": "Следить",
+    "tabs": {
+      "overview": "Обзор",
+      "players": "Игроки",
+      "matches": "Матчи",
+      "standings": "Таблица"
+    },
+    "error": "Информация о матчах команды недоступна (404)",
+    "goHome": "На главную"
+  },
+  "playerDetail": {
+    "following": "Слежу",
+    "follow": "Следить"
+  },
+  "following": {
+    "searchPlaceholder": "Поиск...",
+    "searchHint": "Поиск команд, игроков, лиг",
+    "noResults": "Результатов не найдено",
+    "title": "Подписки",
+    "edit": "Изменить",
+    "done": "Готово",
+    "follow": "Следить",
+    "following": "Слежу",
+    "trending": "Тренды",
+    "loginRequired": "Требуется вход",
+    "goLogin": "Войти",
+    "tabs": {
+      "teams": "Команды",
+      "players": "Игроки",
+      "leagues": "Лиги"
+    }
   }
 }

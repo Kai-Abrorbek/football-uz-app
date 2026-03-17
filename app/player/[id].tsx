@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,15 +15,44 @@ import PlayerStatsTab from "../../src/components/player-detail/tabs/PlayerStatsT
 import PlayerMatchesTab from "../../src/components/player-detail/tabs/PlayerMatchesTab";
 import LeagueTabs from "../../src/components/league-detail/LeagueTabs";
 import { AuthGate } from "../../src/contexts/AuthGate";
+import { useAuth } from "../../src/contexts/AuthContext";
+import {
+  getFollowing,
+  toggleFollowPlayer,
+} from "../../src/constants/followService";
 
 const TABS = [{ key: "overview" }, { key: "stats" }, { key: "matches" }];
 
 export default function PlayerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("overview");
+  const [isFollowing, setIsFollowing] = useState(false);
   const Colors = useColors();
   const styles = getStyles(Colors);
   const { t } = useTranslation();
+  const { userData } = useAuth();
+
+  useEffect(() => {
+    const checkFollowing = async () => {
+      if (!userData) return;
+      const following = await getFollowing();
+      setIsFollowing(following.players.includes(Number(id)));
+    };
+    checkFollowing();
+  }, [id, userData]);
+
+  const handleFollow = async () => {
+    if (!userData) {
+      router.push("/profile");
+      return;
+    }
+    try {
+      const result = await toggleFollowPlayer(Number(id));
+      setIsFollowing(result.following);
+    } catch (error) {
+      console.error("팔로우 실패:", error);
+    }
+  };
 
   const { data, isLoading, isError } = useQuery<any>({
     queryKey: ["player", id],
@@ -41,7 +70,6 @@ export default function PlayerDetailScreen() {
   if (isError) {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
-        {/* 헤더 - 뒤로가기는 살려야 함 */}
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
@@ -53,7 +81,6 @@ export default function PlayerDetailScreen() {
             <Ionicons name="arrow-back" size={24} color={Colors.text} />
           </TouchableOpacity>
         </View>
-
         <View style={styles.center}>
           <Ionicons
             name="person-outline"
@@ -97,7 +124,6 @@ export default function PlayerDetailScreen() {
   return (
     <AuthGate>
       <SafeAreaView style={styles.container} edges={["top"]}>
-        {/* 헤더 */}
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
@@ -124,24 +150,33 @@ export default function PlayerDetailScreen() {
           </View>
 
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.moreButton}>
-              <Ionicons
-                name="ellipsis-vertical"
-                size={20}
-                color={Colors.text}
-              />
+            <TouchableOpacity
+              style={[
+                styles.followButton,
+                isFollowing && styles.followButtonActive,
+              ]}
+              onPress={handleFollow}
+            >
+              <Text
+                style={[
+                  styles.followButtonText,
+                  isFollowing && styles.followButtonTextActive,
+                ]}
+              >
+                {isFollowing
+                  ? t("playerDetail.following")
+                  : t("playerDetail.follow")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* 탭 */}
         <LeagueTabs
           tabs={TABS}
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
 
-        {/* 탭 컨텐츠 */}
         <View style={styles.content}>{renderTab()}</View>
       </SafeAreaView>
     </AuthGate>
@@ -192,6 +227,25 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     playerName: { fontSize: 16, fontWeight: "700", color: Colors.text },
     playerPosition: { fontSize: 12, color: Colors.textSecondary },
     headerRight: { flexDirection: "row", alignItems: "center" },
+    followButton: {
+      paddingHorizontal: 14,
+      paddingVertical: 7,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: Colors.primary,
+      backgroundColor: "transparent",
+    },
+    followButtonActive: {
+      backgroundColor: Colors.primary,
+    },
+    followButtonText: {
+      fontSize: 13,
+      fontWeight: "700",
+      color: Colors.primary,
+    },
+    followButtonTextActive: {
+      color: "#ffffff",
+    },
     moreButton: {
       width: 36,
       height: 36,

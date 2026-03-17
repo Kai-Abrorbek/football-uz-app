@@ -15,6 +15,11 @@ import { useEffect, useState } from "react";
 import { useColors } from "../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 import MatchAlertModal from "./MatchAlertModal";
+import { useAuth } from "../../contexts/AuthContext";
+import {
+  getFollowing,
+  toggleFollowLeague,
+} from "../../constants/followService";
 
 interface Props {
   match: Match;
@@ -31,12 +36,36 @@ export default function MatchHeader({
   onHeaderLayout,
   scrollDistance,
 }: Props) {
-  const [isFollowing, setIsFollowing] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
   const Colors = useColors();
   const styles = getStyles(Colors);
   const [isCompactActive, setIsCompactActive] = useState(false);
+  const { userData } = useAuth();
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  // 초기 팔로잉 상태 확인
+  useEffect(() => {
+    const checkFollowing = async () => {
+      if (!userData) return;
+      const following = await getFollowing();
+      setIsFollowing(following.leagues.includes(match.league.id));
+    };
+    checkFollowing();
+  }, [match.league.id, userData]);
+
+  const handleFollow = async () => {
+    if (!userData) {
+      router.push("/profile");
+      return;
+    }
+    try {
+      const result = await toggleFollowLeague(match.league.id);
+      setIsFollowing(result.following);
+    } catch (error) {
+      console.error("팔로우 실패:", error);
+    }
+  };
 
   const isLive = ["1H", "HT", "2H", "ET", "BT", "P"].includes(
     match.status.short,
@@ -179,7 +208,7 @@ export default function MatchHeader({
                   styles.followButton,
                   isFollowing && styles.followButtonActive,
                 ]}
-                onPress={() => setIsFollowing(!isFollowing)}
+                onPress={handleFollow}
               >
                 <Text
                   style={[

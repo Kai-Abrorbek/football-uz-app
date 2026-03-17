@@ -1,7 +1,7 @@
 import { MATCH_SEASON } from "./leauges";
 
-// export const API_URL = "http://72.62.75.97:4000/api/v1";
-export const API_URL = "http://localhost:4000/api/v1";
+export const API_URL = "http://72.62.75.97:4000/api/v1";
+// export const API_URL = "http://localhost:4000/api/v1";
 // export const API_URL = "https://f206-213-230-80-223.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.84.175.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
@@ -113,4 +113,16 @@ export const ENDPOINTS = {
   // Streaming
   streamingLive: "/matches/streaming/live",
   setStreaming: (id: string) => `/matches/${id}/streaming`,
+
+  followTeam: (teamId: number) => `/users/follow/teams/${teamId}`,
+  followPlayer: (playerId: number) => `/users/follow/players/${playerId}`,
+  followLeague: (leagueId: number) => `/users/follow/leagues/${leagueId}`,
+  following: "/users/following",
+
+  followingTeams: "/users/following/teams",
+  followingPlayers: "/users/following/players",
+  followingLeagues: "/users/following/leagues",
+  suggestedTeams: "/users/suggested/teams",
+  suggestedPlayers: "/users/suggested/players",
+  suggestedLeagues: "/users/suggested/leagues",
 };

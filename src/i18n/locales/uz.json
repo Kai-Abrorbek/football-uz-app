@@ -50,7 +50,8 @@
       "menuItem": "Email tasdiqlash",
       "alreadyVerifiedTitle": "Allaqachon tasdiqlangan",
       "alreadyVerifiedMessage": "Emailingiz allaqachon tasdiqlangan.",
-      "resendConfirm": "{{email}} ga havola yuborilsinmi?"
+      "resendConfirm": "{{email}} ga havola yuborilsinmi?",
+      "following": "Following"
     },
     "telegram": {
       "login": "Telegram orqali kirish",
@@ -650,5 +651,39 @@
     "draw": "Durrang",
     "away": "Mehmon",
     "analyzing": "AI tahlil qilmoqda..."
+  },
+  "teamDetail": {
+    "following": "Kuzatilmoqda",
+    "follow": "Kuzatish",
+    "tabs": {
+      "overview": "Umumiy",
+      "players": "O'yinchilar",
+      "matches": "O'yinlar",
+      "standings": "Jadval"
+    },
+    "error": "Jamoa o'yinlari haqida ma'lumot yo'q (404)",
+    "goHome": "Bosh sahifaga"
+  },
+  "playerDetail": {
+    "following": "Kuzatilmoqda",
+    "follow": "Kuzatish"
+  } ,
+  "following": {
+    "searchPlaceholder": "Qidirish...",
+    "searchHint": "Jamoalar, o'yinchilar, ligalarni qidiring",
+    "noResults": "Natija topilmadi",
+    "title": "Obunalar",
+    "edit": "Tahrirlash",
+    "done": "Tayyor",
+    "follow": "Kuzatish",
+    "following": "Kuzatilmoqda",
+    "trending": "Trendlar",
+    "loginRequired": "Kirish talab qilinadi",
+    "goLogin": "Kirishga o'tish",
+    "tabs": {
+      "teams": "Jamoalar",
+      "players": "O'yinchilar",
+      "leagues": "Ligalar"
+    }
   }
 }

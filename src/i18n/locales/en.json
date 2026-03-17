@@ -56,7 +56,8 @@
       "menuItem": "Email Verification",
       "alreadyVerifiedTitle": "Already Verified",
       "alreadyVerifiedMessage": "Your email is already verified.",
-      "resendConfirm": "Send verification link to {{email}}?"
+      "resendConfirm": "Send verification link to {{email}}?",
+      "following": "Following"
     },
     "telegram": {
       "login": "Login with Telegram",
@@ -655,5 +656,39 @@
     "draw": "Draw",
     "away": "Away",
     "analyzing": "AI Analyzing..."
+  },
+  "teamDetail": {
+    "following": "Following",
+    "follow": "Follow",
+    "tabs": {
+      "overview": "Overview",
+      "players": "Players",
+      "matches": "Matches",
+      "standings": "Standings"
+    },
+    "error": "No team match information (404)",
+    "goHome": "Go to Home"
+  },
+  "playerDetail": {
+    "following": "Following",
+    "follow": "Follow"
+  },
+  "following": {
+    "searchPlaceholder": "Search...",
+    "searchHint": "Search for teams, players, leagues",
+    "noResults": "No results found",
+    "title": "Following",
+    "edit": "Edit",
+    "done": "Done",
+    "follow": "Follow",
+    "following": "Following",
+    "trending": "Trending",
+    "loginRequired": "Login required",
+    "goLogin": "Go to Login",
+    "tabs": {
+      "teams": "Teams",
+      "players": "Players",
+      "leagues": "Leagues"
+    }
   }
 }

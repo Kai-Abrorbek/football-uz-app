@@ -50,7 +50,8 @@
       "menuItem": "이메일 인증",
       "alreadyVerifiedTitle": "인증 완료",
       "alreadyVerifiedMessage": "이미 이메일 인증이 완료된 계정입니다.",
-      "resendConfirm": "{{email}} 으로 인증 링크를 재발송할까요?"
+      "resendConfirm": "{{email}} 으로 인증 링크를 재발송할까요?",
+      "following": "팔로윙"
     },
     "telegram": {
       "login": "텔레그램으로 로그인",
@@ -656,5 +657,39 @@
     "draw": "무",
     "away": "원정",
     "analyzing": "AI 분석 중..."
+  },
+  "teamDetail": {
+    "following": "팔로잉",
+    "follow": "팔로우",
+    "tabs": {
+      "overview": "개요",
+      "players": "선수",
+      "matches": "경기",
+      "standings": "순위"
+    },
+    "error": "팀 경기 정보가 없습니다 (404)",
+    "goHome": "홈으로 이동"
+  },
+  "playerDetail": {
+    "following": "팔로잉",
+    "follow": "팔로우"
+  },
+  "following": {
+    "searchPlaceholder": "검색...",
+    "searchHint": "팀, 선수, 리그를 검색하세요",
+    "noResults": "검색 결과가 없습니다",
+    "title": "팔로잉",
+    "edit": "편집",
+    "done": "완료",
+    "follow": "팔로우",
+    "following": "팔로잉",
+    "trending": "트렌딩",
+    "loginRequired": "로그인이 필요합니다",
+    "goLogin": "로그인하러 가기",
+    "tabs": {
+      "teams": "팀",
+      "players": "선수",
+      "leagues": "리그"
+    }
   }
 }
