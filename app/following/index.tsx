@@ -8,6 +8,7 @@ import {
   FlatList,
   Dimensions,
   ActivityIndicator,
+  LogBox,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
@@ -348,11 +349,13 @@ export default function FollowingScreen() {
           style={styles.suggestedLeft}
           onPress={() => router.push(`/league/${league.apiFootballId}`)}
         >
-          <Image
-            source={league.logo}
-            style={styles.suggestedLogo}
-            contentFit="contain"
-          />
+          <View style={styles.logoBox}>
+            <Image
+              source={league.logo}
+              style={styles.suggestedLogo}
+              contentFit="contain"
+            />
+          </View>
           <View>
             <Text style={styles.suggestedName} numberOfLines={1}>
               {league.name}
@@ -658,13 +661,27 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       gap: 12,
       flex: 1,
     },
+    logoBox: {
+      width: 50,
+      height: 50,
+      borderRadius: 50,
+      backgroundColor: Colors.logoBox,
+      alignItems: "center",
+      justifyContent: "center",
+    },
     suggestedLogo: { width: 40, height: 40 },
     suggestedPlayerPhoto: {
       width: 40,
       height: 40,
       borderRadius: 20,
     },
-    suggestedName: { fontSize: 14, fontWeight: "600", color: Colors.text },
+    suggestedName: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+      overflow: "hidden",
+      width: 180,
+    },
     suggestedSub: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
     followBtn: {
       paddingHorizontal: 16,

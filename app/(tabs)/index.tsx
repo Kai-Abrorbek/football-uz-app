@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -27,6 +27,9 @@ import { getColors } from "../../src/constants/colors";
 import NotificationModal from "../../src/components/notifications/NotificationModal";
 import usePushNotifications from "../../src/hooks/usePushNotifications";
 import DateSelector from "../../src/components/match-detail/DateSelector";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { ENDPOINTS } from "../../src/constants/api";
+import api from "../../src/services/api";
 
 export const formatDate = (date: Date): string => {
   const y = date.getFullYear();
@@ -42,6 +45,7 @@ export default function HomeScreen() {
   const [selectedLeague, setSelectedLeague] = useState<number | undefined>();
   const { data: leagues } = useFeaturedLeagues();
   const { data: liveMatches } = useLiveMatches();
+  const { userData } = useAuth();
   const [notificationModalVisible, setNotificationModalVisible] =
     useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -54,6 +58,20 @@ export default function HomeScreen() {
     refetch,
     isError,
   } = useMatches(selectedDate, selectedLeague);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      if (!userData?.user) return;
+      try {
+        const res: any = await api.get(ENDPOINTS.notifications);
+        const unread = (res ?? []).filter((n: any) => !n.isRead).length;
+        setUnreadCount(unread);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchUnreadCount();
+  }, [userData?.user]);
 
   const getDateLabel = (dateStr: string): string => {
     const today = formatDate(new Date());

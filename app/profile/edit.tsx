@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   Platform,
   ActivityIndicator,
 } from "react-native";
@@ -23,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import api from "../../src/services/api";
 import { AuthResponseDto } from "../../src/types";
 import { ENDPOINTS } from "../../src/constants/api";
+import { useAlert } from "../../src/utils/alert";
 
 export default function EditProfileScreen() {
   const { userData, setUser } = useAuth();
@@ -34,12 +34,18 @@ export default function EditProfileScreen() {
   const [email, setEmail] = useState(userData?.user?.email || "");
   const [avatar, setAvatar] = useState(userData?.user?.avatar || null);
   const [isLoading, setIsLoading] = useState(false);
+  const {
+    AlertComponent,
+    sweetTopSuccessAlert,
+    sweetMixinSuccessAlert,
+    sweetErrorAlert,
+  } = useAlert();
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== "granted") {
-      alert(t("editProfile.photoPermission"));
+      sweetErrorAlert(t("editProfile.photoPermission"));
       return;
     }
 
@@ -57,12 +63,12 @@ export default function EditProfileScreen() {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      alert(t("editProfile.nameRequired"));
+      sweetErrorAlert(t("editProfile.nameRequired"));
       return;
     }
 
     setIsLoading(true);
-
+    await sweetTopSuccessAlert(t("editProfile.editComplete"));
     try {
       const response: any = await api.post(ENDPOINTS.userProfile, {
         username: name,
@@ -84,16 +90,16 @@ export default function EditProfileScreen() {
       setUser(updatedUser);
 
       if (Platform.OS === "web") {
-        alert(t("editProfile.success"));
+        sweetErrorAlert(t("editProfile.success"));
       } else {
-        Alert.alert("✅", t("editProfile.success"));
+        sweetMixinSuccessAlert(t("editProfile.success"));
       }
 
       router.back();
     } catch (error: any) {
       console.error("프로필 수정 실패:", error);
       const message = error.response?.data?.message || t("editProfile.error");
-      alert(message);
+      sweetErrorAlert(message);
     } finally {
       setIsLoading(false);
     }
@@ -169,6 +175,7 @@ export default function EditProfileScreen() {
           )}
         </TouchableOpacity>
       </ScrollView>
+      {AlertComponent}
     </SafeAreaView>
   );
 }

@@ -85,6 +85,7 @@
       "help": "Help",
       "privacy": "Privacy policy",
       "terms": "Terms of service"
+      
     },
     "version": "Version {{version}}"
   },
@@ -598,11 +599,13 @@
     "success": "Profile updated",
     "error": "Failed to update profile",
     "nameRequired": "Please enter your name",
-    "photoPermission": "Photo access permission required"
+    "photoPermission": "Photo access permission required",
+    "editComplete": "Edit Complete"
   },
   "language": {
     "title": "Language Settings",
-    "description": "Select the language to use in the app"
+    "description": "Select the language to use in the app",
+    "languageComplete": "Language settings saved"
   },
   "notifications": {
     "title": "Notification Settings",
@@ -690,5 +693,6 @@
       "players": "Players",
       "leagues": "Leagues"
     }
-  }
+  },
+  "teamRecord": "Team Record"
 }

@@ -39,6 +39,7 @@ export default function MatchDetailScreen() {
     queryKey: ["match", id],
     queryFn: () => api.get(ENDPOINTS.matchDetail(id)),
     staleTime: 1000 * 60,
+    refetchInterval: 1000 * 20,
   });
 
   if (isLoading || !match) {

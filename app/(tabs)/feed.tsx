@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   FlatList,
@@ -126,13 +126,34 @@ export default function FeedScreen() {
 
   const items = data?.pages.flatMap((p: any) => p.items) ?? [];
 
+  // ref로 최신값 유지
+  const itemsRef = useRef(items);
+  const hasNextPageRef = useRef(hasNextPage);
+  const isFetchingNextPageRef = useRef(isFetchingNextPage);
+  const fetchNextPageRef = useRef(fetchNextPage);
+
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
+  useEffect(() => {
+    hasNextPageRef.current = hasNextPage;
+    isFetchingNextPageRef.current = isFetchingNextPage;
+    fetchNextPageRef.current = fetchNextPage;
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 });
+
   const onViewableItemsChangedRef = useRef(({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
       const idx = viewableItems[0].index ?? 0;
       setCurrentIndex(idx);
-      if (idx >= items.length - 3 && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
+      if (
+        idx >= itemsRef.current.length - 3 &&
+        hasNextPageRef.current &&
+        !isFetchingNextPageRef.current
+      ) {
+        fetchNextPageRef.current();
       }
     }
   });
@@ -143,7 +164,6 @@ export default function FeedScreen() {
 
   return (
     <View style={styles.container}>
-      {/* 헤더 */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
@@ -159,11 +179,15 @@ export default function FeedScreen() {
         keyExtractor={(item) => item._id}
         pagingEnabled
         showsVerticalScrollIndicator={false}
-        snapToInterval={SCREEN_H}
-        snapToAlignment="start"
         decelerationRate="fast"
         onViewableItemsChanged={onViewableItemsChangedRef.current}
         viewabilityConfig={viewabilityConfig.current}
+        onEndReached={() => {
+          if (hasNextPageRef.current && !isFetchingNextPageRef.current) {
+            fetchNextPageRef.current();
+          }
+        }}
+        onEndReachedThreshold={0.5}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator

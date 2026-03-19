@@ -158,7 +158,7 @@ export default function FollowSearchModal({
     <Modal
       visible={visible}
       transparent={true}
-      animationType="fade" // 공중에 뜨는 거라 스르륵 나타나는 fade가 더 자연스러워
+      animationType="fade"
       onRequestClose={onClose}
       onShow={() => inputRef.current?.focus()}
     >
@@ -168,7 +168,7 @@ export default function FollowSearchModal({
           {/* 얄쌍해진 검색바 */}
           <View style={styles.header}>
             <TouchableOpacity onPress={onClose} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="#000" />
+              <Ionicons name="arrow-back" size={24} color={Colors.text} />
             </TouchableOpacity>
 
             <View style={styles.inputContainer}>
@@ -176,8 +176,8 @@ export default function FollowSearchModal({
               <TextInput
                 ref={inputRef}
                 style={styles.input}
-                placeholder="검색"
-                placeholderTextColor="#999"
+                placeholder="search"
+                placeholderTextColor={Colors.text}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 cursorColor="#00C853"
@@ -191,7 +191,7 @@ export default function FollowSearchModal({
                 /* 마이크 동작 */
               }}
             >
-              <Ionicons name="mic-outline" size={22} color="#666" />
+              <Ionicons name="mic-outline" size={22} color={Colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -220,7 +220,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
     backdrop: {
       flex: 1,
-      backgroundColor: "rgba(0,0,0,0.5)",
+      backgroundColor: Colors.surface2,
       justifyContent: "center",
       alignItems: "center",
       padding: 20,
@@ -228,11 +228,11 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     floatingSheet: {
       width: "100%",
       height: SCREEN_HEIGHT * 0.95,
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface2,
       borderRadius: 20,
       overflow: "hidden",
       elevation: 5,
-      shadowColor: "#000",
+      shadowColor: Colors.border,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.25,
       shadowRadius: 4,
@@ -244,7 +244,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingVertical: 10,
       borderBottomWidth: 1,
       borderBottomColor: Colors.border,
-      backgroundColor: Colors.surface,
+      backgroundColor: Colors.surface2,
     },
     backButton: {
       marginRight: 12,
@@ -253,7 +253,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.surface2,
       borderRadius: 12,
       paddingHorizontal: 12,
       paddingVertical: 8,
@@ -274,7 +274,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       padding: 0,
       includeFontPadding: false,
       textAlignVertical: "center",
-      // underlineColorAndroid: "transparent", // ← 이거 추가
     },
     listContainer: {
       paddingTop: 8,
@@ -324,8 +323,8 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       paddingVertical: 7,
       borderRadius: 20,
       borderWidth: 1,
-      borderColor: Colors.border,
-      backgroundColor: Colors.surface,
+      borderColor: Colors.primary,
+      backgroundColor: Colors.surface2,
     },
     followBtnActive: {
       backgroundColor: Colors.primary,
@@ -337,7 +336,8 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       color: Colors.text,
     },
     followBtnTextActive: {
-      color: "#fff",
+      color: "#000",
+      fontWeight: "bold",
     },
     emptyContainer: {
       flex: 1,
@@ -347,6 +347,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     emptyText: {
       fontSize: 14,
-      color: Colors.textSecondary,
+      color: Colors.text,
     },
   });

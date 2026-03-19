@@ -102,10 +102,10 @@ export default function HighlightsTab({ match }: Props) {
               </View>
             </View>
             <View style={styles.goalPlayerPhoto}>
-              {getPlayerImg(event.player?.id!) ? (
+              {event.player?.photo ? (
                 <Image
-                  source={getPlayerImg(event.player?.id!)}
-                  // style={styles.goalPlayerPhotoText}
+                  source={event.player?.photo!}
+                  style={styles.goalPlayerPhoto}
                   contentFit="contain"
                 />
               ) : (
@@ -153,9 +153,17 @@ export default function HighlightsTab({ match }: Props) {
               </View>
             </View>
             <View style={styles.cardPlayerPhoto}>
-              <Text style={styles.cardPlayerPhotoText}>
-                {event.player?.name?.charAt(0)}
-              </Text>
+              {event.player?.photo ? (
+                <Image
+                  source={event.player?.photo!}
+                  style={styles.goalPlayerPhoto}
+                  contentFit="contain"
+                />
+              ) : (
+                <Text style={styles.goalPlayerPhotoText}>
+                  {event.player?.name?.charAt(0)}
+                </Text>
+              )}
             </View>
           </View>
         </View>
@@ -203,9 +211,17 @@ export default function HighlightsTab({ match }: Props) {
                 </View>
               </View>
               <View style={styles.substPlayerPhoto}>
-                <Text style={styles.substPlayerPhotoText}>
-                  {event.assist.name?.charAt(0)}
-                </Text>
+                {event.assist?.photo ? (
+                  <Image
+                    source={event.assist?.photo!}
+                    style={styles.goalPlayerPhoto}
+                    contentFit="contain"
+                  />
+                ) : (
+                  <Text style={styles.goalPlayerPhotoText}>
+                    {event.assist?.name?.charAt(0)}
+                  </Text>
+                )}
               </View>
             </View>
           )}
@@ -232,9 +248,17 @@ export default function HighlightsTab({ match }: Props) {
               </View>
             </View>
             <View style={styles.substPlayerPhoto}>
-              <Text style={styles.substPlayerPhotoText}>
-                {event.player?.name?.charAt(0)}
-              </Text>
+              {event.player?.photo ? (
+                <Image
+                  source={event.player?.photo!}
+                  style={styles.goalPlayerPhoto}
+                  contentFit="contain"
+                />
+              ) : (
+                <Text style={styles.goalPlayerPhotoText}>
+                  {event.player?.name?.charAt(0)}
+                </Text>
+              )}
             </View>
           </View>
         </View>

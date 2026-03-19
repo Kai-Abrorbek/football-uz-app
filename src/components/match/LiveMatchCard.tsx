@@ -25,7 +25,13 @@ export default function LiveMatchCard({ match }: Props) {
         </Text>
         <View style={styles.liveIndicator}>
           <View style={styles.liveDot} />
-          <Text style={styles.liveTime}>{match.status.elapsed}'</Text>
+          <Text style={styles.liveTime}>
+            {match.status.short === "HT"
+              ? "HT"
+              : match.status.extra
+                ? `${match.status.elapsed}+${match.status.extra}'`
+                : `${match.status.elapsed}'`}
+          </Text>
         </View>
       </View>
 

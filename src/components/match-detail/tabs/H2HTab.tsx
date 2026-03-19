@@ -221,17 +221,17 @@ export default function H2HTab({ match }: Props) {
               <View style={styles.matchRow}>
                 {/* 홈팀 */}
                 <View style={styles.teamSide}>
+                  <Image
+                    source={m.homeTeam.logo}
+                    style={styles.teamLogo}
+                    contentFit="contain"
+                  />
                   <Text
                     style={[styles.teamName, homeWon && styles.teamNameBold]}
                     numberOfLines={1}
                   >
                     {m.homeTeam.name}
                   </Text>
-                  <Image
-                    source={m.homeTeam.logo}
-                    style={styles.teamLogo}
-                    contentFit="contain"
-                  />
                 </View>
 
                 {/* 스코어 */}

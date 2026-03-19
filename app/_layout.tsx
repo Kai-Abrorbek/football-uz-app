@@ -1,9 +1,9 @@
-import { Redirect, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useColors } from "../src/hooks/useColors";
 import { LanguageProvider } from "../src/contexts/LanguageContext";
-import { AuthProvider, useAuth } from "../src/contexts/AuthContext";
+import { AuthProvider } from "../src/contexts/AuthContext";
 import "../src/i18n";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
 import { ErrorProvider } from "../src/contexts/ErrorContext";

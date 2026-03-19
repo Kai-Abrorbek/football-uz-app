@@ -155,7 +155,7 @@ export default function LeagueMatchesTab({ leagueId }: Props) {
     queryKey: ["league-matches-tab", leagueId],
     queryFn: () =>
       api.get(
-        `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${MATCH_SEASON}&round=${0}`,
+        `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${leagueId !== String(369) || leagueId !== String(253) ? MATCH_SEASON : 2026}&round=${0}`,
       ),
     staleTime: 1000 * 60 * 5,
   });

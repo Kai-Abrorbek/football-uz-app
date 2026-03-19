@@ -22,6 +22,7 @@ import { STANDING_SEASON } from "../../../constants/leauges";
 import MatchVote from "../MatchVote";
 import VenueWeather from "../VenueWeather";
 import TeamMatchesTab from "../TeamRecords";
+import { router } from "expo-router";
 
 interface Props {
   match: Match;
@@ -349,27 +350,48 @@ export default function OverviewTab({ match, onTabChange }: Props) {
                       <Text style={stylesH2H.summaryWins}>
                         {t("matchOverview.wins", { count: homeWins })}
                       </Text>
-                      <Text style={stylesH2H.summaryTeamName} numberOfLines={1}>
-                        {match.homeTeam.name}
-                      </Text>
+                      <View style={{ alignItems: "center" }}>
+                        <Image
+                          source={match.homeTeam.logo}
+                          style={stylesMini.logo}
+                          contentFit="contain"
+                        />
+                        <Text
+                          style={stylesH2H.summaryTeamName}
+                          numberOfLines={1}
+                        >
+                          {match.homeTeam.name}
+                        </Text>
+                      </View>
                     </View>
                     <View style={stylesH2H.summaryDraw}>
                       <Text style={stylesH2H.summaryWins}>{draws}</Text>
                       <Text style={stylesH2H.summaryWins}>
-                        {t("matchOverview.draw", { count: homeWins })}
+                        {t("matchOverview.draw", { count: draws })}
                       </Text>
                     </View>
+
                     <View
                       style={[
                         stylesH2H.summaryTeam,
-                        { alignItems: "flex-end" },
+                        { justifyContent: "flex-end" },
                       ]}
                     >
+                      <View style={{ alignItems: "center" }}>
+                        <Image
+                          source={match.awayTeam.logo}
+                          style={stylesMini.logo}
+                          contentFit="contain"
+                        />
+                        <Text
+                          style={stylesH2H.summaryTeamName}
+                          numberOfLines={1}
+                        >
+                          {match.awayTeam.name}
+                        </Text>
+                      </View>
                       <Text style={stylesH2H.summaryWins}>
-                        {t("matchOverview.wins", { count: homeWins })}
-                      </Text>
-                      <Text style={stylesH2H.summaryTeamName} numberOfLines={1}>
-                        {match.awayTeam.name}
+                        {t("matchOverview.wins", { count: awayWins })}
                       </Text>
                     </View>
                   </View>
@@ -384,39 +406,54 @@ export default function OverviewTab({ match, onTabChange }: Props) {
                 const awayWon = awayGoals > homeGoals;
 
                 return (
-                  <View key={m._id} style={stylesH2H.matchRow}>
-                    <Text style={stylesH2H.matchDate}>
-                      {new Date(m.date).toLocaleDateString(i18n.language, {
-                        year: "2-digit",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </Text>
-                    <View style={stylesH2H.matchTeams}>
-                      <Text
-                        style={[
-                          stylesH2H.matchTeamName,
-                          homeWon && stylesH2H.winner,
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {m.homeTeam.name}
+                  <TouchableOpacity
+                    key={m._id}
+                    onPress={() => router.push(`/match/${m._id}`)}
+                  >
+                    <View key={m._id} style={stylesH2H.matchRow}>
+                      <Text style={stylesH2H.matchDate}>
+                        {new Date(m.date).toLocaleDateString(i18n.language, {
+                          year: "2-digit",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </Text>
-                      <Text style={stylesH2H.matchScore}>
-                        {homeGoals} - {awayGoals}
-                      </Text>
-                      <Text
-                        style={[
-                          stylesH2H.matchTeamName,
-                          stylesH2H.matchTeamNameRight,
-                          awayWon && stylesH2H.winner,
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {m.awayTeam.name}
-                      </Text>
+                      <View style={stylesH2H.matchTeams}>
+                        <Image
+                          source={m.homeTeam.logo}
+                          style={stylesMini.logo}
+                          contentFit="contain"
+                        />
+                        <Text
+                          style={[
+                            stylesH2H.matchTeamName,
+                            homeWon && stylesH2H.winner,
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {m.homeTeam.name}
+                        </Text>
+                        <Text style={stylesH2H.matchScore}>
+                          {homeGoals} - {awayGoals}
+                        </Text>
+                        <Text
+                          style={[
+                            stylesH2H.matchTeamName,
+                            stylesH2H.matchTeamNameRight,
+                            awayWon && stylesH2H.winner,
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {m.awayTeam.name}
+                        </Text>
+                        <Image
+                          source={m.awayTeam.logo}
+                          style={stylesMini.logo}
+                          contentFit="contain"
+                        />
+                      </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 );
               })}
             </View>
@@ -545,7 +582,7 @@ const miniStyles = (Colors: ReturnType<typeof getColors>) =>
       color: Colors.text,
       textAlign: "center",
     },
-    logo: { width: 22, height: 22 },
+    logo: { width: 32, height: 32 },
     teamName: { flex: 1, fontSize: 13, fontWeight: "500", color: Colors.text },
     stat: { width: 40, fontSize: 13, color: Colors.text, textAlign: "center" },
     points: { fontWeight: "700" },
@@ -601,7 +638,12 @@ const h2hStyles = (Colors: ReturnType<typeof getColors>) =>
       justifyContent: "space-between",
       paddingVertical: 8,
     },
-    summaryTeam: { flex: 1, gap: 2 },
+    summaryTeam: {
+      flex: 1,
+      gap: 15,
+      flexDirection: "row",
+      alignItems: "center",
+    },
     summaryDraw: { alignItems: "center", gap: 2 },
     summaryWins: { fontSize: 20, fontWeight: "700", color: Colors.text },
     summaryTeamName: { fontSize: 11, color: Colors.textSecondary },

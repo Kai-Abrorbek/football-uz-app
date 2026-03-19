@@ -190,20 +190,18 @@ export default function StandingsTab({ match }: Props) {
   const renderLiveChip = (teamId: number) => {
     const live = liveScoreMap[teamId];
     if (!live) return null;
-
     const isHome = live.homeId === teamId;
-    // 이기고 있으면 초록, 지고 있으면 빨강, 비기면 회색
-    const homeWin = live.home > live.away;
-    const awayWin = live.away > live.home;
-    const winning = (isHome && homeWin) || (!isHome && awayWin);
-    const losing = (isHome && awayWin) || (!isHome && homeWin);
+    const myScore = isHome ? live.home : live.away;
+    const oppScore = isHome ? live.away : live.home;
 
+    const winning = myScore > oppScore;
+    const losing = myScore < oppScore;
     const chipBg = winning ? "#2e7d32" : losing ? "#d32f2f" : "#757575";
 
     return (
       <View style={[styles.liveChip, { backgroundColor: chipBg }]}>
         <Text style={styles.liveChipText}>
-          {live.home} - {live.away}
+          {myScore} - {oppScore}
         </Text>
       </View>
     );

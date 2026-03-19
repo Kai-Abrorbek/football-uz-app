@@ -201,7 +201,7 @@ export default function AllMatchesModal({ visible, leagueId, onClose }: Props) {
       try {
         const directionParam = direction ? `&direction=${direction}` : "";
         const res: any = await api.get(
-          `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${MATCH_SEASON}&round=${round}${directionParam}`,
+          `${ENDPOINTS.leagueMatches}?leagueId=${leagueId}&season=${leagueId !== String(369) || leagueId !== String(253) ? MATCH_SEASON : 2026}&round=${round}${directionParam}`,
         );
         return res as LeagueMatchesResponse;
       } catch (e) {

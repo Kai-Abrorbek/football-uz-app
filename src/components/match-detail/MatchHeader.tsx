@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Pressable,
   Animated,
+  ScrollView,
 } from "react-native";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -43,7 +44,6 @@ export default function MatchHeader({
   const [isCompactActive, setIsCompactActive] = useState(false);
   const { userData } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
-
   // 초기 팔로잉 상태 확인
   useEffect(() => {
     const checkFollowing = async () => {
@@ -89,7 +89,11 @@ export default function MatchHeader({
 
   const getStatusText = () => {
     if (isHalfTime) return t("matchHeader.halfTime");
-    if (isLive) return `${match.status.elapsed || 0}'`;
+    if (isLive) {
+      const elapsed = match.status.elapsed || 0;
+      const extra = match.status.extra;
+      return extra ? `${elapsed}+${extra}'` : `${elapsed}'`;
+    }
     if (isFinished) return t("matchHeader.finished");
     const date = new Date(match.date);
     const today = new Date();
@@ -179,7 +183,9 @@ export default function MatchHeader({
                 style={styles.leagueLogo}
                 contentFit="contain"
               />
-              <Text style={styles.leagueName}>{match.league.name}</Text>
+              <Text numberOfLines={1} style={styles.leagueName}>
+                {match.league.name}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={14}
@@ -310,7 +316,11 @@ export default function MatchHeader({
 
           {/* 이벤트 영역 (원래 코드 복구) */}
           {match.events && match.events.length > 0 && (
-            <View style={styles.eventsContainer}>
+            <ScrollView
+              style={styles.eventsContainer}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={true}
+            >
               {(() => {
                 const goalEvents = match.events.filter(
                   (e) => e.type === "Goal",
@@ -318,11 +328,35 @@ export default function MatchHeader({
                 const redCardEvents = match.events.filter(
                   (e) => e.type === "Card" && e.detail === "Red Card",
                 );
-                const homeGoals = goalEvents.filter(
-                  (e) => e.team?.id === match.homeTeam.id,
+
+                // 선수별로 골 그룹핑
+                const groupGoalsByPlayer = (events: any[]) => {
+                  const map = new Map<
+                    number,
+                    { name: string; times: string[] }
+                  >();
+                  events.forEach((e) => {
+                    const id = e.player?.id ?? Math.random();
+                    const time = e.time.extra
+                      ? `${e.time.elapsed}+${e.time.extra}'`
+                      : `${e.time.elapsed}'`;
+                    if (map.has(id)) {
+                      map.get(id)!.times.push(time);
+                    } else {
+                      map.set(id, {
+                        name: e.player?.name?.split(" ").slice(-1)[0] ?? "",
+                        times: [time],
+                      });
+                    }
+                  });
+                  return Array.from(map.values());
+                };
+
+                const homeGoals = groupGoalsByPlayer(
+                  goalEvents.filter((e) => e.team?.id === match.homeTeam.id),
                 );
-                const awayGoals = goalEvents.filter(
-                  (e) => e.team?.id !== match.homeTeam.id,
+                const awayGoals = groupGoalsByPlayer(
+                  goalEvents.filter((e) => e.team?.id !== match.homeTeam.id),
                 );
                 const homeRedCards = redCardEvents.filter(
                   (e) => e.team?.id === match.homeTeam.id,
@@ -336,10 +370,9 @@ export default function MatchHeader({
                     {goalEvents.length > 0 && (
                       <View style={styles.eventsRow}>
                         <View style={styles.eventsColumn}>
-                          {homeGoals.map((event, index) => (
+                          {homeGoals.map((g, index) => (
                             <Text key={index} style={styles.eventText}>
-                              {event.player?.name?.split(" ").slice(-1)[0]}{" "}
-                              {event.time.elapsed}'
+                              {g.name} {g.times.join(", ")}
                             </Text>
                           ))}
                         </View>
@@ -352,10 +385,9 @@ export default function MatchHeader({
                             { alignItems: "flex-end" },
                           ]}
                         >
-                          {awayGoals.map((event, index) => (
+                          {awayGoals.map((g, index) => (
                             <Text key={index} style={styles.eventText}>
-                              {event.player?.name?.split(" ").slice(-1)[0]}{" "}
-                              {event.time.elapsed}'
+                              {g.times.join(", ")} {g.name}
                             </Text>
                           ))}
                         </View>
@@ -400,7 +432,7 @@ export default function MatchHeader({
                   </View>
                 );
               })()}
-            </View>
+            </ScrollView>
           )}
         </View>
       </Animated.View>
@@ -440,10 +472,23 @@ export default function MatchHeader({
             >
               {isFinished
                 ? "FT"
-                : isLive
-                  ? `${match.status.elapsed}'`
-                  : getTimeText()}
+                : isHalfTime
+                  ? "HT"
+                  : isLive
+                    ? match.status.extra
+                      ? `${match.status.elapsed}+${match.status.extra}'`
+                      : `${match.status.elapsed}'`
+                    : getTimeText()}
             </Text>
+            {!isLive && !isFinished && !isHalfTime && (
+              <Text style={styles.compactDateText}>
+                {new Date(match.date).toLocaleDateString(i18n.language, {
+                  month: "numeric",
+                  day: "numeric",
+                  weekday: "short",
+                })}
+              </Text>
+            )}
           </View>
           <Text style={styles.compactScore}>{match.goals.away ?? ""}</Text>
           <Image
@@ -507,6 +552,12 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       fontWeight: "700",
       color: Colors.textSecondary,
     },
+    compactDateText: {
+      fontSize: 10,
+      color: Colors.textSecondary,
+      textAlign: "center",
+      marginTop: 2,
+    },
     liveIndicator: {
       position: "absolute",
       top: 55,
@@ -535,10 +586,16 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     leagueLogo: {
       width: 30,
       height: 30,
-      backgroundColor: Colors.text,
+      backgroundColor: Colors.logoBox,
       borderRadius: 50,
     },
-    leagueName: { fontSize: 14, fontWeight: "600", color: Colors.text },
+    leagueName: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: Colors.text,
+      overflow: "hidden",
+      width: 130,
+    },
     scoreArea: {
       flexDirection: "row",
       alignItems: "center",
@@ -586,7 +643,6 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
       borderTopWidth: 1,
       borderTopColor: Colors.border,
       maxHeight: 110,
-      overflow: "scroll",
     },
     eventsRow: {
       flexDirection: "row",

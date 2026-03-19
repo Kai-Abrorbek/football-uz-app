@@ -5,7 +5,6 @@ import {
   Modal,
   TouchableOpacity,
   Switch,
-  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +14,7 @@ import { getColors } from "../../constants/colors";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
+import { useAlert } from "../../utils/alert";
 
 interface Props {
   visible: boolean;
@@ -34,6 +34,12 @@ export default function MatchAlertModal({ visible, onClose, matchId }: Props) {
   const styles = getStyles(Colors);
   const { userData } = useAuth();
   const queryClient = useQueryClient();
+  const {
+    AlertComponent,
+    sweetTopSuccessAlert,
+    sweetMixinSuccessAlert,
+    sweetErrorAlert,
+  } = useAlert();
 
   const { data: alert } = useQuery<MatchAlert | null>({
     queryKey: ["matchAlert", matchId],
@@ -60,7 +66,7 @@ export default function MatchAlertModal({ visible, onClose, matchId }: Props) {
 
   const handleToggleAlert = () => {
     if (!userData?.user) {
-      Alert.alert(t("matchAlert.loginRequired"));
+      sweetErrorAlert(t("matchAlert.loginRequired"));
       return;
     }
 
@@ -68,6 +74,7 @@ export default function MatchAlertModal({ visible, onClose, matchId }: Props) {
       deleteAlert();
     } else {
       setAlert({ matchStart: true, goals: true, matchEnd: true });
+      sweetTopSuccessAlert("On All Alerts");
     }
   };
 
@@ -185,6 +192,7 @@ export default function MatchAlertModal({ visible, onClose, matchId }: Props) {
           )}
         </View>
       </View>
+      {AlertComponent}
     </Modal>
   );
 }

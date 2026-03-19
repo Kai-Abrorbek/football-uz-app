@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ import { getColors } from "../../../constants/colors";
 import { ENDPOINTS } from "../../../constants/api";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
+import { router } from "expo-router";
 
 interface Props {
   leagueId: string;
@@ -102,54 +104,59 @@ export default function LeagueStatsTab({ leagueId }: Props) {
         {/* 선수 목록 */}
         {data.map((item, index) => {
           return (
-            <View key={index} style={styles.statRow}>
-              <View style={styles.rankContainer}>
-                <Text style={styles.rank}>{index + 1}</Text>
-              </View>
+            <Pressable
+              key={index}
+              onPress={() => router.push(`/player/${item.apiFootballId}`)}
+            >
+              <View key={index} style={styles.statRow}>
+                <View style={styles.rankContainer}>
+                  <Text style={styles.rank}>{index + 1}</Text>
+                </View>
 
-              <View style={styles.playerPhoto}>
-                {item?.photo ? (
-                  <Image
-                    source={item?.photo}
-                    style={styles.playerPhoto}
-                    contentFit="cover"
-                  />
-                ) : (
-                  <Text style={styles.playerPhotoText}>
-                    {item.player?.name?.charAt(0) || item.name?.charAt(0)}
-                  </Text>
-                )}
-              </View>
-              <View style={styles.playerInfo}>
-                <Text style={styles.playerName}>
-                  {item.player?.name || item.name}
-                </Text>
-                <View style={styles.teamRow}>
-                  {item.team?.logo && (
+                <View style={styles.playerPhoto}>
+                  {item?.photo ? (
                     <Image
-                      source={item.team.logo}
-                      style={styles.teamLogo}
-                      contentFit="contain"
+                      source={item?.photo}
+                      style={styles.playerPhoto}
+                      contentFit="cover"
                     />
+                  ) : (
+                    <Text style={styles.playerPhotoText}>
+                      {item.player?.name?.charAt(0) || item.name?.charAt(0)}
+                    </Text>
                   )}
-                  <Text style={styles.teamName}>
-                    {item.team?.name || item.team}
+                </View>
+                <View style={styles.playerInfo}>
+                  <Text style={styles.playerName}>
+                    {item.player?.name || item.name}
+                  </Text>
+                  <View style={styles.teamRow}>
+                    {item.team?.logo && (
+                      <Image
+                        source={item.team.logo}
+                        style={styles.teamLogo}
+                        contentFit="contain"
+                      />
+                    )}
+                    <Text style={styles.teamName}>
+                      {item.team?.name || item.team}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.statValue}>
+                  <Text style={styles.statNumber}>
+                    {activeStatTab === "goals"
+                      ? item?.statistics[0].goals.total
+                      : activeStatTab === "assists"
+                        ? item?.statistics[0].goals.assists
+                        : activeStatTab === "yellowCards"
+                          ? item?.statistics[0].cards.yellow
+                          : item?.statistics[0].cards.red}
                   </Text>
                 </View>
               </View>
-
-              <View style={styles.statValue}>
-                <Text style={styles.statNumber}>
-                  {activeStatTab === "goals"
-                    ? item?.statistics[0].goals.total
-                    : activeStatTab === "assists"
-                      ? item?.statistics[0].goals.assists
-                      : activeStatTab === "yellowCards"
-                        ? item?.statistics[0].cards.yellow
-                        : item?.statistics[0].cards.red}
-                </Text>
-              </View>
-            </View>
+            </Pressable>
           );
         })}
       </View>

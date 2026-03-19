@@ -70,10 +70,12 @@ export interface MatchEvent {
   player?: {
     id: number;
     name: string;
+    photo?: string;
   };
   assist?: {
     id: number;
     name: string;
+    photo?: string;
   };
   type: string;
   detail: string;

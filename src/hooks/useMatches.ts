@@ -15,6 +15,7 @@ export const useMatches = (date?: string, leagueId?: number) => {
         params: { startUTC, endUTC, leagueId },
       }),
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 1000 * 20,
   });
 };
 
@@ -22,7 +23,7 @@ export const useLiveMatches = () => {
   return useQuery<Match[]>({
     queryKey: ["matches", "live"],
     queryFn: () => api.get(ENDPOINTS.liveMatches),
-    refetchInterval: 1000 * 30, // 30초마다 자동 갱신
+    refetchInterval: 1000 * 20,
   });
 };
 
@@ -31,5 +32,6 @@ export const useMatchDetail = (id: string) => {
     queryKey: ["match", id],
     queryFn: () => api.get(ENDPOINTS.matchDetail(id)),
     staleTime: 1000 * 60,
+    refetchInterval: 1000 * 60,
   });
 };

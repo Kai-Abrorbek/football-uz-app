@@ -6,14 +6,13 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Alert,
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Colors, getColors } from "../../src/constants/colors";
+import { getColors } from "../../src/constants/colors";
 import { ENDPOINTS } from "../../src/constants/api";
 import api from "../../src/services/api";
 import { AuthResponseDto } from "../../src/types";
@@ -23,6 +22,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useColors } from "../../src/hooks/useColors";
 import TelegramLoginButton from "../../src/components/auth/TelegramLoginButton";
+import { useAlert } from "../../src/utils/alert";
 
 export default function ProfileScreen() {
   const { userData, setUser, logout } = useAuth();
@@ -33,10 +33,17 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const Colors = useColors();
   const styles = getStyles(Colors);
+  const {
+    AlertComponent,
+    sweetConfirmAlert,
+    sweetMixinSuccessAlert,
+    sweetErrorAlert,
+    sweetMixinErrorAlert,
+  } = useAlert();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      alert(t("auth.validation.emailPasswordRequired"));
+      await sweetMixinErrorAlert(t("auth.validation.allFieldsRequired"));
       return;
     }
 
@@ -45,7 +52,6 @@ export default function ProfileScreen() {
         emailOrUsername: email,
         password,
       });
-      console.log(response);
       await AsyncStorage.setItem("auth_token", response.accessToken);
       await AsyncStorage.setItem("user_data", JSON.stringify(response));
       setUser(response);
@@ -53,23 +59,23 @@ export default function ProfileScreen() {
       console.error("Login failed:", error);
       const message =
         error.response?.data?.message || t("auth.errors.loginFailed");
-      alert(message);
+      await sweetErrorAlert(message);
     }
   };
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
-      alert(t("auth.validation.allFieldsRequired"));
+      await sweetMixinErrorAlert(t("auth.validation.allFieldsRequired"));
       return;
     }
 
-    if (name.length < 3) {
-      alert(t("auth.validation.nameMinLength"));
+    if (name.length < 5) {
+      await sweetMixinErrorAlert(t("auth.validation.nameMinLength"));
       return;
     }
 
     if (password.length < 6) {
-      alert(t("auth.validation.passwordMinLength"));
+      await sweetMixinErrorAlert(t("auth.validation.passwordMinLength"));
       return;
     }
 
@@ -86,16 +92,12 @@ export default function ProfileScreen() {
       setUser(response);
 
       // ✅ 이메일 인증 안내
-      Alert.alert(
-        t("auth.emailVerification.title"),
-        t("auth.emailVerification.message"),
-        [{ text: t("common.confirm") }],
-      );
+      await sweetMixinSuccessAlert(t("auth.emailVerification.message"));
     } catch (error: any) {
       console.error("Sign up failed:", error);
       const message =
         error.response?.data?.message || t("auth.errors.registerFailed");
-      alert(message);
+      await sweetMixinErrorAlert(message);
     }
   };
 
@@ -112,7 +114,7 @@ export default function ProfileScreen() {
       setUser(response);
     } catch (error: any) {
       console.error("Google login failed:", error);
-      alert(t("auth.errors.googleLoginFailed"));
+      await sweetMixinErrorAlert(t("auth.errors.googleLoginFailed"));
     }
   };
 
@@ -121,27 +123,24 @@ export default function ProfileScreen() {
       await api.post(ENDPOINTS.authResendVerification, {
         email: userData?.user?.email,
       });
-      Alert.alert(
-        t("auth.emailVerification.title"),
-        t("auth.emailVerification.resendSuccess"),
-        [{ text: t("common.confirm") }],
-      );
+
+      await sweetMixinSuccessAlert(t("auth.emailVerification.resendSuccess"));
     } catch (error: any) {
       const message =
         error.response?.data?.message || t("auth.errors.resendFailed");
-      alert(message);
+      await sweetMixinErrorAlert(message);
     }
   };
 
   const handleEmailVerification = async () => {
     if (userData?.user?.isEmailVerified) {
       if (Platform.OS === "web") {
-        window.alert(t("auth.emailVerification.alreadyVerifiedMessage"));
-      } else {
-        Alert.alert(
-          t("auth.emailVerification.alreadyVerifiedTitle"),
+        await sweetMixinErrorAlert(
           t("auth.emailVerification.alreadyVerifiedMessage"),
-          [{ text: t("common.confirm") }],
+        );
+      } else {
+        await sweetMixinErrorAlert(
+          t("auth.emailVerification.alreadyVerifiedMessage"),
         );
       }
       return;
@@ -149,7 +148,7 @@ export default function ProfileScreen() {
 
     if (Platform.OS === "web") {
       if (
-        window.confirm(
+        await sweetConfirmAlert(
           t("auth.emailVerification.resendConfirm", {
             email: userData?.user?.email,
           }),
@@ -158,19 +157,12 @@ export default function ProfileScreen() {
         handleResendVerification();
       }
     } else {
-      Alert.alert(
-        t("auth.emailVerification.title"),
+      const confirmed = await sweetConfirmAlert(
         t("auth.emailVerification.resendConfirm", {
           email: userData?.user?.email,
         }),
-        [
-          { text: t("common.cancel"), style: "cancel" },
-          {
-            text: t("auth.emailVerification.resend"),
-            onPress: handleResendVerification,
-          },
-        ],
       );
+      if (confirmed) handleResendVerification();
     }
   };
 
@@ -178,18 +170,11 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     if (Platform.OS === "web") {
-      if (window.confirm(t("auth.logout.confirm"))) {
-        logout();
-      }
+      const confirmed = await sweetConfirmAlert(t("auth.logout.confirm"));
+      if (confirmed) logout();
     } else {
-      Alert.alert(t("auth.logout.title"), t("auth.logout.confirm"), [
-        { text: t("auth.logout.cancel"), style: "cancel" },
-        {
-          text: t("auth.logout.action"),
-          style: "destructive",
-          onPress: async () => logout(),
-        },
-      ]);
+      const confirmed = await sweetConfirmAlert(t("auth.logout.confirm"));
+      if (confirmed) logout();
     }
   };
 
@@ -316,6 +301,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
+        {AlertComponent}
       </SafeAreaView>
     );
   }
@@ -542,9 +528,9 @@ export default function ProfileScreen() {
         <Text style={styles.version}>
           {t("profile.version", { version: "1.0.0" })}
         </Text>
-
         <View style={{ height: 40 }} />
       </ScrollView>
+      {AlertComponent}
     </SafeAreaView>
   );
 }

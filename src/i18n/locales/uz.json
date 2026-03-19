@@ -592,11 +592,13 @@
     "success": "Profil yangilandi",
     "error": "Profilni yangilashda xatolik",
     "nameRequired": "Iltimos, ismingizni kiriting",
-    "photoPermission": "Rasm kiritish uchun ruxsat kerak"
+    "photoPermission": "Rasm kiritish uchun ruxsat kerak",
+    "editComplete": "Tahrirlash tugallandi"
   },
   "language": {
     "title": "Til sozlamalari",
-    "description": "Ilovada foydalanish uchun tilni tanlang"
+    "description": "Ilovada foydalanish uchun tilni tanlang",
+    "languageComplete": "Til sozlamalari saqlandi"
   },
   "notifications": {
     "title": "Bildirishnoma sozlamalari",
@@ -685,5 +687,6 @@
       "players": "O'yinchilar",
       "leagues": "Ligalar"
     }
-  }
+  },
+  "teamRecord": "Jamoa statistikasi"
 }

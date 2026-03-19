@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { useColors } from "../../../hooks/useColors";
 import { useError } from "../../../contexts/ErrorContext";
 import { useLiveMatches } from "../../../hooks/useMatches";
+import { MATCH_SEASON, STANDING_SEASON } from "../../../constants/leauges";
 
 interface Props {
   leagueId: string;
@@ -68,7 +69,9 @@ const getZoneColor = (rank: number, total: number): string | null => {
 };
 
 export default function LeagueStandingsTab({ leagueId }: Props) {
-  const [selectedSeason, setSelectedSeason] = useState("2024");
+  const [selectedSeason, setSelectedSeason] = useState(
+    STANDING_SEASON.toString(),
+  );
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
   const { t } = useTranslation();
   const Colors = useColors();

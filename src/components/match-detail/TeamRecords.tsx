@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../constants/api";
@@ -7,6 +14,7 @@ import { Match } from "../../types";
 import { Colors, getColors } from "../../constants/colors";
 import { useTranslation } from "react-i18next";
 import { useColors } from "../../hooks/useColors";
+import { router } from "expo-router";
 
 interface TeamMatchesProps {
   team1Id: number;
@@ -47,25 +55,34 @@ export default function TeamMatchesTab({ team1Id, team2Id }: TeamMatchesProps) {
     if (myScore! < opponentScore!) statusColor = "#EB5757";
 
     return (
-      <View style={styles.matchRow}>
-        {/* 홈팀 로고 (항상 왼쪽) */}
-        <Image source={{ uri: match.homeTeam.logo }} style={styles.miniLogo} />
+      <TouchableOpacity onPress={() => router.push(`/match/${match._id}`)}>
+        <View style={styles.matchRow}>
+          {/* 홈팀 로고 (항상 왼쪽) */}
+          <Image
+            source={{ uri: match.homeTeam.logo }}
+            style={styles.miniLogo}
+          />
 
-        {/* 스코어 */}
-        <View style={[styles.resultBadge, { backgroundColor: statusColor }]}>
-          <Text style={styles.resultText}>
-            {match.goals.home} - {match.goals.away}
-          </Text>
+          {/* 스코어 */}
+          <View style={[styles.resultBadge, { backgroundColor: statusColor }]}>
+            <Text style={styles.resultText}>
+              {match.goals.home} - {match.goals.away}
+            </Text>
+          </View>
+
+          {/* 어웨이팀 로고 (항상 오른쪽) */}
+          <Image
+            source={{ uri: match.awayTeam.logo }}
+            style={styles.miniLogo}
+          />
         </View>
-
-        {/* 어웨이팀 로고 (항상 오른쪽) */}
-        <Image source={{ uri: match.awayTeam.logo }} style={styles.miniLogo} />
-      </View>
+      </TouchableOpacity>
     );
   };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>팀 기록</Text>
+      <Text style={styles.title}>{t("teamRecord")}</Text>
 
       <View style={styles.columnsContainer}>
         {/* 왼쪽: 팀 1 기록 */}

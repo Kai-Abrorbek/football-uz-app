@@ -12,6 +12,7 @@ import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
+import { useAlert } from "../../src/utils/alert";
 
 type Language = "en" | "uz" | "ru" | "kr";
 
@@ -29,6 +30,12 @@ export default function LanguageScreen() {
   const styles = getStyles(Colors);
   const { t } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(language);
+  const {
+    AlertComponent,
+    sweetTopSuccessAlert,
+    sweetMixinSuccessAlert,
+    sweetErrorAlert,
+  } = useAlert();
 
   const handleLanguageSelect = async (lang: Language) => {
     setSelectedLanguage(lang);
@@ -49,6 +56,9 @@ export default function LanguageScreen() {
         };
         await AsyncStorage.setItem("user_data", JSON.stringify(updatedUser));
         setUser(updatedUser);
+        await sweetMixinSuccessAlert(
+          t(`language.languageComplete`) + ` [ ${lang.toUpperCase()} ]`,
+        );
       } catch (error) {
         console.error("언어 설정 저장 실패:", error);
       }
@@ -60,7 +70,10 @@ export default function LanguageScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.back()}
+          onPress={() => {
+            if (router.canDismiss()) router.back();
+            else router.replace("/");
+          }}
         >
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
         </TouchableOpacity>
@@ -106,6 +119,7 @@ export default function LanguageScreen() {
           ))}
         </View>
       </ScrollView>
+      {AlertComponent}
     </SafeAreaView>
   );
 }
