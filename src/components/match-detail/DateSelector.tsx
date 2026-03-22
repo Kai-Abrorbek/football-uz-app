@@ -110,20 +110,37 @@ export default function DateSelector({
 
   const handleDateSelect = (key: string) => {
     const selected = new Date(key);
+    const firstDate = dates[0];
     const lastDate = dates[dates.length - 1];
 
-    // 선택한 날짜 + 7일이 현재 마지막 날짜보다 크면 추가
+    let newDates = [...dates];
+    let isUpdated = false;
+
+    const selectedMinus7 = new Date(selected);
+    selectedMinus7.setDate(selected.getDate() - 7);
+
+    if (selectedMinus7 < firstDate) {
+      const current = new Date(firstDate);
+      while (formatDate(current) > formatDate(selectedMinus7)) {
+        current.setDate(current.getDate() - 1);
+        newDates.unshift(new Date(current)); // 배열 맨 앞에 추가
+      }
+      isUpdated = true;
+    }
+
     const selectedPlus7 = new Date(selected);
     selectedPlus7.setDate(selected.getDate() + 7);
 
     if (selectedPlus7 > lastDate) {
-      const newDates = [...dates];
       const current = new Date(lastDate);
-
       while (formatDate(current) < formatDate(selectedPlus7)) {
         current.setDate(current.getDate() + 1);
-        newDates.push(new Date(current));
+        newDates.push(new Date(current)); // 배열 맨 뒤에 추가
       }
+      isUpdated = true;
+    }
+
+    if (isUpdated) {
       setDates(newDates);
     }
 

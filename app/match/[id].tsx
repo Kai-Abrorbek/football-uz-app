@@ -23,6 +23,7 @@ import StandingsTab from "../../src/components/match-detail/tabs/StandingsTab";
 import StreamTab from "../../src/components/match-detail/tabs/StreamTab.native";
 import { useColors } from "../../src/hooks/useColors";
 import { AuthGate } from "../../src/contexts/AuthGate";
+import PlayoffScreen from "../../src/components/match-detail/tabs/PlayoffScreen";
 
 const COMPACT_HEADER_HEIGHT = 80;
 const TAB_HEIGHT = 50;
@@ -40,6 +41,7 @@ export default function MatchDetailScreen() {
     queryFn: () => api.get(ENDPOINTS.matchDetail(id)),
     staleTime: 1000 * 60,
     refetchInterval: 1000 * 20,
+    retry: false,
   });
 
   if (isLoading || !match) {
@@ -54,6 +56,13 @@ export default function MatchDetailScreen() {
     match.status.short,
   );
   const isFinished = match.status.short === "FT";
+  const round = [
+    "Round of 32",
+    "Round of 16",
+    "Quarter-finals",
+    "Semi-finals",
+    "Final",
+  ].includes(match.round);
 
   const getTabs = () => {
     const baseTabs = isLive
@@ -78,7 +87,11 @@ export default function MatchDetailScreen() {
       case "stats":
         return <StatsTab match={match} />;
       case "standings":
-        return <StandingsTab match={match} />;
+        return round ? (
+          <PlayoffScreen match={match} />
+        ) : (
+          <StandingsTab match={match} />
+        );
       case "h2h":
         return <H2HTab match={match} />;
       case "highlights":

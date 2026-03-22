@@ -12,7 +12,7 @@ export const useMatches = (date?: string, leagueId?: number) => {
     queryKey: ["matches", date, leagueId],
     queryFn: () =>
       api.get(ENDPOINTS.matches, {
-        params: { startUTC, endUTC, leagueId },
+        params: { startUTC, endUTC, leagueId, limit: 9999 },
       }),
     staleTime: 1000 * 60 * 5,
     refetchInterval: 1000 * 20,

@@ -28,6 +28,7 @@ interface Props {
 }
 
 const SEASONS = [
+  { value: "2026", label: "2026~27" },
   { value: "2025", label: "2025~26" },
   { value: "2024", label: "2024~25" },
   { value: "2023", label: "2023~24" },
@@ -70,7 +71,9 @@ const getZoneColor = (rank: number, total: number): string | null => {
 
 export default function LeagueStandingsTab({ leagueId }: Props) {
   const [selectedSeason, setSelectedSeason] = useState(
-    STANDING_SEASON.toString(),
+    leagueId === String(369) || leagueId === String(253)
+      ? String(2026)
+      : STANDING_SEASON.toString(),
   );
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
   const { t } = useTranslation();

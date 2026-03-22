@@ -85,13 +85,17 @@ export default function OverviewTab({ match, onTabChange }: Props) {
       return res;
     },
     enabled: !!match.apiFootballId,
+    retry: false,
   });
 
   const { data: standing } = useQuery({
     queryKey: ["standings", match.league.id],
     queryFn: () =>
       api.get(
-        ENDPOINTS.leagueStandingsAndSeason(match.league.id, STANDING_SEASON),
+        ENDPOINTS.leagueStandingsAndSeason(
+          match.league.id,
+          match.league.id !== 369 ? STANDING_SEASON : 2026,
+        ),
       ),
     staleTime: 1000 * 60 * 30,
   });

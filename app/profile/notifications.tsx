@@ -20,6 +20,7 @@ import { ENDPOINTS } from "../../src/constants/api";
 import { useColors } from "../../src/hooks/useColors";
 import { getColors } from "../../src/constants/colors";
 import { useTranslation } from "react-i18next";
+import { useAlert } from "../../src/utils/alert";
 
 export default function NotificationsScreen() {
   const Colors = useColors();
@@ -32,6 +33,7 @@ export default function NotificationsScreen() {
   const [matchEnd, setMatchEnd] = useState(false);
   const [news, setNews] = useState(false);
   const [predictions, setPredictions] = useState(false);
+  const { AlertComponent, sweetMixinErrorAlert } = useAlert();
 
   useEffect(() => {
     loadSettings();
@@ -92,7 +94,7 @@ export default function NotificationsScreen() {
     } catch (error) {
       console.error("설정 저장 실패:", error);
       setter(!value);
-      alert(t("notifications.saveFailed"));
+      sweetMixinErrorAlert(t("notifications.saveFailed"));
     }
   };
 
@@ -209,6 +211,7 @@ export default function NotificationsScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+      {AlertComponent}
     </SafeAreaView>
   );
 }

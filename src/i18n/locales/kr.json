@@ -694,5 +694,11 @@
       "leagues": "리그"
     }
   },
-  "teamRecord": "팀 기록"
+  "teamRecord": "팀 기록",
+  "playoff": "플레이오프",
+  "total": "총합",
+  "finalmatch": "결승전",
+  "final": "결승",
+  "round_of_16": "16강",
+  "quarter_final": "8강"
 }

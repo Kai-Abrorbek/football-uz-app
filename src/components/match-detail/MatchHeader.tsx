@@ -22,12 +22,25 @@ import {
   toggleFollowLeague,
 } from "../../constants/followService";
 
+// ⭐️ 총합 점수 계산을 위해 필요한 라이브러리와 API 임포트 추가
+import { useQuery } from "@tanstack/react-query";
+import api from "../../services/api";
+import { ENDPOINTS } from "../../constants/api";
+
+const ROUND_ORDER = [
+  "Round of 32",
+  "Round of 16",
+  "Quarter-finals",
+  "Semi-finals",
+  "Final",
+];
+
 interface Props {
   match: Match;
   scrollY: Animated.Value;
   headerHeight: number;
   onHeaderLayout: (height: number) => void;
-  scrollDistance: number; // 스크롤 애니메이션을 위한 값
+  scrollDistance: number;
 }
 
 export default function MatchHeader({
@@ -44,7 +57,7 @@ export default function MatchHeader({
   const [isCompactActive, setIsCompactActive] = useState(false);
   const { userData } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
-  // 초기 팔로잉 상태 확인
+
   useEffect(() => {
     const checkFollowing = async () => {
       if (!userData) return;
@@ -73,6 +86,73 @@ export default function MatchHeader({
   const isFinished = match.status.short === "FT";
   const isUpcoming = match.status.short === "NS";
   const isHalfTime = match.status.short === "HT";
+
+  // ⭐️ 추가: 1차전/2차전 합산 스코어 계산 로직
+  const isKnockoutRound = ROUND_ORDER.includes(match.league.round);
+
+  const { data: h2hMatches = [] } = useQuery<Match[]>({
+    queryKey: [
+      "knockout-h2h",
+      match.league.id,
+      match.homeTeam.id,
+      match.awayTeam.id,
+      match.league.round,
+    ],
+    queryFn: async () => {
+      try {
+        const res: any = await api.get(
+          `${ENDPOINTS.matches}?leagueId=${match.league.id}&season=${match.league.season}&limit=999&allDates=true`,
+        );
+        // 방어 코드 적용
+        const all = Array.isArray(res) ? res : res?.data || [];
+        return all
+          .filter(
+            (m: Match) =>
+              m.league.round === match.league.round &&
+              ((m.homeTeam.id === match.homeTeam.id &&
+                m.awayTeam.id === match.awayTeam.id) ||
+                (m.homeTeam.id === match.awayTeam.id &&
+                  m.awayTeam.id === match.homeTeam.id)),
+          )
+          .sort(
+            (a: Match, b: Match) =>
+              new Date(a.date).getTime() - new Date(b.date).getTime(),
+          );
+      } catch (e) {
+        return [];
+      }
+    },
+    enabled: isKnockoutRound,
+    staleTime: 1000 * 60 * 30,
+  });
+
+  let showAggregate = false;
+  let aggHome = match.goals.home ?? 0;
+  let aggAway = match.goals.away ?? 0;
+
+  if (isKnockoutRound && h2hMatches.length >= 2) {
+    const firstLeg = h2hMatches[0];
+    const secondLeg = h2hMatches[1];
+
+    // 현재 경기가 2차전(두 번째 경기)일 때만 총합 표시
+    if (
+      match._id === secondLeg._id ||
+      match.apiFootballId === secondLeg.apiFootballId
+    ) {
+      showAggregate = true;
+      const firstLegHomeGoals = firstLeg.goals.home ?? 0;
+      const firstLegAwayGoals = firstLeg.goals.away ?? 0;
+
+      // 1차전 팀 진영(홈/어웨이)에 맞춰 점수 교차 병합
+      if (firstLeg.homeTeam.id === match.homeTeam.id) {
+        aggHome += firstLegHomeGoals;
+        aggAway += firstLegAwayGoals;
+      } else {
+        aggHome += firstLegAwayGoals;
+        aggAway += firstLegHomeGoals;
+      }
+    }
+  }
 
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
@@ -124,7 +204,6 @@ export default function MatchHeader({
     });
   };
 
-  // 애니메이션 수치 설정
   const bigHeaderOpacity = scrollY.interpolate({
     inputRange: [0, scrollDistance * 0.8],
     outputRange: [1, 0],
@@ -150,7 +229,6 @@ export default function MatchHeader({
         if (headerHeight === 0) onHeaderLayout(e.nativeEvent.layout.height);
       }}
     >
-      {/* ===== 큰 헤더 ===== */}
       <Animated.View style={{ opacity: bigHeaderOpacity }}>
         <View style={styles.container}>
           {isLive && !isHalfTime && (
@@ -159,7 +237,6 @@ export default function MatchHeader({
             </View>
           )}
 
-          {/* 상단 row (원래 코드 복구) */}
           <View style={styles.topRow}>
             <TouchableOpacity
               style={styles.backButton}
@@ -194,16 +271,18 @@ export default function MatchHeader({
             </TouchableOpacity>
 
             <View style={{ flexDirection: "row", gap: 10 }}>
-              <TouchableOpacity
-                style={styles.alertBtn}
-                onPress={() => setAlertModalVisible(true)}
-              >
-                <Ionicons
-                  name="notifications-outline"
-                  size={22}
-                  color={Colors.text}
-                />
-              </TouchableOpacity>
+              {!isFinished && (
+                <TouchableOpacity
+                  style={styles.alertBtn}
+                  onPress={() => setAlertModalVisible(true)}
+                >
+                  <Ionicons
+                    name="notifications-outline"
+                    size={22}
+                    color={Colors.text}
+                  />
+                </TouchableOpacity>
+              )}
               <MatchAlertModal
                 visible={alertModalVisible}
                 onClose={() => setAlertModalVisible(false)}
@@ -230,7 +309,6 @@ export default function MatchHeader({
             </View>
           </View>
 
-          {/* 스코어 영역 (원래 코드 복구) */}
           <View style={styles.scoreArea}>
             <Pressable
               onPress={() =>
@@ -285,8 +363,18 @@ export default function MatchHeader({
                   </View>
                 </>
               )}
-              {match.league.round && (
-                <Text style={styles.round}>{match.league.round}</Text>
+              {/* ⭐️ Round 텍스트 밑에 총합 점수 깔끔하게 추가 */}
+              {(match.league.round || showAggregate) && (
+                <View style={{ alignItems: "center" }}>
+                  {match.league.round && (
+                    <Text style={styles.round}>{match.league.round}</Text>
+                  )}
+                  {showAggregate && (
+                    <Text style={styles.aggregateText}>
+                      {t(`total`)} {aggHome} - {aggAway}
+                    </Text>
+                  )}
+                </View>
               )}
             </View>
 
@@ -314,7 +402,6 @@ export default function MatchHeader({
             </Pressable>
           </View>
 
-          {/* 이벤트 영역 (원래 코드 복구) */}
           {match.events && match.events.length > 0 && (
             <ScrollView
               style={styles.eventsContainer}
@@ -329,7 +416,6 @@ export default function MatchHeader({
                   (e) => e.type === "Card" && e.detail === "Red Card",
                 );
 
-                // 선수별로 골 그룹핑
                 const groupGoalsByPlayer = (events: any[]) => {
                   const map = new Map<
                     number,
@@ -437,9 +523,8 @@ export default function MatchHeader({
         </View>
       </Animated.View>
 
-      {/* ===== 컴팩트 헤더 (스크롤 후) ===== */}
       <Animated.View
-        pointerEvents={isCompactActive ? "auto" : "none"} // ★ 추가: 안 보일 땐 터치 무시!
+        pointerEvents={isCompactActive ? "auto" : "none"}
         style={[
           styles.compactHeader,
           {
@@ -636,6 +721,17 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     },
     timeText: { fontSize: 24, fontWeight: "700", color: Colors.text },
     round: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
+
+    // ⭐️ 새로 추가된 총합 스코어 스타일
+    aggregateText: {
+      fontSize: 14,
+      color: Colors.primary,
+      fontWeight: "700",
+      marginTop: 2,
+      position: "absolute",
+      bottom: 90,
+    },
+
     eventsContainer: {
       paddingHorizontal: 16,
       paddingTop: 12,

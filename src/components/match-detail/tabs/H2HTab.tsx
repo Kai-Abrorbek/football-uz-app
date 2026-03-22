@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { Image } from "expo-image";
 import { getColors } from "../../../constants/colors";
@@ -13,6 +14,7 @@ import api from "../../../services/api";
 import { useColors } from "../../../hooks/useColors";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { router } from "expo-router";
 
 interface Props {
   match: Match;
@@ -218,7 +220,12 @@ export default function H2HTab({ match }: Props) {
               </View>
 
               {/* 팀 + 스코어 */}
-              <View style={styles.matchRow}>
+              <Pressable
+                style={styles.matchRow}
+                onPress={() => {
+                  router.push(`/match/${m._id}`);
+                }}
+              >
                 {/* 홈팀 */}
                 <View style={styles.teamSide}>
                   <Image
@@ -260,7 +267,7 @@ export default function H2HTab({ match }: Props) {
                     {m.awayTeam.name}
                   </Text>
                 </View>
-              </View>
+              </Pressable>
 
               <View style={styles.divider} />
             </View>

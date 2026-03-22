@@ -681,5 +681,11 @@
       "leagues": "Лиги"
     }
   },
-  "teamRecord": "Статистика команды"
+  "teamRecord": "Статистика команды",
+  "playoff": "Playoff",
+  "total": "Total",
+  "finalmatch": "Финальный матч",
+  "final": "Финал",
+  "round_of_16": "1/8 финала",
+  "quarter_final": "1/4 финала"
 }

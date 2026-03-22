@@ -72,7 +72,12 @@ export default function StandingsTab({ match }: Props) {
     queryKey: ["standings", match.league.id],
     queryFn: () =>
       api.get(
-        ENDPOINTS.leagueStandingsAndSeason(match.league.id, STANDING_SEASON),
+        ENDPOINTS.leagueStandingsAndSeason(
+          match.league.id,
+          match.league.id === 369 || match.league.id === 253
+            ? 2026
+            : STANDING_SEASON,
+        ),
       ),
     staleTime: 1000 * 60 * 30,
     retry: false,

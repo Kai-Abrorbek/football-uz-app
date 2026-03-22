@@ -688,5 +688,11 @@
       "leagues": "Ligalar"
     }
   },
-  "teamRecord": "Jamoa statistikasi"
+  "teamRecord": "Jamoa statistikasi",
+  "playoff": "Playoff",
+  "total": "Total",
+  "finalmatch": "Yarim Final",
+  "final": "Final",
+  "round_of_16": "1/8 final",
+  "quarter_final": "Chorak final"
 }

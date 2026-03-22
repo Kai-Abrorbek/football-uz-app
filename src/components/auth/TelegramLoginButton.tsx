@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Linking,
   ActivityIndicator,
-  Alert,
   StyleSheet,
 } from "react-native";
 import uuid from "react-native-uuid";
@@ -18,6 +17,7 @@ import { API_URL } from "../../constants/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../contexts/AuthContext";
 import { router } from "expo-router";
+import { useAlert } from "../../utils/alert";
 
 export default function TelegramLoginButton() {
   const { t } = useTranslation();
@@ -26,6 +26,7 @@ export default function TelegramLoginButton() {
   const { setUser } = useAuth();
   const [isWaiting, setIsWaiting] = useState(false);
   const [loginToken, setLoginToken] = useState<string | null>(null);
+  const { AlertComponent, sweetMixinSuccessAlert } = useAlert();
 
   const BOT_USERNAME = "footballuz2026_bot";
   const BACKEND_URL = API_URL;
@@ -63,15 +64,8 @@ export default function TelegramLoginButton() {
               user: user,
             });
 
-            Alert.alert(
-              t("auth.telegram.successTitle"),
+            sweetMixinSuccessAlert(
               t("auth.telegram.successMessage", { name: user.username }),
-              [
-                {
-                  text: "OK",
-                  onPress: () => router.replace("/(tabs)"), // ✅ 메인으로 이동
-                },
-              ],
             );
           }
         } catch (error) {
@@ -103,6 +97,7 @@ export default function TelegramLoginButton() {
           style={{ marginTop: 20 }}
         />
       )}
+      {AlertComponent}
     </View>
   );
 }
