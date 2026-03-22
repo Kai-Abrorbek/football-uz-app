@@ -15,30 +15,30 @@ import { apiErrorEmitter } from "../src/services/api";
 
 const queryClient = new QueryClient();
 
-// async function displayRichNotification(data: any) {
-//   // 1. 안드로이드 채널 생성 (필수)
-//   const channelId = await notifee.createChannel({
-//     id: "match_updates",
-//     name: "Match Updates",
-//   });
+async function displayRichNotification(data: any) {
+  // 1. 안드로이드 채널 생성 (필수)
+  const channelId = await notifee.createChannel({
+    id: "match_updates",
+    name: "Match Updates",
+  });
 
-//   // 2. 알림 띄우기!
-//   await notifee.displayNotification({
-//     title: data.title || "⚽ 경기 업데이트", // 이제 data에서 꺼내 씀
-//     body: data.body || "점수가 변경되었습니다.",
-//     android: {
-//       channelId,
-//       // 우측에 동그랗게 뜨는 작은 로고 (팀 로고 넣기 좋음)
-//       largeIcon: data.logoUrl || "https://my-test-url.com/logo.png",
-//     },
-//   });
-// }
+  // 2. 알림 띄우기!
+  await notifee.displayNotification({
+    title: data.title || "⚽ 경기 업데이트", // 이제 data에서 꺼내 씀
+    body: data.body || "점수가 변경되었습니다.",
+    android: {
+      channelId,
+      // 우측에 동그랗게 뜨는 작은 로고 (팀 로고 넣기 좋음)
+      largeIcon: data.logoUrl || "https://my-test-url.com/logo.png",
+    },
+  });
+}
 
-// messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-//   if (remoteMessage.data) {
-//     await displayRichNotification(remoteMessage.data);
-//   }
-// });
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  if (remoteMessage.data) {
+    await displayRichNotification(remoteMessage.data);
+  }
+});
 
 function StackLayout() {
   const Colors = useColors();
@@ -76,16 +76,16 @@ function StackLayout() {
 }
 
 export default function RootLayout() {
-  // useEffect(() => {
-  //   // 2. 앱 화면 켜져있을 때 (포그라운드)
-  //   const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-  //     if (remoteMessage.data) {
-  //       await displayRichNotification(remoteMessage.data);
-  //     }
-  //   });
+  useEffect(() => {
+    // 2. 앱 화면 켜져있을 때 (포그라운드)
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      if (remoteMessage.data) {
+        await displayRichNotification(remoteMessage.data);
+      }
+    });
 
-  //   return unsubscribe;
-  // }, []);
+    return unsubscribe;
+  }, []);
 
   const { sweetErrorAlert, AlertComponent } = useAlert();
 
