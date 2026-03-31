@@ -102,10 +102,10 @@ function SmallMatchCard({ match, styles, Colors, t, i18n }: any) {
         <View style={styles.rightSection}>
           <Text style={styles.statusText}>
             {isFinished
-              ? t("leagueOverview.fulltime", "풀타임")
+              ? t("leagueMatches.fulltime", "풀타임")
               : isLive
                 ? "LIVE"
-                : t("leagueOverview.scheduled", "예정")}
+                : t("leagueMatches.scheduled", "예정")}
           </Text>
           <Text style={styles.dateText}>
             {new Date(match.date).getMonth() + 1}.{" "}

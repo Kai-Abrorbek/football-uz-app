@@ -202,6 +202,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     container: {
       flex: 1,
       backgroundColor: Colors.background,
+      marginBottom: 40,
     },
     statTabs: {
       flexDirection: "row",

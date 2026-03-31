@@ -12,7 +12,36 @@
           "package_name": "com.footballuz.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "793550954290-39lo088aqkpn9mhlq1u76rl23su0uafd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.footballuz.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "793550954290-3mno256m4k9cfrnbmgh0l2fclmr5mf3u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.footballuz.app",
+            "certificate_hash": "80c0597ba48aa565fa854f6e12bd2573a3635bd6"
+          }
+        },
+        {
+          "client_id": "793550954290-rh6m5rqlc5c4skivlkj5ghv9d6j04v78.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.footballuz.app",
+            "certificate_hash": "a7b3bed081958106895071e522519828b160a55d"
+          }
+        },
+        {
+          "client_id": "793550954290-ea2r2qj0nnea4j7oti3jk71bifq75mqd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDhxjf5-NaPxjcnwc3BXfbQp7deDjRVhWE"
@@ -20,7 +49,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "793550954290-ea2r2qj0nnea4j7oti3jk71bifq75mqd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

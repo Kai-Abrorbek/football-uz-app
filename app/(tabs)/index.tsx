@@ -171,6 +171,7 @@ export default function HomeScreen() {
     refetch();
     setSelectedDate(formatDate(new Date()));
   };
+
   return (
     <SafeAreaView style={styles.container} edges={[]}>
       {/*  헤더 수정 */}

@@ -1,5 +1,11 @@
 import { useState, useRef } from "react";
-import { View, StyleSheet, Animated, Platform } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Animated,
+  Platform,
+  RefreshControl,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
@@ -36,7 +42,11 @@ export default function MatchDetailScreen() {
   const Colors = useColors();
   const styles = getStyles(Colors);
 
-  const { data: match, isLoading } = useQuery<Match>({
+  const {
+    data: match,
+    isLoading,
+    refetch,
+  } = useQuery<Match>({
     queryKey: ["match", id],
     queryFn: () => api.get(ENDPOINTS.matchDetail(id)),
     staleTime: 1000 * 60,
@@ -173,7 +183,7 @@ export default function MatchDetailScreen() {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.surface2 },
+    container: { flex: 1, backgroundColor: Colors.surface2, marginBottom: 40 },
     loadingContainer: { flex: 1, backgroundColor: Colors.surface2 },
     scrollView: { flex: 1 },
     content: { flex: 1 },

@@ -7,11 +7,12 @@ import { AuthProvider } from "../src/contexts/AuthContext";
 import "../src/i18n";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
 import { ErrorProvider } from "../src/contexts/ErrorContext";
-import notifee, { AndroidStyle } from "@notifee/react-native";
+import notifee, { AndroidStyle, EventType } from "@notifee/react-native";
 import messaging from "@react-native-firebase/messaging";
 import { useAlert } from "../src/utils/alert";
 import { useEffect } from "react";
 import { apiErrorEmitter } from "../src/services/api";
+import { router } from "expo-router";
 
 const queryClient = new QueryClient();
 
@@ -77,14 +78,34 @@ function StackLayout() {
 
 export default function RootLayout() {
   useEffect(() => {
-    // 2. 앱 화면 켜져있을 때 (포그라운드)
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    // 1. 알림 클릭 핸들러 (포그라운드/백그라운드 공통)
+    const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
+      // 사용자가 알림을 '눌렀을 때' (PRESS)
+      if (type === EventType.PRESS) {
+        console.log("사용자가 알림을 눌렀어!", detail.notification?.data);
+
+        const data = detail.notification?.data;
+        if (data?.screen === "Match" && data?.referenceId) {
+          // ⚽️ 경기 상세 페이지로 쏴주기!
+          router.push(`/match/${data.referenceId}`);
+        } else {
+          // 데이터 없으면 그냥 앱만 열림
+          router.replace("/");
+        }
+      }
+    });
+
+    // 2. 포그라운드 메시지 수신 (기존 유지)
+    const unsubscribeFCM = messaging().onMessage(async (remoteMessage) => {
       if (remoteMessage.data) {
         await displayRichNotification(remoteMessage.data);
       }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribeNotifee();
+      unsubscribeFCM();
+    };
   }, []);
 
   const { sweetErrorAlert, AlertComponent } = useAlert();

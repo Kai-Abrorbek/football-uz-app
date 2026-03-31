@@ -424,7 +424,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     continentTabText: {
       fontSize: 14,
       fontWeight: "500",
-      color: Colors.text,
+      color: Colors.text2,
     },
     continentTabTextActive: {
       color: Colors.text2,

@@ -184,7 +184,12 @@ export default function ProfileScreen() {
         <ScrollView contentContainerStyle={styles.authContainer}>
           <View style={styles.authHeader}>
             <View style={styles.logoCircle}>
-              <Ionicons name="football" size={60} color={Colors.primary} />
+              <Image
+                source={require("../../assets/icon2.png")}
+                contentFit="cover"
+                style={{ width: 110, height: 110, borderRadius: 55 }}
+              />
+              {/* <Ionicons name="football" size={60} color={Colors.primary} /> */}
             </View>
             <Text style={styles.authTitle}>{t("auth.brandTitle")}</Text>
             <Text style={styles.authSubtitle}>

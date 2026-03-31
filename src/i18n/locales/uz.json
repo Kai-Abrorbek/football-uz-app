@@ -183,7 +183,7 @@
   "leagueMatches": {
     "matchday": "O‘yin kuni ({{current}}/{{total}})",
     "today": "Bugun",
-    "scheduled": "Rejalashtirilgan",
+    "scheduled": "Kutilmoqda",
     "fulltime": "To‘liq vaqt",
     "tomorrow": "Ertaga",
     "seeMore": "Barcha o‘yinlar"
@@ -502,7 +502,7 @@
   },
   "notification": {
     "title": "Bildirishnomalar",
-    "markAllRead": "Barchasini o'qilgan deb belgilash",
+    "markAllRead": "Barchasini o'qish",
     "loginRequired": "Bildirishnomalarni ko'rish uchun tizimga kiring.",
     "empty": "Hali bildirishnomalar yo'q.",
     "minutesAgo": " daq oldin",

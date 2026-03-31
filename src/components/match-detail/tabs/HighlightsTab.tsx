@@ -293,6 +293,7 @@ const getStyles = (Colors: ReturnType<typeof getColors>) =>
     container: {
       flex: 1,
       backgroundColor: Colors.surface2,
+      marginBottom: 40,
     },
     emptyContainer: {
       alignItems: "center",
