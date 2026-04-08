@@ -3,7 +3,7 @@ import { MATCH_SEASON } from "./leauges";
 export const API_URL = "http://72.62.75.97:4000/api/v1";
 // export const API_URL = "http://localhost:4000/api/v1";
 // export const API_URL = "https://f206-213-230-80-223.ngrok-free.app/api/v1";
-// export const API_URL = "http://10.84.175.88:4000/api/v1";
+// export const API_URL = "http://10.51.67.88:4000/api/v1";
 // export const API_URL = "http://192.168.1.3:4000/api/v1";
 
 export const WORLDCUP_LEAGUE_ID = 1;

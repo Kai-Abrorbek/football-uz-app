@@ -7,6 +7,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   PanResponder,
+  Pressable,
 } from "react-native";
 import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
@@ -21,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { useError } from "../../../contexts/ErrorContext";
 import { STANDING_SEASON } from "../../../constants/leauges";
 import { useLiveMatches } from "../../../hooks/useMatches";
+import { router } from "expo-router";
 
 interface Props {
   match: Match;
@@ -248,7 +250,16 @@ export default function StandingsTab({ match }: Props) {
               const rowKey = `${entry.rank}-${entry.team.id}`;
 
               return (
-                <View
+                <Pressable
+                  onPress={() => {
+                    router.push({
+                      pathname: `/team/${entry.team.id}`,
+                      params: {
+                        team: JSON.stringify(entry.team),
+                        // leagueId: JSON.stringify(standings.league.id),
+                      },
+                    });
+                  }}
                   key={rowKey}
                   style={[
                     styles.leftCell,
@@ -277,7 +288,7 @@ export default function StandingsTab({ match }: Props) {
                   </Text>
                   {/* 라이브 칩 */}
                   {renderLiveChip(entry.team.id)}
-                </View>
+                </Pressable>
               );
             })}
           </View>

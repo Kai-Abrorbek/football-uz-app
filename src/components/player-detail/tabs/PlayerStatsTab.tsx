@@ -88,7 +88,12 @@ export default function PlayerStatsTab({ player }: { player: any }) {
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background, padding: 16 },
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+      padding: 16,
+      marginBottom: 40,
+    },
     section: { marginBottom: 8 },
     teamName: {
       fontSize: 16,

@@ -139,7 +139,12 @@ export default function PlayerMatchesTab({
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background, padding: 16 },
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+      padding: 16,
+      marginBottom: 50,
+    },
     empty: { flex: 1, alignItems: "center", justifyContent: "center" },
     emptyText: { fontSize: 14, color: Colors.textSecondary },
     card: {

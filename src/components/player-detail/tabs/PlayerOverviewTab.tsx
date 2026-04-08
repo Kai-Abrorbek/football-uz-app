@@ -173,7 +173,11 @@ export default function PlayerOverviewTab({
 
 const getStyles = (Colors: ReturnType<typeof getColors>) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: Colors.background },
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+      marginBottom: 40,
+    },
     photoContainer: {
       width: "100%",
       height: 280,

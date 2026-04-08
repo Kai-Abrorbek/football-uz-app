@@ -18,6 +18,7 @@ import { useColors } from "../../src/hooks/useColors";
 import { useTranslation } from "react-i18next";
 import { SEASON, FEATURED_LEAGUES } from "../../src/constants/leauges";
 import { AuthGate } from "../../src/contexts/AuthGate";
+import PlayoffScreen from "../../src/components/match-detail/tabs/PlayoffScreen";
 
 const TABS = [
   { key: "overview" },
@@ -55,6 +56,14 @@ export default function LeagueDetailScreen() {
     },
     staleTime: 1000 * 60 * 30,
   });
+
+  const round = [
+    "Round of 32",
+    "Round of 16",
+    "Quarter-finals",
+    "Semi-finals",
+    "Final",
+  ].includes(match.round);
 
   if (isError) {
     return (
@@ -95,7 +104,11 @@ export default function LeagueDetailScreen() {
       case "matches":
         return <LeagueMatchesTab leagueId={id} />;
       case "standings":
-        return <LeagueStandingsTab leagueId={id} />;
+        return round ? (
+          <PlayoffScreen match={match} />
+        ) : (
+          <LeagueStandingsTab leagueId={id} />
+        );
       default:
         return <LeagueOverviewTab leagueId={id} highlightMatch={match} />;
     }

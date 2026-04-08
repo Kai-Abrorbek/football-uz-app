@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useColors } from "../src/hooks/useColors";
@@ -7,39 +7,15 @@ import { AuthProvider } from "../src/contexts/AuthContext";
 import "../src/i18n";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
 import { ErrorProvider } from "../src/contexts/ErrorContext";
-import notifee, { AndroidStyle, EventType } from "@notifee/react-native";
+import notifee, { EventType } from "@notifee/react-native";
 import messaging from "@react-native-firebase/messaging";
 import { useAlert } from "../src/utils/alert";
 import { useEffect } from "react";
 import { apiErrorEmitter } from "../src/services/api";
-import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createNotificationChannels } from "../src/services/notificationService";
 
 const queryClient = new QueryClient();
-
-async function displayRichNotification(data: any) {
-  // 1. 안드로이드 채널 생성 (필수)
-  const channelId = await notifee.createChannel({
-    id: "match_updates",
-    name: "Match Updates",
-  });
-
-  // 2. 알림 띄우기!
-  await notifee.displayNotification({
-    title: data.title || "⚽ 경기 업데이트", // 이제 data에서 꺼내 씀
-    body: data.body || "점수가 변경되었습니다.",
-    android: {
-      channelId,
-      // 우측에 동그랗게 뜨는 작은 로고 (팀 로고 넣기 좋음)
-      largeIcon: data.logoUrl || "https://my-test-url.com/logo.png",
-    },
-  });
-}
-
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-  if (remoteMessage.data) {
-    await displayRichNotification(remoteMessage.data);
-  }
-});
 
 function StackLayout() {
   const Colors = useColors();
@@ -77,39 +53,57 @@ function StackLayout() {
 }
 
 export default function RootLayout() {
+  const { sweetErrorAlert, AlertComponent } = useAlert();
+
   useEffect(() => {
-    // 1. 알림 클릭 핸들러 (포그라운드/백그라운드 공통)
-    const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
-      // 사용자가 알림을 '눌렀을 때' (PRESS)
-      if (type === EventType.PRESS) {
-        console.log("사용자가 알림을 눌렀어!", detail.notification?.data);
+    // ✅ 채널 생성
+    createNotificationChannels();
 
-        const data = detail.notification?.data;
-        if (data?.screen === "Match" && data?.referenceId) {
-          // ⚽️ 경기 상세 페이지로 쏴주기!
-          router.push(`/match/${data.referenceId}`);
-        } else {
-          // 데이터 없으면 그냥 앱만 열림
-          router.replace("/");
+    // ✅ 1. Quit State: FCM으로 직접 열린 경우
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        if (remoteMessage?.data?.referenceId) {
+          setTimeout(() => {
+            router.push(`/match/${remoteMessage.data!.referenceId}`);
+          }, 300);
+          return;
         }
-      }
-    });
 
-    // 2. 포그라운드 메시지 수신 (기존 유지)
-    const unsubscribeFCM = messaging().onMessage(async (remoteMessage) => {
-      if (remoteMessage.data) {
-        await displayRichNotification(remoteMessage.data);
+        // Notifee 경유 (onBackgroundEvent에서 저장한 경우)
+        AsyncStorage.getItem("pendingNavigation").then((referenceId) => {
+          if (referenceId) {
+            AsyncStorage.removeItem("pendingNavigation");
+            setTimeout(() => {
+              router.push(`/match/${referenceId}`);
+            }, 300);
+          }
+        });
+      });
+
+    // ✅ 2. Background State: FCM 알림 클릭
+    const unsubscribeFCMBackground = messaging().onNotificationOpenedApp(
+      (remoteMessage) => {
+        if (remoteMessage?.data?.referenceId) {
+          router.push(`/match/${remoteMessage.data.referenceId}`);
+        }
+      },
+    );
+
+    // ✅ 3. Foreground: Notifee 알림 클릭
+    const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS && detail.notification?.data?.referenceId) {
+        router.push(`/match/${detail.notification.data.referenceId}`);
       }
     });
 
     return () => {
+      unsubscribeFCMBackground();
       unsubscribeNotifee();
-      unsubscribeFCM();
     };
   }, []);
 
-  const { sweetErrorAlert, AlertComponent } = useAlert();
-
+  // API 에러 핸들러
   useEffect(() => {
     const handler = (msg: string) => sweetErrorAlert(msg);
     apiErrorEmitter.on("error", handler);
@@ -125,6 +119,7 @@ export default function RootLayout() {
           <ErrorProvider>
             <LanguageProvider>
               <StackLayout />
+              {AlertComponent}
             </LanguageProvider>
           </ErrorProvider>
         </AuthProvider>
