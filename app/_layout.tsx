@@ -7,13 +7,10 @@ import { AuthProvider } from "../src/contexts/AuthContext";
 import "../src/i18n";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
 import { ErrorProvider } from "../src/contexts/ErrorContext";
-import notifee, { EventType } from "@notifee/react-native";
-import messaging from "@react-native-firebase/messaging";
 import { useAlert } from "../src/utils/alert";
 import { useEffect } from "react";
 import { apiErrorEmitter } from "../src/services/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createNotificationChannels } from "../src/services/notificationService";
+import { Platform } from "react-native";
 
 const queryClient = new QueryClient();
 
@@ -56,54 +53,70 @@ export default function RootLayout() {
   const { sweetErrorAlert, AlertComponent } = useAlert();
 
   useEffect(() => {
-    // ✅ 채널 생성
-    createNotificationChannels();
+    // 웹에서는 FCM/Notifee 스킵
+    if (Platform.OS === "web") return;
 
-    // ✅ 1. Quit State: FCM으로 직접 열린 경우
-    messaging()
-      .getInitialNotification()
-      .then((remoteMessage) => {
-        if (remoteMessage?.data?.referenceId) {
-          setTimeout(() => {
-            router.push(`/match/${remoteMessage.data!.referenceId}`);
-          }, 300);
-          return;
-        }
+    const initNative = async () => {
+      const { createNotificationChannels } =
+        await import("../src/services/notificationService");
+      const messaging = (await import("@react-native-firebase/messaging"))
+        .default;
+      const notifee = (await import("@notifee/react-native")).default;
+      const { EventType } = await import("@notifee/react-native");
+      const AsyncStorage = (
+        await import("@react-native-async-storage/async-storage")
+      ).default;
 
-        // Notifee 경유 (onBackgroundEvent에서 저장한 경우)
-        AsyncStorage.getItem("pendingNavigation").then((referenceId) => {
-          if (referenceId) {
-            AsyncStorage.removeItem("pendingNavigation");
+      createNotificationChannels();
+
+      messaging()
+        .getInitialNotification()
+        .then((remoteMessage) => {
+          if (remoteMessage?.data?.referenceId) {
             setTimeout(() => {
-              router.push(`/match/${referenceId}`);
+              router.push(`/match/${remoteMessage.data!.referenceId}`);
             }, 300);
+            return;
           }
+
+          AsyncStorage.getItem("pendingNavigation").then((referenceId) => {
+            if (referenceId) {
+              AsyncStorage.removeItem("pendingNavigation");
+              setTimeout(() => {
+                router.push(`/match/${referenceId}`);
+              }, 300);
+            }
+          });
         });
-      });
 
-    // ✅ 2. Background State: FCM 알림 클릭
-    const unsubscribeFCMBackground = messaging().onNotificationOpenedApp(
-      (remoteMessage) => {
-        if (remoteMessage?.data?.referenceId) {
-          router.push(`/match/${remoteMessage.data.referenceId}`);
-        }
-      },
-    );
+      const unsubscribeFCMBackground = messaging().onNotificationOpenedApp(
+        (remoteMessage) => {
+          if (remoteMessage?.data?.referenceId) {
+            router.push(`/match/${remoteMessage.data.referenceId}`);
+          }
+        },
+      );
 
-    // ✅ 3. Foreground: Notifee 알림 클릭
-    const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
-      if (type === EventType.PRESS && detail.notification?.data?.referenceId) {
-        router.push(`/match/${detail.notification.data.referenceId}`);
-      }
-    });
+      const unsubscribeNotifee = notifee.onForegroundEvent(
+        ({ type, detail }) => {
+          if (
+            type === EventType.PRESS &&
+            detail.notification?.data?.referenceId
+          ) {
+            router.push(`/match/${detail.notification.data.referenceId}`);
+          }
+        },
+      );
 
-    return () => {
-      unsubscribeFCMBackground();
-      unsubscribeNotifee();
+      return () => {
+        unsubscribeFCMBackground();
+        unsubscribeNotifee();
+      };
     };
+
+    initNative();
   }, []);
 
-  // API 에러 핸들러
   useEffect(() => {
     const handler = (msg: string) => sweetErrorAlert(msg);
     apiErrorEmitter.on("error", handler);

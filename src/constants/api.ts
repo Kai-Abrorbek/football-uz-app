@@ -1,6 +1,6 @@
 import { MATCH_SEASON } from "./leauges";
 
-export const API_URL = "http://72.62.75.97:4000/api/v1";
+export const API_URL = "https://footballuz.online/api/v1";
 // export const API_URL = "http://localhost:4000/api/v1";
 // export const API_URL = "https://f206-213-230-80-223.ngrok-free.app/api/v1";
 // export const API_URL = "http://10.51.67.88:4000/api/v1";

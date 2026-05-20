@@ -137,7 +137,10 @@ export default function HomeScreen() {
         {groupList.map((group: any, index: number) => (
           <View key={group.league.id}>
             <View style={styles.leagueGroup}>
-              <TouchableOpacity style={styles.leagueHeader}>
+              <TouchableOpacity
+                style={styles.leagueHeader}
+                onPress={() => router.push(`/league/${group.league.id}`)}
+              >
                 <Image
                   source={group.league.logo}
                   style={styles.leagueLogo}

@@ -341,7 +341,8 @@ export default function LeagueStandingsTab({ leagueId }: Props) {
                   const formArr = (entry.form || "")
                     .split("")
                     .filter(Boolean)
-                    .slice(-5);
+                    .slice(-5)
+                    .reverse();
                   const rowKey = `${entry.rank}-${entry.team.id}`;
                   return (
                     <TouchableOpacity

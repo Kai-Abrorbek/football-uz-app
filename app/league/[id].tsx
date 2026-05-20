@@ -63,7 +63,7 @@ export default function LeagueDetailScreen() {
     "Quarter-finals",
     "Semi-finals",
     "Final",
-  ].includes(match.round);
+  ].includes(match?.round ?? "");
 
   if (isError) {
     return (

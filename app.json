@@ -31,7 +31,8 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/icon2.png"
+      "favicon": "./assets/icon2.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",
@@ -70,7 +71,18 @@
         }
       ],
       "@react-native-firebase/messaging",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf",
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf",
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"
+          ]
+        }
+      ]
     ],
     "extra": {
       "router": {},

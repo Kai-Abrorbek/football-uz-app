@@ -4,6 +4,65 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { useColors } from "../../src/hooks/useColors";
 import { View } from "react-native";
+import { Platform } from "react-native";
+
+type IoniconsName = React.ComponentProps<typeof Ionicons>["name"];
+
+function TabIcon({
+  name,
+  focusedName,
+  color,
+  size,
+  focused,
+}: {
+  name: IoniconsName;
+  focusedName: IoniconsName;
+  color: string;
+  size: number;
+  focused: boolean;
+}) {
+  const Colors = useColors();
+
+  if (Platform.OS === "web") {
+    const emojiMap: Partial<Record<IoniconsName, string>> = {
+      "home-outline": "🏠",
+      "list-outline": "📋",
+      "newspaper-outline": "📰",
+      "play-circle-outline": "▶️",
+      "chatbubble-outline": "💬",
+      "person-outline": "👤",
+    };
+    return (
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          width: 44,
+          height: 44,
+          borderRadius: 12,
+          backgroundColor: focused ? color + "18" : "transparent",
+        }}
+      >
+        <span style={{ fontSize: size }}>{emojiMap[name]}</span>
+      </View>
+    );
+  }
+
+  return (
+    <View
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        backgroundColor: focused ? color + "18" : "transparent",
+      }}
+    >
+      <Ionicons name={focused ? focusedName : name} size={size} color={color} />
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const { userData, setUser } = useAuth();
@@ -40,25 +99,15 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t("tabs.home"),
+          // home
           tabBarIcon: ({ color, size, focused }) => (
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                backgroundColor: focused
-                  ? Colors.tabBarActive + "18"
-                  : "transparent",
-              }}
-            >
-              <Ionicons
-                name={focused ? "home" : "home-outline"}
-                size={size}
-                color={color}
-              />
-            </View>
+            <TabIcon
+              name="home-outline"
+              focusedName="home"
+              color={color}
+              size={size}
+              focused={focused}
+            />
           ),
         }}
       />
@@ -66,25 +115,15 @@ export default function TabLayout() {
         name="leagues"
         options={{
           title: t("tabs.leagues"),
+          // leagues
           tabBarIcon: ({ color, size, focused }) => (
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                backgroundColor: focused
-                  ? Colors.tabBarActive + "18"
-                  : "transparent",
-              }}
-            >
-              <Ionicons
-                name={focused ? "list" : "list-outline"}
-                size={size}
-                color={color}
-              />
-            </View>
+            <TabIcon
+              name="list-outline"
+              focusedName="list"
+              color={color}
+              size={size}
+              focused={focused}
+            />
           ),
         }}
       />
@@ -92,25 +131,15 @@ export default function TabLayout() {
         name="news"
         options={{
           title: t("tabs.news"),
+          // news
           tabBarIcon: ({ color, size, focused }) => (
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                backgroundColor: focused
-                  ? Colors.tabBarActive + "18"
-                  : "transparent",
-              }}
-            >
-              <Ionicons
-                name={focused ? "newspaper" : "newspaper-outline"}
-                size={size}
-                color={color}
-              />
-            </View>
+            <TabIcon
+              name="newspaper-outline"
+              focusedName="newspaper"
+              color={color}
+              size={size}
+              focused={focused}
+            />
           ),
         }}
       />
@@ -118,25 +147,15 @@ export default function TabLayout() {
         name="feed"
         options={{
           title: t("tabs.feed"),
+          // feed
           tabBarIcon: ({ color, size, focused }) => (
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                backgroundColor: focused
-                  ? Colors.tabBarActive + "18"
-                  : "transparent",
-              }}
-            >
-              <Ionicons
-                name={focused ? "play-circle" : "play-circle-outline"}
-                size={size}
-                color={color}
-              />
-            </View>
+            <TabIcon
+              name="play-circle-outline"
+              focusedName="play-circle"
+              color={color}
+              size={size}
+              focused={focused}
+            />
           ),
           tabBarStyle: { display: "none" },
         }}
@@ -145,25 +164,15 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: t("tabs.chat"),
+          // chat
           tabBarIcon: ({ color, size, focused }) => (
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                backgroundColor: focused
-                  ? Colors.tabBarActive + "18"
-                  : "transparent",
-              }}
-            >
-              <Ionicons
-                name={focused ? "chatbubble" : "chatbubble-outline"}
-                size={size}
-                color={color}
-              />
-            </View>
+            <TabIcon
+              name="chatbubble-outline"
+              focusedName="chatbubble"
+              color={color}
+              size={size}
+              focused={focused}
+            />
           ),
         }}
       />
@@ -171,25 +180,15 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: t("tabs.profile"),
+          // profile
           tabBarIcon: ({ color, size, focused }) => (
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                backgroundColor: focused
-                  ? Colors.tabBarActive + "18"
-                  : "transparent",
-              }}
-            >
-              <Ionicons
-                name={focused ? "person" : "person-outline"}
-                size={size}
-                color={color}
-              />
-            </View>
+            <TabIcon
+              name="person-outline"
+              focusedName="person"
+              color={color}
+              size={size}
+              focused={focused}
+            />
           ),
         }}
       />
