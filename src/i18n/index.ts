@@ -14,8 +14,8 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     kr: { translation: kr },
   },
-  lng: getLocales()[0]?.languageCode || "uz",
-  fallbackLng: "uz",
+  lng: getLocales()[0]?.languageCode || "kr",
+  fallbackLng: "kr",
   interpolation: {
     escapeValue: false,
   },
