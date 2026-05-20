@@ -9,10 +9,10 @@ import kr from "./locales/kr.json";
 i18n.use(initReactI18next).init({
   compatibilityJSON: "v4",
   resources: {
+    kr: { translation: kr },
     uz: { translation: uz },
     ru: { translation: ru },
     en: { translation: en },
-    kr: { translation: kr },
   },
   lng: getLocales()[0]?.languageCode || "kr",
   fallbackLng: "kr",
